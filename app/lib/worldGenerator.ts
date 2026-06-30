@@ -1,16 +1,16 @@
 import { supabase } from './supabase'
 
 const TERRAIN_TYPES = ['plains', 'forest', 'mountains', 'ocean', 'desert', 'swamp', 'hills']
-const TERRAIN_WEIGHTS = [30, 25, 15, 20, 5, 5, 10]
+const TERRAIN_WEIGHTS = [27, 27, 7, 8, 2, 2, 27]
 
 const TERRAIN_AFFINITY: Record<string, Record<string, number>> = {
-  plains:    { plains: 8, forest: 5, hills: 4, mountains: 2, desert: 3, swamp: 2, ocean: 1 },
-  forest:    { forest: 8, plains: 5, hills: 3, swamp: 4, mountains: 2, desert: 1, ocean: 1 },
-  mountains: { mountains: 8, hills: 6, forest: 3, plains: 2, ocean: 2, desert: 2, swamp: 1 },
-  ocean:     { ocean: 10, plains: 3, swamp: 2, hills: 1, forest: 1, mountains: 1, desert: 1 },
-  desert:    { desert: 8, plains: 5, hills: 3, mountains: 2, forest: 1, swamp: 1, ocean: 1 },
-  swamp:     { swamp: 8, forest: 5, plains: 4, ocean: 3, hills: 2, mountains: 1, desert: 1 },
-  hills:     { hills: 8, mountains: 6, plains: 4, forest: 3, desert: 2, swamp: 1, ocean: 1 },
+  plains:    { plains: 20, forest: 6, hills: 5, mountains: 1, desert: 4, swamp: 2, ocean: 1 },
+  forest:    { forest: 20, plains: 6, hills: 4, swamp: 5, mountains: 2, desert: 1, ocean: 1 },
+  mountains: { mountains: 20, hills: 12, forest: 4, plains: 1, ocean: 2, desert: 2, swamp: 1 },
+  ocean:     { ocean: 25, plains: 2, swamp: 3, hills: 1, forest: 1, mountains: 1, desert: 1 },
+  desert:    { desert: 20, plains: 6, hills: 4, mountains: 2, forest: 1, swamp: 1, ocean: 1 },
+  swamp:     { swamp: 20, forest: 6, plains: 4, ocean: 5, hills: 1, mountains: 1, desert: 1 },
+  hills:     { hills: 20, mountains: 12, plains: 5, forest: 4, desert: 3, swamp: 1, ocean: 1 },
 }
 
 function getNeighbors(x: number, y: number, width: number, height: number): number[][] {
@@ -33,7 +33,7 @@ function pickTerrainWithAffinity(neighborTerrains: string[]): string {
   neighborTerrains.forEach(neighbor => {
     const affinity = TERRAIN_AFFINITY[neighbor]
     if (affinity) {
-      TERRAIN_TYPES.forEach(t => { weights[t] = (weights[t] || 0) + (affinity[t] || 0) * 3 })
+      TERRAIN_TYPES.forEach(t => { weights[t] = (weights[t] || 0) + (affinity[t] || 0) * 6 })
     }
   })
 
@@ -89,15 +89,32 @@ export async function generateWorld(gameName: string, width: number, height: num
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const terrain = grid[y][x]
-      locations.push({
-          world_id: world.id,
-          loc_code: locationCode(x, y),
-          terrain_type: terrain,
-          population: populationForTerrain(terrain),
-          population_optimal: populationForTerrain(terrain),
-        })
+
+      let population_center = null
+      if (terrain !== 'ocean' && Math.random() < 0.12) {
+        const roll = Math.random()
+        const type = roll < 0.05 ? 'city' : roll < 0.25 ? 'town' : 'village'
+        const settlementPop = type === 'city'
+          ? Math.floor(Math.random() * 7000) + 3000
+          : type === 'town'
+          ? Math.floor(Math.random() * 2200) + 800
+          : Math.floor(Math.random() * 600) + 200
+        population_center = { name: `${type} at ${locationCode(x, y)}`, type, population: settlementPop }
       }
+
+      const basePop = populationForTerrain(terrain)
+      const totalPop = basePop + (population_center ? population_center.population : 0)
+
+      locations.push({
+        world_id: world.id,
+        loc_code: locationCode(x, y),
+        terrain_type: terrain,
+        population: totalPop,
+        population_optimal: totalPop,
+        resources: population_center ? { population_center } : {},
+      })
     }
+  }
 
   for (let i = 0; i < locations.length; i += 100) {
     const { error } = await supabase.from('locations').insert(locations.slice(i, i + 100))
