@@ -127,11 +127,12 @@ export default function WorldMap({ locations }: { locations: Location[] }) {
       )
 
       // Draw population center dot
-      if (loc.population_center) {
-        const dotSize = loc.population_center.type === 'city' ? 3
-          : loc.population_center.type === 'town' ? 2 : 1.5
-        const dotColor = loc.population_center.type === 'city' ? '#ff0000'
-          : loc.population_center.type === 'town' ? '#ffaa00' : '#ffffff'
+      const popCenter = loc.resources?.population_center
+      if (popCenter) {
+        const dotSize = popCenter.type === 'city' ? 3
+          : popCenter.type === 'town' ? 2 : 1.5
+        const dotColor = popCenter.type === 'city' ? '#ff0000'
+          : popCenter.type === 'town' ? '#ffaa00' : '#ffffff'
         ctx.beginPath()
         ctx.arc(px, py, dotSize, 0, Math.PI * 2)
         ctx.fillStyle = dotColor
@@ -188,10 +189,10 @@ export default function WorldMap({ locations }: { locations: Location[] }) {
             <h3 className="font-bold text-lg mb-1">{selected.loc_code}</h3>
             <p className="text-gray-600 mb-1">{TERRAIN_LABELS[selected.terrain_type]}</p>
             <p className="text-sm text-gray-500 mb-2">Population: {selected.population.toLocaleString()}</p>
-            {selected.population_center && (
+            {selected.resources?.population_center && (
               <div className="mb-3 p-2 bg-yellow-50 rounded border border-yellow-200">
-                <p className="text-sm font-semibold">{selected.population_center.name}</p>
-                <p className="text-xs text-gray-500 capitalize">{selected.population_center.type} — {selected.population_center.population.toLocaleString()} pop</p>
+                <p className="text-sm font-semibold">{selected.resources.population_center.name}</p>
+                <p className="text-xs text-gray-500 capitalize">{selected.resources.population_center.type} — {selected.resources.population_center.population.toLocaleString()} pop</p>
               </div>
             )}
             <div>
