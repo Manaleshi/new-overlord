@@ -6,6 +6,7 @@ type Location = {
   loc_code: string
   terrain_type: string
   population: number
+  geographic_name?: string
   population_center?: {
     name: string
     type: string
@@ -187,6 +188,7 @@ export default function WorldMap({ locations }: { locations: Location[] }) {
         {selected ? (
           <div className="border rounded p-4 bg-white shadow">
             <h3 className="font-bold text-lg mb-1">{selected.loc_code}</h3>
+            <p className="text-sm text-gray-400 mb-1">{selected.geographic_name}</p>
             <p className="text-gray-600 mb-1">{TERRAIN_LABELS[selected.terrain_type]}</p>
             <p className="text-sm text-gray-500 mb-2">Population: {selected.population.toLocaleString()}</p>
             {selected.resources?.population_center && (
