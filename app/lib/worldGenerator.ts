@@ -87,10 +87,6 @@ function pickTerrainWithAffinity(neighborTerrains: string[]): string {
   return 'plains'
 }
 
-function locationCode(x: number, y: number): string {
-  return `L${String(x).padStart(2, '0')}${String(y).padStart(2, '0')}`
-}
-
 function distanceFromCenter(x: number, y: number, cx: number, cy: number): number {
   return Math.sqrt((x - cx) ** 2 + (y - cy) ** 2)
 }
@@ -145,7 +141,39 @@ function calculateRecruits(population: number, hasSettlement: boolean, settlemen
   }
 }
 
-function buildExits(x: number, y: number, grid: string[][], geoNames: Record<string, string>, width: number, height: number) {
+// Generate pool of unique random loc codes
+function generateUniqueLocCodes(count: number): string[] {
+  const used = new Set<string>()
+  const codes: string[] = []
+  while (codes.length < count) {
+    const num = Math.floor(Math.random() * 9000) + 1000
+    const code = `L${num}`
+    if (!used.has(code)) {
+      used.add(code)
+      codes.push(code)
+    }
+  }
+  return codes
+}
+
+const usedInnerIds = new Set<string>()
+function nextInnerLocId(): string {
+  while (true) {
+    const id = `IL${String(Math.floor(Math.random() * 9000) + 1000)}`
+    if (!usedInnerIds.has(id)) {
+      usedInnerIds.add(id)
+      return id
+    }
+  }
+}
+
+function buildExits(
+  x: number, y: number,
+  grid: string[][],
+  coordToCode: Record<string, string>,
+  geoNames: Record<string, string>,
+  width: number, height: number
+) {
   const exits = []
   const isOdd = x % 2 === 1
   const dirOffsets: [number, number][] = isOdd
@@ -158,8 +186,9 @@ function buildExits(x: number, y: number, grid: string[][], geoNames: Record<str
     const ny = y + dy
     if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue
     const destTerrain = grid[ny][nx]
-    const destCode = locationCode(nx, ny)
-    const destGeoName = geoNames[destCode] ?? ''
+    const coordKey = `${nx},${ny}`
+    const destCode = coordToCode[coordKey]
+    const destGeoName = geoNames[coordKey] ?? ''
     const walkDays = TERRAIN_WALK_DAYS[destTerrain]
     exits.push({
       direction: DIRECTIONS[dir],
@@ -201,17 +230,6 @@ function floodFill(
   return cluster
 }
 
-const usedInnerIds = new Set<string>()
-function nextInnerLocId(): string {
-  while (true) {
-    const id = `IL${String(Math.floor(Math.random() * 9000) + 1000)}`
-    if (!usedInnerIds.has(id)) {
-      usedInnerIds.add(id)
-      return id
-    }
-  }
-}
-
 export async function generateWorld(gameName: string, width: number, height: number) {
   usedInnerIds.clear()
 
@@ -234,6 +252,7 @@ export async function generateWorld(gameName: string, width: number, height: num
   const maxDist = Math.sqrt(cx ** 2 + cy ** 2)
   const imperialRadius = 4
 
+  // Generate terrain grid
   const grid: string[][] = Array.from({ length: height }, () => Array(width).fill(''))
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -250,6 +269,24 @@ export async function generateWorld(gameName: string, width: number, height: num
     }
   }
 
+  // Generate unique random loc codes for every hex
+  const totalHexes = width * height
+  const locCodes = generateUniqueLocCodes(totalHexes)
+
+  // Map coord key "x,y" to random loc code
+  const coordToCode: Record<string, string> = {}
+  let codeIndex = 0
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      coordToCode[`${x},${y}`] = locCodes[codeIndex++]
+    }
+  }
+
+  // Force imperial city to a recognizable code
+  const imperialCode = 'L0001'
+  coordToCode[`${cx},${cy}`] = imperialCode
+
+  // Flood fill for region names — keyed by coord
   const visited: boolean[][] = Array.from({ length: height }, () => Array(width).fill(false))
   const usedNames = new Set<string>()
   const geoNames: Record<string, string> = {}
@@ -263,26 +300,28 @@ export async function generateWorld(gameName: string, width: number, height: num
         const regionName = generateRegionName(terrain, usedNames)
         const baseName = regionName.split(' ')[0]
         for (const [cx2, cy2] of cluster) {
-          geoNames[locationCode(cx2, cy2)] = regionName
-          baseNames[locationCode(cx2, cy2)] = baseName
+          geoNames[`${cx2},${cy2}`] = regionName
+          baseNames[`${cx2},${cy2}`] = baseName
         }
       }
     }
   }
 
+  // Override center region
   const imperialRegionName = 'Imperial Heartlands'
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const dist = distanceFromCenter(x, y, cx, cy)
       if (dist <= imperialRadius) {
-        geoNames[locationCode(x, y)] = imperialRegionName
-        baseNames[locationCode(x, y)] = 'Imperial'
+        geoNames[`${x},${y}`] = imperialRegionName
+        baseNames[`${x},${y}`] = 'Imperial'
       }
     }
   }
 
+  // Generate settlements
   const settlementUsedNames = new Set<string>()
-  type SettlementData = { type: string; population: number; locCode: string }
+  type SettlementData = { type: string; population: number; coordKey: string }
   const settlementMap: Record<string, SettlementData> = {}
 
   for (let y = 0; y < height; y++) {
@@ -309,60 +348,58 @@ export async function generateWorld(gameName: string, width: number, height: num
           : type === 'town'
           ? Math.floor(Math.random() * 2200) + 800
           : Math.floor(Math.random() * 600) + 200
-        const lc = locationCode(x, y)
-        settlementMap[lc] = { type, population: settlementPop, locCode: lc }
+        settlementMap[`${x},${y}`] = { type, population: settlementPop, coordKey: `${x},${y}` }
       }
     }
   }
 
-  const imperialCityCode = locationCode(cx, cy)
-  settlementMap[imperialCityCode] = {
-    type: 'imperial',
-    population: 75000,
-    locCode: imperialCityCode
-  }
+  // Force imperial city
+  settlementMap[`${cx},${cy}`] = { type: 'imperial', population: 75000, coordKey: `${cx},${cy}` }
 
+  // Name settlements
   const regionSettlements: Record<string, SettlementData[]> = {}
-  for (const [lc, settlement] of Object.entries(settlementMap)) {
-    const regionName = geoNames[lc]
+  for (const [coordKey, settlement] of Object.entries(settlementMap)) {
+    const regionName = geoNames[coordKey]
     if (!regionSettlements[regionName]) regionSettlements[regionName] = []
     regionSettlements[regionName].push(settlement)
   }
 
   const settlementNames: Record<string, string> = {}
-  settlementNames[imperialCityCode] = 'The Imperial City'
+  settlementNames[`${cx},${cy}`] = 'The Imperial City'
 
   for (const [regionName, settlements] of Object.entries(regionSettlements)) {
-    const baseName = settlements[0] ? baseNames[settlements[0].locCode] : null
+    const baseName = settlements[0] ? baseNames[settlements[0].coordKey] : null
     const sorted = [...settlements].sort((a, b) => b.population - a.population)
     sorted.forEach((s, i) => {
-      if (s.locCode === imperialCityCode) return
+      if (s.coordKey === `${cx},${cy}`) return
       if (i === 0 && regionName !== imperialRegionName) {
-        settlementNames[s.locCode] = generateSettlementName(baseName, settlementUsedNames)
+        settlementNames[s.coordKey] = generateSettlementName(baseName, settlementUsedNames)
       } else {
-        settlementNames[s.locCode] = generateSettlementName(null, settlementUsedNames)
+        settlementNames[s.coordKey] = generateSettlementName(null, settlementUsedNames)
       }
     })
   }
 
+  // Build location rows
   const locations = []
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const terrain = grid[y][x]
-      const lc = locationCode(x, y)
-      const settlement = settlementMap[lc]
+      const coordKey = `${x},${y}`
+      const lc = coordToCode[coordKey]
+      const settlement = settlementMap[coordKey]
       const dist = distanceFromCenter(x, y, cx, cy)
       const isImperialLand = dist <= imperialRadius
-      const isImperialCity = lc === imperialCityCode
+      const isImperialCity = coordKey === `${cx},${cy}`
       const basePop = basePopulationForTerrain(terrain)
       const settlePop = settlement ? settlement.population : 0
       const totalPop = basePop + settlePop
       const wages = calculateWages(totalPop)
-      const exits = buildExits(x, y, grid, geoNames, width, height)
+      const exits = buildExits(x, y, grid, coordToCode, geoNames, width, height)
 
       const innerLoc = settlement ? {
         id: nextInnerLocId(),
-        name: settlementNames[lc] ?? 'Unknown',
+        name: settlementNames[coordKey] ?? 'Unknown',
         type: settlement.type,
         population: settlement.population,
         economics: {
@@ -378,8 +415,10 @@ export async function generateWorld(gameName: string, width: number, height: num
       locations.push({
         world_id: world.id,
         loc_code: lc,
+        grid_x: x,
+        grid_y: y,
         terrain_type: terrain,
-        geographic_name: geoNames[lc],
+        geographic_name: geoNames[coordKey],
         population: totalPop,
         population_optimal: totalPop,
         resources: {

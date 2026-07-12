@@ -39,7 +39,6 @@ function generateBaseName(usedNames: Set<string>): string {
     }
     attempts++
   }
-  // Fallback with number if exhausted
   const name = PREFIXES[Math.floor(Math.random() * PREFIXES.length)] + attempts
   usedNames.add(name)
   return name
@@ -54,13 +53,11 @@ export function generateRegionName(terrain: string, usedNames: Set<string>): str
 
 export function generateSettlementName(baseName: string | null, usedNames: Set<string>): string {
   if (baseName) {
-    // Use the region's base name as the settlement name
     if (!usedNames.has(baseName)) {
       usedNames.add(baseName)
       return baseName
     }
   }
-  // Generate a unique settlement name
   let attempts = 0
   while (attempts < 100) {
     const prefix = PREFIXES[Math.floor(Math.random() * PREFIXES.length)]

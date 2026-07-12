@@ -39,6 +39,8 @@ type Location = {
   terrain_type: string
   population: number
   geographic_name?: string
+  grid_x?: number
+  grid_y?: number
   economics?: {
     wages: number
     taxes: number
@@ -124,8 +126,8 @@ function getHexAtPoint(mouseX: number, mouseY: number, locations: Location[]): L
   let closest: Location | null = null
   let closestDist = Infinity
   for (const loc of locations) {
-    const x = parseInt(loc.loc_code.slice(1, 3))
-    const y = parseInt(loc.loc_code.slice(3, 5))
+    const x = loc.grid_x ?? 0
+    const y = loc.grid_y ?? 0
     const { px, py } = hexCenter(x, y)
     const dist = Math.sqrt((mouseX - px) ** 2 + (mouseY - py) ** 2)
     if (dist < closestDist) {
@@ -188,8 +190,8 @@ export default function WorldMap({ locations }: { locations: Location[] }) {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     for (const loc of mapData) {
-      const x = parseInt(loc.loc_code.slice(1, 3))
-      const y = parseInt(loc.loc_code.slice(3, 5))
+      const x = loc.grid_x ?? 0
+      const y = loc.grid_y ?? 0
       const { px, py } = hexCenter(x, y)
       const color = TERRAIN_COLORS[loc.terrain_type] ?? '#888'
       const isSelected = selected?.loc_code === loc.loc_code
