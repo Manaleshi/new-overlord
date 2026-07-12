@@ -20,7 +20,7 @@ async function fetchAllLocations() {
   while (true) {
     const { data, error } = await supabase
       .from('locations')
-      .select('loc_code, terrain_type, population, resources, geographic_name')
+      .select('loc_code, terrain_type, population, resources, geographic_name, economics')
       .range(from, from + batchSize - 1)
 
     if (error) throw error

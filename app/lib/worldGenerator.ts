@@ -14,20 +14,47 @@ const TERRAIN_AFFINITY: Record<string, Record<string, number>> = {
   hills:     { hills: 20, mountains: 12, plains: 5, forest: 4, desert: 3, swamp: 1, ocean: 1 },
 }
 
-const TERRAIN_WAGES: Record<string, number> = {
-  plains: 10, forest: 8, mountains: 12, ocean: 0,
-  desert: 6, swamp: 7, hills: 9
+const TERRAIN_WALK_DAYS: Record<string, number | null> = {
+  plains: 7, forest: 9, mountains: null, ocean: null,
+  desert: 9, swamp: 14, hills: 9
 }
 
-const TERRAIN_RESOURCES: Record<string, string[]> = {
-  plains: ['grain', 'cattle', 'horses'],
-  forest: ['wood', 'herbs', 'hide'],
-  mountains: ['stone', 'iron', 'gems'],
-  ocean: ['fish'],
-  desert: ['stone', 'gems'],
-  swamp: ['herbs', 'fish'],
-  hills: ['stone', 'iron', 'cattle'],
+const TERRAIN_RESOURCES: Record<string, { item: string; tag: string; monthly_max: number; tokens_per_day: number; tokens_per_unit: number; hidden?: boolean; required_skill?: string; rare?: boolean }[]> = {
+  plains:  [
+    { item: 'grain', tag: 'grai', monthly_max: 30, tokens_per_day: 1, tokens_per_unit: 30 },
+    { item: 'cattle', tag: 'catt', monthly_max: 15, tokens_per_day: 1, tokens_per_unit: 30 },
+    { item: 'horses', tag: 'hrse', monthly_max: 5, tokens_per_day: 1, tokens_per_unit: 30 },
+  ],
+  forest:  [
+    { item: 'wood', tag: 'wood', monthly_max: 20, tokens_per_day: 6, tokens_per_unit: 30 },
+    { item: 'herbs', tag: 'herb', monthly_max: 10, tokens_per_day: 3, tokens_per_unit: 30 },
+    { item: 'hide', tag: 'hide', monthly_max: 8, tokens_per_day: 3, tokens_per_unit: 30 },
+    { item: 'yew', tag: 'yew_', monthly_max: 3, tokens_per_day: 2, tokens_per_unit: 30, hidden: true, required_skill: 'fore', rare: true },
+  ],
+  mountains: [
+    { item: 'stone', tag: 'ston', monthly_max: 25, tokens_per_day: 5, tokens_per_unit: 30 },
+    { item: 'iron', tag: 'iron', monthly_max: 10, tokens_per_day: 5, tokens_per_unit: 30 },
+    { item: 'gems', tag: 'gems', monthly_max: 2, tokens_per_day: 1, tokens_per_unit: 30, hidden: true, required_skill: 'digg', rare: true },
+  ],
+  ocean:   [
+    { item: 'fish', tag: 'fish', monthly_max: 40, tokens_per_day: 3, tokens_per_unit: 10 },
+  ],
+  desert:  [
+    { item: 'stone', tag: 'ston', monthly_max: 10, tokens_per_day: 5, tokens_per_unit: 30 },
+    { item: 'gems', tag: 'gems', monthly_max: 3, tokens_per_day: 1, tokens_per_unit: 30, hidden: true, required_skill: 'digg', rare: true },
+  ],
+  swamp:   [
+    { item: 'herbs', tag: 'herb', monthly_max: 15, tokens_per_day: 3, tokens_per_unit: 30 },
+    { item: 'fish', tag: 'fish', monthly_max: 12, tokens_per_day: 3, tokens_per_unit: 10 },
+  ],
+  hills:   [
+    { item: 'stone', tag: 'ston', monthly_max: 20, tokens_per_day: 5, tokens_per_unit: 30 },
+    { item: 'iron', tag: 'iron', monthly_max: 8, tokens_per_day: 5, tokens_per_unit: 30 },
+    { item: 'cattle', tag: 'catt', monthly_max: 10, tokens_per_day: 1, tokens_per_unit: 30 },
+  ],
 }
+
+const DIRECTIONS = ['North', 'NorthEast', 'SouthEast', 'South', 'SouthWest', 'NorthWest']
 
 function getNeighbors(x: number, y: number, width: number, height: number): number[][] {
   const isOdd = x % 2 === 1
@@ -76,18 +103,82 @@ function basePopulationForTerrain(terrain: string): number {
   return base[terrain] ?? 0
 }
 
-function calculateWages(population: number, terrain: string): number {
-  const baseWage = TERRAIN_WAGES[terrain] ?? 10
-  if (population < 100) return Math.round(baseWage * 1.3)
-  if (population < 500) return Math.round(baseWage * 1.1)
-  if (population < 2000) return Math.round(baseWage * 1.0)
-  if (population < 5000) return Math.round(baseWage * 0.9)
-  return Math.round(baseWage * 0.8)
+function calculateWages(population: number): number {
+  if (population < 200) return 14
+  if (population < 500) return 12
+  if (population < 1000) return 11
+  if (population < 3000) return 10
+  if (population < 10000) return 9
+  return 8
 }
 
-function calculateTaxes(population: number, wages: number, hasTitle: boolean): number {
-  const taxRate = hasTitle ? 0.18 : 0
-  return Math.round(population * wages * taxRate)
+function calculateTaxes(population: number, wages: number): number {
+  return Math.round(population * wages * 0.15)
+}
+
+function calculateEntertainment(population: number, hasSettlement: boolean): number {
+  const base = Math.round(population * 0.05)
+  return hasSettlement ? Math.round(base * 1.5) : base
+}
+
+function calculateRecruits(population: number, hasSettlement: boolean, settlementType: string | null) {
+  if (population < 50) return {
+    followers: { amount: 0, price: 0 },
+    leaders: { amount: 0, price: 0 },
+    heroes: { amount: 0, price: 0 }
+  }
+  const followerAmount = Math.floor(population * 0.02 * (0.8 + Math.random() * 0.4))
+  const followerPrice = Math.floor(10 + Math.random() * 5)
+  const leaderAmount = hasSettlement
+    ? Math.floor(Math.random() * 2) + 1
+    : Math.random() < 0.3 ? 1 : 0
+  const leaderPrice = Math.floor(40 + Math.random() * 20)
+  const heroRoll = Math.random()
+  const heroAmount = settlementType === 'imperial' ? (heroRoll < 0.15 ? 1 : 0)
+    : settlementType === 'city' ? (heroRoll < 0.05 ? 1 : 0)
+    : 0
+  const heroPrice = Math.floor(150 + Math.random() * 100)
+  return {
+    followers: { amount: followerAmount, price: followerPrice },
+    leaders: { amount: leaderAmount, price: leaderPrice },
+    heroes: { amount: heroAmount, price: heroPrice }
+  }
+}
+
+function buildExits(x: number, y: number, grid: string[][], geoNames: Record<string, string>, width: number, height: number) {
+  const exits = []
+  const isOdd = x % 2 === 1
+  const dirOffsets: [number, number][] = isOdd
+    ? [[0, -1], [1, -1], [1, 0], [0, 1], [-1, 0], [-1, -1]]
+    : [[0, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0]]
+
+  for (let dir = 0; dir < 6; dir++) {
+    const [dx, dy] = dirOffsets[dir]
+    const nx = x + dx
+    const ny = y + dy
+    if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue
+    const destTerrain = grid[ny][nx]
+    const destCode = locationCode(nx, ny)
+    const destGeoName = geoNames[destCode] ?? ''
+    const walkDays = TERRAIN_WALK_DAYS[destTerrain]
+    exits.push({
+      direction: DIRECTIONS[dir],
+      dest_loc_code: destCode,
+      dest_terrain: destTerrain,
+      dest_name: destGeoName,
+      walk_days: walkDays,
+      ride_days: walkDays ? Math.ceil(walkDays * 0.67) : null,
+      fly_days: 4,
+      sail_days: destTerrain === 'ocean' ? 4 : null,
+      impassable: walkDays === null && destTerrain !== 'ocean',
+      sailing_only: destTerrain === 'ocean',
+    })
+  }
+  return exits.sort((a, b) => {
+    if (a.impassable && !b.impassable) return 1
+    if (!a.impassable && b.impassable) return -1
+    return (a.walk_days ?? 99) - (b.walk_days ?? 99)
+  })
 }
 
 function floodFill(
@@ -110,7 +201,20 @@ function floodFill(
   return cluster
 }
 
+const usedInnerIds = new Set<string>()
+function nextInnerLocId(): string {
+  while (true) {
+    const id = `IL${String(Math.floor(Math.random() * 9000) + 1000)}`
+    if (!usedInnerIds.has(id)) {
+      usedInnerIds.add(id)
+      return id
+    }
+  }
+}
+
 export async function generateWorld(gameName: string, width: number, height: number) {
+  usedInnerIds.clear()
+
   const { data: game, error: gameError } = await supabase
     .from('games')
     .insert({ name: gameName, status: 'setup' })
@@ -130,10 +234,7 @@ export async function generateWorld(gameName: string, width: number, height: num
   const maxDist = Math.sqrt(cx ** 2 + cy ** 2)
   const imperialRadius = 4
 
-  // Generate terrain grid
   const grid: string[][] = Array.from({ length: height }, () => Array(width).fill(''))
-
-  // Force center area to plains for Imperial City
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const dist = distanceFromCenter(x, y, cx, cy)
@@ -149,7 +250,6 @@ export async function generateWorld(gameName: string, width: number, height: num
     }
   }
 
-  // Flood fill for region names
   const visited: boolean[][] = Array.from({ length: height }, () => Array(width).fill(false))
   const usedNames = new Set<string>()
   const geoNames: Record<string, string> = {}
@@ -170,7 +270,6 @@ export async function generateWorld(gameName: string, width: number, height: num
     }
   }
 
-  // Override center region name to something imperial
   const imperialRegionName = 'Imperial Heartlands'
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -182,7 +281,6 @@ export async function generateWorld(gameName: string, width: number, height: num
     }
   }
 
-  // Generate settlements with distance-based density
   const settlementUsedNames = new Set<string>()
   type SettlementData = { type: string; population: number; locCode: string }
   const settlementMap: Record<string, SettlementData> = {}
@@ -191,24 +289,18 @@ export async function generateWorld(gameName: string, width: number, height: num
     for (let x = 0; x < width; x++) {
       const terrain = grid[y][x]
       if (terrain === 'ocean') continue
-
       const dist = distanceFromCenter(x, y, cx, cy)
       const distFactor = 1 - (dist / maxDist)
-
-      // Settlement probability increases near center
-      const settlementChance = 0.04 + (distFactor * 0.25)
-      // City probability increases near center
-      const cityChance = 0.01 + (distFactor * 0.08)
-      const townChance = 0.05 + (distFactor * 0.15)
-
-      // Terrain modifier for settlement likelihood
       const terrainSettleMod: Record<string, number> = {
         plains: 1.4, hills: 1.2, forest: 1.1,
         mountains: 0.4, swamp: 0.3, desert: 0.5, ocean: 0
       }
       const mod = terrainSettleMod[terrain] ?? 1.0
+      const settlementChance = (0.04 + (distFactor * 0.25)) * mod
+      const cityChance = 0.01 + (distFactor * 0.08)
+      const townChance = 0.05 + (distFactor * 0.15)
 
-      if (Math.random() < settlementChance * mod) {
+      if (Math.random() < settlementChance) {
         const roll = Math.random()
         const type = roll < cityChance ? 'city'
           : roll < cityChance + townChance ? 'town' : 'village'
@@ -223,7 +315,6 @@ export async function generateWorld(gameName: string, width: number, height: num
     }
   }
 
-  // Force Imperial City at center
   const imperialCityCode = locationCode(cx, cy)
   settlementMap[imperialCityCode] = {
     type: 'imperial',
@@ -231,7 +322,6 @@ export async function generateWorld(gameName: string, width: number, height: num
     locCode: imperialCityCode
   }
 
-  // Group settlements by region, name them
   const regionSettlements: Record<string, SettlementData[]> = {}
   for (const [lc, settlement] of Object.entries(settlementMap)) {
     const regionName = geoNames[lc]
@@ -255,7 +345,6 @@ export async function generateWorld(gameName: string, width: number, height: num
     })
   }
 
-  // Build location rows
   const locations = []
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -265,14 +354,26 @@ export async function generateWorld(gameName: string, width: number, height: num
       const dist = distanceFromCenter(x, y, cx, cy)
       const isImperialLand = dist <= imperialRadius
       const isImperialCity = lc === imperialCityCode
-
       const basePop = basePopulationForTerrain(terrain)
       const settlePop = settlement ? settlement.population : 0
       const totalPop = basePop + settlePop
+      const wages = calculateWages(totalPop)
+      const exits = buildExits(x, y, grid, geoNames, width, height)
 
-      const wages = calculateWages(totalPop, terrain)
-      const taxes = calculateTaxes(totalPop, wages, false)
-      const resources = TERRAIN_RESOURCES[terrain] ?? []
+      const innerLoc = settlement ? {
+        id: nextInnerLocId(),
+        name: settlementNames[lc] ?? 'Unknown',
+        type: settlement.type,
+        population: settlement.population,
+        economics: {
+          wages: calculateWages(settlement.population),
+          taxes: calculateTaxes(settlement.population, calculateWages(settlement.population)),
+          entertainment: calculateEntertainment(settlement.population, true),
+          market: settlement.type === 'city' || settlement.type === 'imperial',
+          market_days: settlement.type === 'city' || settlement.type === 'imperial' ? [15, 30] : [],
+          recruits: calculateRecruits(settlement.population, true, settlement.type),
+        }
+      } : null
 
       locations.push({
         world_id: world.id,
@@ -282,28 +383,34 @@ export async function generateWorld(gameName: string, width: number, height: num
         population: totalPop,
         population_optimal: totalPop,
         resources: {
-          ...(settlement ? {
-            population_center: {
-              name: settlementNames[lc] ?? 'Unknown',
-              type: settlement.type,
-              population: settlement.population,
-            }
-          } : {}),
+          ...(innerLoc ? { population_center: innerLoc } : {}),
           is_imperial_land: isImperialLand,
           is_imperial_city: isImperialCity,
-          natural_resources: resources,
+          exits,
+          natural_resources: terrain === 'ocean' ? [] : (TERRAIN_RESOURCES[terrain] ?? [])
+            .filter((r) => Math.random() < (r.rare ? 0.08 : 0.85))
+            .map(r => ({
+              item: r.item,
+              tag: r.tag,
+              amount: Math.floor(r.monthly_max * (0.5 + Math.random())),
+              tokens_per_day: r.tokens_per_day,
+              tokens_per_unit: r.tokens_per_unit,
+              hidden: r.hidden ?? false,
+              required_skill: r.required_skill ?? null,
+            })),
         },
         economics: {
           wages,
-          taxes,
+          taxes: calculateTaxes(totalPop, wages),
+          entertainment: calculateEntertainment(totalPop, !!settlement),
           market: settlement?.type === 'city' || settlement?.type === 'imperial',
           market_days: settlement?.type === 'city' || settlement?.type === 'imperial' ? [15, 30] : [],
+          recruits: calculateRecruits(totalPop, !!settlement, settlement?.type ?? null),
         },
       })
     }
   }
 
-  // Insert in batches
   for (let i = 0; i < locations.length; i += 100) {
     const { error } = await supabase.from('locations').insert(locations.slice(i, i + 100))
     if (error) throw error
