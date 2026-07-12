@@ -128,11 +128,14 @@ export default function WorldMap({ locations }: { locations: Location[] }) {
       )
 
       // Draw population center dot
-      const popCenter = loc.resources?.population_center
+     const popCenter = loc.resources?.population_center
       if (popCenter) {
-        const dotSize = popCenter.type === 'city' ? 3
+        const isImperial = popCenter.type === 'imperial'
+        const dotSize = isImperial ? 5
+          : popCenter.type === 'city' ? 3
           : popCenter.type === 'town' ? 2 : 1.5
-        const dotColor = popCenter.type === 'city' ? '#ff0000'
+        const dotColor = isImperial ? '#FFD700'
+          : popCenter.type === 'city' ? '#ff0000'
           : popCenter.type === 'town' ? '#ffaa00' : '#ffffff'
         ctx.beginPath()
         ctx.arc(px, py, dotSize, 0, Math.PI * 2)
