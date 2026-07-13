@@ -5,6 +5,15 @@ import { revalidatePath } from 'next/cache'
 
 async function createNewWorld() {
   'use server'
+  // Delete in correct order to respect foreign keys
+  await supabase.from('unit_items').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  await supabase.from('unit_skills').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  await supabase.from('units').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  await supabase.from('faction_titles').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  await supabase.from('factions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  await supabase.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  await supabase.from('turn_events').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  await supabase.from('structures').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('locations').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('worlds').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('games').delete().neq('id', '00000000-0000-0000-0000-000000000000')

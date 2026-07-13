@@ -1,5 +1,7 @@
 import { supabase } from './supabase'
 import { generateRegionName, generateSettlementName } from './nameGenerator'
+import { seedNPCUnits } from './seedNPCUnits'
+import { seedNPCFactions } from './seedNPCFactions'
 
 const TERRAIN_TYPES = ['plains', 'forest', 'mountains', 'ocean', 'desert', 'swamp', 'hills']
 const TERRAIN_WEIGHTS = [27, 27, 7, 8, 2, 2, 27]
@@ -455,5 +457,10 @@ export async function generateWorld(gameName: string, width: number, height: num
     if (error) throw error
   }
 
-  return { game, world, locationCount: locations.length }
+  // Seed NPC factions if they exist
+ // Seed NPC factions then units
+  await seedNPCFactions(game.id)
+  const { unitsCreated } = await seedNPCUnits()
+
+  return { game, world, locationCount: locations.length, unitsCreated }
 }
