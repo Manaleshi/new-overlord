@@ -27,7 +27,7 @@ async function insertSkills(unitId: string, skills: { tag: string; level: number
     token_progress: 0,
   }))
   const { error } = await supabase.from('unit_skills').insert(rows)
-  if (error) throw error
+  if (error) console.error(`Failed to insert skills for unit ${unitId}:`, error.message)
 }
 
 // Helper to insert items for a unit
@@ -42,17 +42,18 @@ async function insertItems(unitId: string, items: { tag: string; quantity: numbe
     token_progress: 0,
   }))
   const { error } = await supabase.from('unit_items').insert(rows)
-  if (error) throw error
+  if (error) console.error(`Failed to insert items for unit ${unitId}:`, error.message)
 }
 
 export async function seedNPCUnits() {
   // Get the active game
-  const { data: game } = await supabase
+  const { data: games } = await supabase
     .from('games')
     .select('id')
-    .eq('status', 'setup')
-    .single()
-  if (!game) throw new Error('No active game found')
+    .order('created_at', { ascending: false })
+    .limit(1)
+  if (!games || games.length === 0) throw new Error('No active game found')
+  const game = games[0]
 
   // Get NPC factions
   const { data: factions } = await supabase
@@ -74,16 +75,30 @@ export async function seedNPCUnits() {
   if (!imperialCity) throw new Error('Imperial City not found')
 
   // Get all imperial land locations
-  const { data: allLocations } = await supabase
-    .from('locations')
-    .select('id, loc_code, terrain_type, resources, grid_x, grid_y')
+  let allLocations: any[] = []
+  let from = 0
+  while (true) {
+    const { data, error } = await supabase
+      .from('locations')
+      .select('id, loc_code, terrain_type, resources, grid_x, grid_y')
+      .range(from, from + 999)
+    if (error) throw error
+    if (!data || data.length === 0) break
+    allLocations = allLocations.concat(data)
+    if (data.length < 1000) break
+    from += 1000
+  }
   if (!allLocations) throw new Error('No locations found')
 
-  const imperialLands = allLocations.filter((l: any) => l.resources?.is_imperial_land === true)
+  const imperialLands = allLocations.filter((l: any) => 
+    l.resources?.is_imperial_land === true || l.resources?.is_imperial_land === 'true'
+  )
   const imperialPopCenters = imperialLands.filter((l: any) => l.resources?.population_center)
   const imperialNonPop = imperialLands.filter((l: any) => !l.resources?.population_center && l.loc_code !== 'L0001')
 
-  const nonImperialLocs = allLocations.filter((l: any) => !l.resources?.is_imperial_land)
+  const nonImperialLocs = allLocations.filter((l: any) => 
+    !l.resources?.is_imperial_land || l.resources?.is_imperial_land === 'false'
+  )
   const cities = nonImperialLocs.filter((l: any) => l.resources?.population_center?.type === 'city')
   const towns = nonImperialLocs.filter((l: any) => l.resources?.population_center?.type === 'town')
   const villages = nonImperialLocs.filter((l: any) => l.resources?.population_center?.type === 'village')
@@ -93,6 +108,10 @@ export async function seedNPCUnits() {
     l.terrain_type !== 'ocean' &&
     l.terrain_type !== 'mountains'
   )
+
+  console.log(`Found: ${cities.length} cities, ${towns.length} towns, ${villages.length} villages`)
+  console.log(`Imperial lands: ${imperialLands.length}, pop centers: ${imperialPopCenters.length}`)
+  console.log(`Forests: ${forests.length}, wilderness: ${wilderness.length}`)
 
   let totalUnits = 0
 
@@ -344,8 +363,7 @@ export async function seedNPCUnits() {
   // ── MERCHANTS ────────────────────────────────────────────
 
   // Merchant caravan at every city with a market
-  const marketCities = cities.filter((l: any) => l.resources?.economics?.market)
-  for (const loc of [...marketCities, imperialCity]) {
+  for (const loc of [...cities, imperialCity]) {
     // Merchant leader
     const leaderId = await insertUnit({
       faction_id: factionMap['F005'],
