@@ -292,6 +292,7 @@ export async function POST(req: NextRequest) {
     const fullEmail = await resendRes.json()
     const body = fullEmail.text ?? fullEmail.html ?? ''
 
+    console.log('Full email response:', JSON.stringify(fullEmail))
     console.log('Email body:', body)
 
     const toAddress = to.toLowerCase()
