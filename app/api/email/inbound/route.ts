@@ -279,9 +279,20 @@ export async function POST(req: NextRequest) {
 
     const emailData = payload.data
     const from = emailData.from
-    const to = emailData.to?.[0] ?? ''
+    const to = emailData.to?.[0] ?? emailData.received_for?.[0] ?? ''
     const subject = (emailData.subject ?? '').toLowerCase()
-    const body = emailData.text ?? ''
+    const emailId = emailData.email_id
+
+    // Fetch full email content from Resend API
+    const resendRes = await fetch(`https://api.resend.com/emails/${emailId}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      }
+    })
+    const fullEmail = await resendRes.json()
+    const body = fullEmail.text ?? fullEmail.html ?? ''
+
+    console.log('Email body:', body)
 
     const toAddress = to.toLowerCase()
     const firstLine = body.split('\n')[0]?.trim().toUpperCase() ?? ''
