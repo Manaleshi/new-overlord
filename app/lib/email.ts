@@ -1,6 +1,12 @@
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+})
 
 export async function sendEmail({
   to,
@@ -11,13 +17,11 @@ export async function sendEmail({
   subject: string
   text: string
 }) {
-  const { data, error } = await resend.emails.send({
-    from: 'New Overlord <onboarding@resend.dev>',
+  const info = await transporter.sendMail({
+    from: `New Overlord <${process.env.GMAIL_USER}>`,
     to,
     subject,
     text,
   })
-
-  if (error) throw error
-  return data
+  return info
 }
