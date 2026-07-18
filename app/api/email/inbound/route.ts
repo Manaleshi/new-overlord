@@ -3,23 +3,10 @@ import { supabase } from '../../../lib/supabase'
 import { sendEmail } from '../../../lib/email'
 import bcrypt from 'bcryptjs'
 
-// Parse the plain text body of an email into key/value commands
-function parseOrders(text: string): Record<string, string> {
-  const result: Record<string, string> = {}
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
-  for (const line of lines) {
-    const parts = line.split(/\s+/)
-    if (parts.length >= 1) {
-      result[parts[0].toUpperCase()] = parts.slice(1).join(' ')
-    }
-  }
-  return result
-}
-
 async function handleRegistration(from: string, body: string) {
   const lines = body.split('\n').map(l => l.trim()).filter(Boolean)
   const data: Record<string, string> = {}
-  
+
   for (const line of lines) {
     const parts = line.split(/\s+/)
     if (parts.length >= 2) {
@@ -34,11 +21,13 @@ async function handleRegistration(from: string, body: string) {
   const starting_zone = (data['ZONE'] || 'colonial').toLowerCase()
 
   if (!password) {
-    await sendEmail({
-      to: email,
-      subject: 'New Overlord — Registration Error',
-      text: `Registration failed — PASSWORD is required.\n\nPlease send:\n\nREGISTER\nPASSWORD yourpassword\nTYPE general|mage|adventurer|craftsman\nZONE imperial|borders|colonial\nELEMENT fire|water|earth|air|void (mages only)`
-    })
+    try {
+      await sendEmail({
+        to: email,
+        subject: 'New Overlord — Registration Error',
+        text: `Registration failed — PASSWORD is required.\n\nPlease send:\n\nREGISTER\nPASSWORD yourpassword\nTYPE general|mage|adventurer|craftsman\nZONE imperial|borders|colonial\nELEMENT fire|water|earth|air|void (mages only)`
+      })
+    } catch (e) { console.error('Email failed:', e) }
     return
   }
 
@@ -50,11 +39,13 @@ async function handleRegistration(from: string, body: string) {
     .single()
 
   if (existing) {
-    await sendEmail({
-      to: email,
-      subject: 'New Overlord — Registration Error',
-      text: `That email address is already registered.`
-    })
+    try {
+      await sendEmail({
+        to: email,
+        subject: 'New Overlord — Registration Error',
+        text: `That email address is already registered.`
+      })
+    } catch (e) { console.error('Email failed:', e) }
     return
   }
 
@@ -66,11 +57,7 @@ async function handleRegistration(from: string, body: string) {
     .limit(1)
 
   if (!games || games.length === 0) {
-    await sendEmail({
-      to: email,
-      subject: 'New Overlord — Registration Error',
-      text: `No active game found. Please contact the Game Master.`
-    })
+    console.error('No active game found')
     return
   }
   const game = games[0]
@@ -99,11 +86,7 @@ async function handleRegistration(from: string, body: string) {
   }
 
   if (eligible.length === 0) {
-    await sendEmail({
-      to: email,
-      subject: 'New Overlord — Registration Error',
-      text: `No starting location available for zone: ${starting_zone}. Please contact the Game Master.`
-    })
+    console.error('No starting location available for zone:', starting_zone)
     return
   }
 
@@ -118,7 +101,10 @@ async function handleRegistration(from: string, body: string) {
     .insert({ email, password_hash, display_name: email.split('@')[0] })
     .select()
     .single()
-  if (playerError) throw playerError
+  if (playerError) {
+    console.error('Player creation failed:', playerError)
+    return
+  }
 
   // Generate unique faction code
   let faction_code = `F${Math.floor(Math.random() * 9000) + 1000}`
@@ -132,7 +118,6 @@ async function handleRegistration(from: string, body: string) {
     faction_code = `F${Math.floor(Math.random() * 9000) + 1000}`
   }
 
-  // Starting bonus
   const bonus = starting_zone === 'imperial' ? 1000 : starting_zone === 'borders' ? 500 : 0
   const funds = 5000 + bonus
 
@@ -156,7 +141,10 @@ async function handleRegistration(from: string, body: string) {
     })
     .select()
     .single()
-  if (factionError) throw factionError
+  if (factionError) {
+    console.error('Faction creation failed:', factionError)
+    return
+  }
 
   // Starting skills
   const skillMap: Record<string, { tag: string; level: number }[]> = {
@@ -167,7 +155,6 @@ async function handleRegistration(from: string, body: string) {
   }
   const heroSkills = skillMap[leader_type] ?? [{ tag: 'cmbt', level: 1 }]
 
-  // Starting items
   const itemMap: Record<string, { tag: string; quantity: number; equipped: boolean; equip_slot?: string }[]> = {
     general: [
       { tag: 'swrd', quantity: 1, equipped: true, equip_slot: 'weapon' },
@@ -210,7 +197,10 @@ async function handleRegistration(from: string, body: string) {
     })
     .select()
     .single()
-  if (heroError) throw heroError
+  if (heroError) {
+    console.error('Hero creation failed:', heroError)
+    return
+  }
 
   if (heroSkills.length > 0) {
     await supabase.from('unit_skills').insert(
@@ -243,13 +233,16 @@ async function handleRegistration(from: string, body: string) {
     attributes: { role: 'followers' }
   })
 
+  console.log(`Player created: ${email}, faction: ${faction_code}, location: ${startingLocation.loc_code}`)
+
   const settlementName = startingLocation.resources?.population_center?.name ?? startingLocation.loc_code
   const regionName = startingLocation.geographic_name ?? ''
 
-  await sendEmail({
-    to: email,
-    subject: `Welcome to New Overlord — ${faction_code}`,
-    text: `Welcome to New Overlord!
+  try {
+    await sendEmail({
+      to: email,
+      subject: `Welcome to New Overlord — ${faction_code}`,
+      text: `Welcome to New Overlord!
 
 Your faction has been created:
 
@@ -270,14 +263,16 @@ Your first turn report will arrive when the game begins.
 
 Good luck!
 — The Game Master`
-  })
+    })
+  } catch (emailErr) {
+    console.error('Welcome email failed (player still created):', emailErr)
+  }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json()
-    
-    // Resend sends email.received events
+
     if (payload.type !== 'email.received') {
       return NextResponse.json({ ok: true })
     }
@@ -288,25 +283,27 @@ export async function POST(req: NextRequest) {
     const subject = (emailData.subject ?? '').toLowerCase()
     const body = emailData.text ?? ''
 
-    // Route based on recipient address or subject
     const toAddress = to.toLowerCase()
     const firstLine = body.split('\n')[0]?.trim().toUpperCase() ?? ''
 
     if (toAddress.includes('register') || firstLine === 'REGISTER' || subject.includes('register')) {
       await handleRegistration(from, body)
     } else if (toAddress.includes('orders') || firstLine === 'ORDERS') {
-      // TODO: handle order submission
-      await sendEmail({
-        to: from,
-        subject: 'New Overlord — Orders Received',
-        text: 'Order processing is not yet active. Please wait for the game to begin.'
-      })
+      try {
+        await sendEmail({
+          to: from,
+          subject: 'New Overlord — Orders Received',
+          text: 'Order processing is not yet active. Please wait for the game to begin.'
+        })
+      } catch (e) { console.error('Email failed:', e) }
     } else {
-      await sendEmail({
-        to: from,
-        subject: 'New Overlord — Unknown Command',
-        text: `Unknown command. To register, send an email to register@adeliivexa.resend.app with:\n\nREGISTER\nPASSWORD yourpassword\nTYPE general|mage|adventurer|craftsman\nZONE imperial|borders|colonial`
-      })
+      try {
+        await sendEmail({
+          to: from,
+          subject: 'New Overlord — Unknown Command',
+          text: `Unknown command. To register send an email to register@adeliivexa.resend.app with:\n\nREGISTER\nPASSWORD yourpassword\nTYPE general|mage|adventurer|craftsman\nZONE imperial|borders|colonial`
+        })
+      } catch (e) { console.error('Email failed:', e) }
     }
 
     return NextResponse.json({ ok: true })
