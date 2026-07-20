@@ -34,7 +34,7 @@ export async function checkGmailInbox(): Promise<{ from: string; subject: string
     const parsed = await simpleParser(all.body)
     const from = parsed.from?.value?.[0]?.address ?? ''
     const subject = parsed.subject ?? ''
-    const body = parsed.text ?? parsed.html ?? ''
+    const body = parsed.text ?? (parsed.html || '')
 
     emails.push({ from, subject, body })
   }

@@ -17,11 +17,17 @@ export async function sendEmail({
   subject: string
   text: string
 }) {
-  const info = await transporter.sendMail({
-    from: `New Overlord <${process.env.GMAIL_USER}>`,
-    to,
-    subject,
-    text,
-  })
-  return info
+  try {
+    const info = await transporter.sendMail({
+      from: `New Overlord <${process.env.GMAIL_USER}>`,
+      to,
+      subject,
+      text,
+    })
+    console.log('Email sent:', info.messageId)
+    return info
+  } catch (err) {
+    console.error('Email send error:', err)
+    throw err
+  }
 }
