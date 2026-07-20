@@ -80,20 +80,16 @@ export async function seedNPCUnits() {
 
   console.log(`Found: ${cities.length} cities, ${towns.length} towns, ${villages.length} villages`)
   console.log(`Imperial lands: ${imperialLands.length}, pop centers: ${imperialPopCenters.length}`)
-  console.log(`Forests: ${forests.length}, wilderness: ${wilderness.length}`)
 
-  // Collect all units, skills, items in arrays then batch insert
   const unitRows: any[] = []
-  const skillRows: any[] = []
-  const itemRows: any[] = []
+  const pendingSkills: { unitIndex: number; tag: string; level: number; experience_days: number }[] = []
+  const pendingItems: { unitIndex: number; tag: string; quantity: number; equipped: boolean; equip_slot?: string }[] = []
 
-  // Each unit gets a temporary index to link skills/items before we have real IDs
-  type PendingSkill = { unitIndex: number; tag: string; level: number }
-  type PendingItem = { unitIndex: number; tag: string; quantity: number; equipped: boolean; equip_slot?: string }
-  const pendingSkills: PendingSkill[] = []
-  const pendingItems: PendingItem[] = []
-
-  function addUnit(unit: any, skills: { tag: string; level: number }[], items: { tag: string; quantity: number; equipped: boolean; equip_slot?: string }[]) {
+  function addUnit(
+    unit: any,
+    skills: { tag: string; level: number; experience_days: number }[],
+    items: { tag: string; quantity: number; equipped: boolean; equip_slot?: string }[]
+  ) {
     const index = unitRows.length
     unitRows.push(unit)
     skills.forEach(s => pendingSkills.push({ unitIndex: index, ...s }))
@@ -102,7 +98,6 @@ export async function seedNPCUnits() {
 
   // ── IMPERIALS ────────────────────────────────────────────
 
-  // Guard Captain at Imperial City
   addUnit(makeUnit({
     faction_id: factionMap['F001'],
     location_id: imperialCity.id,
@@ -114,12 +109,12 @@ export async function seedNPCUnits() {
     initiative: 3, melee: 4, defense: 5,
     observation: 2,
     attributes: { role: 'guard_captain', home: 'L0001' }
-  }), [{ tag: 'cmbt', level: 2 }, { tag: 'blde', level: 2 }],
+  }),
+  [{ tag: 'cmbt', level: 2, experience_days: 60 }, { tag: 'blde', level: 2, experience_days: 60 }],
   [{ tag: 'swrd', quantity: 1, equipped: true, equip_slot: 'weapon' },
    { tag: 'leat', quantity: 1, equipped: true, equip_slot: 'armor' },
    { tag: 'coif', quantity: 1, equipped: true, equip_slot: 'helmet' }])
 
-  // Imperial Guard at Imperial City
   addUnit(makeUnit({
     faction_id: factionMap['F001'],
     location_id: imperialCity.id,
@@ -128,12 +123,12 @@ export async function seedNPCUnits() {
     figure_count: 50,
     initiative: 2, melee: 3, defense: 4,
     attributes: { role: 'guard', home: 'L0001' }
-  }), [{ tag: 'cmbt', level: 1 }, { tag: 'blde', level: 1 }],
+  }),
+  [{ tag: 'cmbt', level: 1, experience_days: 15 }, { tag: 'blde', level: 1, experience_days: 15 }],
   [{ tag: 'swrd', quantity: 50, equipped: true, equip_slot: 'weapon' },
    { tag: 'leat', quantity: 50, equipped: true, equip_slot: 'armor' },
    { tag: 'coif', quantity: 50, equipped: true, equip_slot: 'helmet' }])
 
-  // Imperial Guard in every other imperial pop center
   for (const loc of imperialPopCenters) {
     if (loc.loc_code === 'L0001') continue
     addUnit(makeUnit({
@@ -144,12 +139,12 @@ export async function seedNPCUnits() {
       figure_count: 30,
       initiative: 2, melee: 3, defense: 4,
       attributes: { role: 'guard' }
-    }), [{ tag: 'cmbt', level: 1 }, { tag: 'blde', level: 1 }],
+    }),
+    [{ tag: 'cmbt', level: 1, experience_days: 15 }, { tag: 'blde', level: 1, experience_days: 15 }],
     [{ tag: 'swrd', quantity: 30, equipped: true, equip_slot: 'weapon' },
      { tag: 'leat', quantity: 30, equipped: true, equip_slot: 'armor' }])
   }
 
-  // Imperial Patrol on every non-pop imperial hex
   for (const loc of imperialNonPop) {
     addUnit(makeUnit({
       faction_id: factionMap['F001'],
@@ -159,7 +154,8 @@ export async function seedNPCUnits() {
       figure_count: 20,
       initiative: 2, melee: 2, defense: 3,
       attributes: { role: 'patrol' }
-    }), [{ tag: 'cmbt', level: 1 }],
+    }),
+    [{ tag: 'cmbt', level: 1, experience_days: 15 }],
     [{ tag: 'leat', quantity: 20, equipped: true, equip_slot: 'armor' }])
   }
 
@@ -174,7 +170,8 @@ export async function seedNPCUnits() {
       figure_count: 30,
       melee: 2, defense: 3,
       attributes: { role: 'militia' }
-    }), [{ tag: 'cmbt', level: 1 }],
+    }),
+    [{ tag: 'cmbt', level: 1, experience_days: 15 }],
     [{ tag: 'swrd', quantity: 30, equipped: true, equip_slot: 'weapon' },
      { tag: 'leat', quantity: 30, equipped: true, equip_slot: 'armor' }])
   }
@@ -188,7 +185,8 @@ export async function seedNPCUnits() {
       figure_count: 15,
       melee: 1, defense: 2,
       attributes: { role: 'militia' }
-    }), [{ tag: 'cmbt', level: 1 }],
+    }),
+    [{ tag: 'cmbt', level: 1, experience_days: 15 }],
     [{ tag: 'leat', quantity: 15, equipped: true, equip_slot: 'armor' }])
   }
 
@@ -220,7 +218,8 @@ export async function seedNPCUnits() {
       initiative: 3, melee: 2, defense: 1,
       stealth: 2, observation: 2,
       attributes: { role: 'predator' }
-    }), [{ tag: 'cmbt', level: 1 }], [])
+    }),
+    [{ tag: 'cmbt', level: 1, experience_days: 15 }], [])
   }
 
   // ── OUTLAWS ──────────────────────────────────────────────
@@ -239,7 +238,8 @@ export async function seedNPCUnits() {
       melee: 2,
       stealth: 2,
       attributes: { role: 'bandit' }
-    }), [{ tag: 'cmbt', level: 1 }],
+    }),
+    [{ tag: 'cmbt', level: 1, experience_days: 15 }],
     [{ tag: useAxe ? 'baxe' : 'swrd', quantity: figureCount, equipped: true, equip_slot: 'weapon' }])
   }
 
@@ -256,7 +256,8 @@ export async function seedNPCUnits() {
       upkeep_per_figure: 20,
       initiative: 0,
       attributes: { role: 'merchant' }
-    }), [{ tag: 'trad', level: 1 }], [])
+    }),
+    [{ tag: 'trad', level: 1, experience_days: 15 }], [])
 
     addUnit(makeUnit({
       faction_id: factionMap['F005'],
@@ -266,13 +267,13 @@ export async function seedNPCUnits() {
       figure_count: 10,
       melee: 2, defense: 2,
       attributes: { role: 'caravan_guard' }
-    }), [{ tag: 'cmbt', level: 1 }],
+    }),
+    [{ tag: 'cmbt', level: 1, experience_days: 15 }],
     [{ tag: 'swrd', quantity: 10, equipped: true, equip_slot: 'weapon' }])
   }
 
   // ── BATCH INSERT ─────────────────────────────────────────
 
-  // Insert all units in batches of 100
   const insertedIds: string[] = []
   for (let i = 0; i < unitRows.length; i += 100) {
     const batch = unitRows.slice(i, i + 100)
@@ -281,7 +282,7 @@ export async function seedNPCUnits() {
     data.forEach((u: any) => insertedIds.push(u.id))
   }
 
-  // Build skill rows using real IDs
+  const skillRows: any[] = []
   for (const ps of pendingSkills) {
     const unitId = insertedIds[ps.unitIndex]
     if (!unitId) continue
@@ -289,12 +290,12 @@ export async function seedNPCUnits() {
       unit_id: unitId,
       skill_tag: ps.tag,
       level: ps.level,
-      experience_days: 0,
+      experience_days: ps.experience_days,
       token_progress: 0,
     })
   }
 
-  // Build item rows using real IDs
+  const itemRows: any[] = []
   for (const pi of pendingItems) {
     const unitId = insertedIds[pi.unitIndex]
     if (!unitId) continue
@@ -308,13 +309,11 @@ export async function seedNPCUnits() {
     })
   }
 
-  // Insert skills in batches of 100
   for (let i = 0; i < skillRows.length; i += 100) {
     const { error } = await supabase.from('unit_skills').insert(skillRows.slice(i, i + 100))
     if (error) console.error('Skill insert error:', error.message)
   }
 
-  // Insert items in batches of 100
   for (let i = 0; i < itemRows.length; i += 100) {
     const { error } = await supabase.from('unit_items').insert(itemRows.slice(i, i + 100))
     if (error) console.error('Item insert error:', error.message)
