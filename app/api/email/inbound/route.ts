@@ -309,7 +309,7 @@ export async function POST(req: NextRequest) {
         await sendEmail({
           to: from,
           subject: 'New Overlord — Unknown Command',
-          text: `Unknown command. To register send an email to register@adeliivexa.resend.app with:\n\nREGISTER\nPASSWORD yourpassword\nTYPE general|mage|adventurer|craftsman\nZONE imperial|borders|colonial`
+          text: `Unknown command. To register send an email to orders@new-overlord.us with:\n\nREGISTER\nPASSWORD yourpassword\nTYPE general|mage|adventurer|craftsman\nZONE imperial|borders|colonial`
         })
       } catch (e) { console.error('Email failed:', e) }
     }
