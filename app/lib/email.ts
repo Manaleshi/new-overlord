@@ -1,12 +1,6 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendEmail({
   to,
@@ -17,17 +11,18 @@ export async function sendEmail({
   subject: string
   text: string
 }) {
-  try {
-    const info = await transporter.sendMail({
-      from: `New Overlord <${process.env.GMAIL_USER}>`,
-      to,
-      subject,
-      text,
-    })
-    console.log('Email sent:', info.messageId)
-    return info
-  } catch (err) {
-    console.error('Email send error:', err)
-    throw err
+  const { data, error } = await resend.emails.send({
+    from: 'New Overlord <orders@new-overlord.us>',
+    to,
+    subject,
+    text,
+  })
+
+  if (error) {
+    console.error('Email send error:', error)
+    throw error
   }
+
+  console.log('Email sent:', data?.id)
+  return data
 }
