@@ -183,6 +183,15 @@ function formatLocation(location: any, factionUnits: any[], otherUnits: any[], f
     }
   }
 
+  // Own units at this location
+  const ownUnitsHere = factionUnits.filter((u: any) => u.location_id === location.id)
+  if (ownUnitsHere.length > 0) {
+    lines.push(`  Your units:`)
+    for (const u of ownUnitsHere) {
+      lines.push(`    ${u.name} [${u.unit_code}] - ${u.figure_count} ${u.unit_type}`)
+    }
+  }
+
   // Other units visible at this location
   const othersHere = otherUnits.filter((u: any) => u.location_id === location.id)
   const visibleOthers = othersHere.filter((u: any) => isVisible(factionObservation, u))
