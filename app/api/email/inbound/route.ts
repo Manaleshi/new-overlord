@@ -229,10 +229,10 @@ export async function POST(req: NextRequest) {
 
     const firstLine = body.split('\n').map((l: string) => l.trim()).filter(Boolean)[0]?.toUpperCase() ?? ''
 
-    if (firstLine === 'REGISTER' || subject.includes('register')) {
-      await handleRegistration(from, body)
-    } else if (firstLine === '#GAME') {
+    if (firstLine.startsWith('#GAME')) {
       await handleOrders(from, body)
+    } else if (firstLine === 'REGISTER' || subject.includes('register')) {
+      await handleRegistration(from, body)
     } else {
       try {
         await sendEmail({
