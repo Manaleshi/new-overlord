@@ -98,6 +98,116 @@ Your first turn report will be sent when the game begins.
   } catch (e) { console.error('Confirmation email failed:', e) }
 }
 
+async function handleOrders(from: string, body: string) {
+  const { parseOrderFile, formatSyntaxCheck } = await import('../../../lib/orderParser')
+
+  const parsed = parseOrderFile(body)
+
+  if (!parsed.factionCode || !parsed.password) {
+    await sendEmail({
+      to: from,
+      subject: 'New Overlord — Order Error',
+      text: `Could not parse your order file. Make sure it starts with:\n#GAME FXXXX yourpassword\n\nErrors:\n${parsed.errors.join('\n')}`
+    })
+    return
+  }
+
+  const { data: faction } = await supabase
+    .from('factions')
+    .select('id, faction_code, name, player_id')
+    .eq('faction_code', parsed.factionCode)
+    .single()
+
+  if (!faction) {
+    await sendEmail({
+      to: from,
+      subject: 'New Overlord — Order Error',
+      text: `Faction ${parsed.factionCode} not found.`
+    })
+    return
+  }
+
+  const { data: player } = await supabase
+    .from('players')
+    .select('id, email, password_hash')
+    .eq('id', faction.player_id)
+    .single()
+
+  if (!player || player.email !== from) {
+    await sendEmail({
+      to: from,
+      subject: 'New Overlord — Order Error',
+      text: `You are not authorized to submit orders for faction ${parsed.factionCode}.`
+    })
+    return
+  }
+
+  const validPassword = await bcrypt.compare(parsed.password, player.password_hash)
+  if (!validPassword) {
+    await sendEmail({
+      to: from,
+      subject: 'New Overlord — Order Error',
+      text: `Invalid password for faction ${parsed.factionCode}.`
+    })
+    return
+  }
+
+  const { data: games } = await supabase
+    .from('games')
+    .select('id, turn_number, status')
+    .order('created_at', { ascending: false })
+    .limit(1)
+  if (!games || games.length === 0) return
+  const game = games[0]
+
+  await supabase
+    .from('orders')
+    .delete()
+    .eq('faction_id', faction.id)
+    .eq('turn_number', game.turn_number)
+
+  if (parsed.factionOrders.length > 0) {
+    await supabase.from('orders').insert({
+      faction_id: faction.id,
+      unit_id: null,
+      turn_number: game.turn_number,
+      orders_raw: parsed.factionOrders.map((o: any) => o.raw).join('\n'),
+      orders_parsed: parsed.factionOrders,
+      submitted_at: new Date().toISOString(),
+    })
+  }
+
+  for (const unitOrder of parsed.unitOrders) {
+    const { data: unit } = await supabase
+      .from('units')
+      .select('id, unit_code, name')
+      .eq('unit_code', unitOrder.unitCode)
+      .eq('faction_id', faction.id)
+      .single()
+
+    if (!unit) {
+      parsed.errors.push(`Unit ${unitOrder.unitCode} not found or not yours`)
+      continue
+    }
+
+    await supabase.from('orders').insert({
+      faction_id: faction.id,
+      unit_id: unit.id,
+      turn_number: game.turn_number,
+      orders_raw: unitOrder.orders.map((o: any) => o.raw).join('\n'),
+      orders_parsed: unitOrder.orders,
+      submitted_at: new Date().toISOString(),
+    })
+  }
+
+  const syntaxReport = formatSyntaxCheck(parsed)
+  await sendEmail({
+    to: from,
+    subject: `New Overlord — Orders Received [${parsed.factionCode}] Turn ${game.turn_number}`,
+    text: `Your orders for ${faction.name} [${parsed.factionCode}] have been received for Turn ${game.turn_number}.\n\nSyntax Check:\n\n${syntaxReport}\n\n${parsed.errors.length > 0 ? 'Please fix errors and resubmit.' : 'Orders look good!'}\n\n— The Game Master`
+  })
+}
+
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json()
@@ -112,31 +222,26 @@ export async function POST(req: NextRequest) {
     const subject = (emailData.subject ?? '').toLowerCase()
     const emailId = emailData.email_id
 
-    // Fetch full email content using Resend SDK
     const { Resend } = await import('resend')
     const resendClient = new Resend(process.env.RESEND_API_KEY)
     const { data: fullEmail } = await resendClient.emails.receiving.get(emailId)
     const body = fullEmail?.text ?? fullEmail?.html ?? ''
 
-    const toAddress = to.toLowerCase()
     const firstLine = body.split('\n').map((l: string) => l.trim()).filter(Boolean)[0]?.toUpperCase() ?? ''
 
-    if (toAddress.includes('orders') || firstLine === 'REGISTER' || subject.includes('register')) {
+    if (firstLine === 'REGISTER' || subject.includes('register')) {
       await handleRegistration(from, body)
-    } else if (firstLine === 'ORDERS' || subject.includes('orders')) {
-      try {
-        await sendEmail({
-          to: from,
-          subject: 'New Overlord — Orders Received',
-          text: 'Order processing is not yet active. Please wait for the game to begin.'
-        })
-      } catch (e) { console.error('Email failed:', e) }
+    } else if (firstLine === '#GAME') {
+      await handleOrders(from, body)
     } else {
       try {
         await sendEmail({
           to: from,
           subject: 'New Overlord — Unknown Command',
-          text: `Unknown command. To register send an email to orders@new-overlord.us with:\n\nREGISTER\nPASSWORD yourpassword\nTYPE general|mage|adventurer|craftsman\nZONE imperial|borders|colonial`
+          text: `Unknown command. 
+
+To register: send an email to orders@new-overlord.us with REGISTER as the first line.
+To submit orders: send an email to orders@new-overlord.us starting with #GAME FXXXX yourpassword`
         })
       } catch (e) { console.error('Email failed:', e) }
     }
