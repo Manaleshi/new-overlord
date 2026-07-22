@@ -32,7 +32,13 @@ export function parseOrderFile(text: string): ParsedFactionOrders {
     errors: [],
   }
 
-  const lines = text.split('\n')
+  const normalized = text
+    .replace(/^\uFEFF/, '')        // strip BOM if present
+    .replace(/=\r?\n/g, '')        // undo quoted-printable soft line breaks
+    .replace(/\r\n?/g, '\n')       // normalize CRLF / lone CR to LF
+    .replace(/[\u00A0\u2007\u202F]/g, ' ') // normalize non-breaking spaces to regular spaces
+
+  const lines = normalized.split('\n')
     .map(l => l.trim())
     .filter(l => l.length > 0 && !l.startsWith(';')) // strip blank lines and comments
 
