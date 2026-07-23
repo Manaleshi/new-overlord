@@ -305,7 +305,10 @@ export async function generateTurnReport(factionId: string): Promise<string> {
         lines.push(`  ${def.name} [${def.tag}]`)
         lines.push(`    Weight: ${def.weight}.${def.equip_slot ? ` Equipment slot: ${def.equip_slot}.` : ''}`)
         if (def.effects && Object.keys(def.effects).length > 0) {
-          const effectList = Object.entries(def.effects).map(([k, v]) => `${k}: ${v > 0 ? '+' : ''}${v}`).join(', ')
+          const effectList = Object.entries(def.effects).map(([k, v]) => {
+            const num = Number(v)
+            return `${k}: ${num > 0 ? '+' : ''}${num}`
+          }).join(', ')
           lines.push(`    Effects: ${effectList}`)
         }
       }
