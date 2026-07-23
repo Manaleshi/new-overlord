@@ -17,6 +17,8 @@
 import { supabase } from './supabase'
 import bcrypt from 'bcryptjs'
 import type { ParsedOrder } from './orderParser'
+import { generateTurnReport } from './turnReport'
+import { sendEmail } from './email''
 
 const DAYS_PER_TURN = 30
 const SKILL_LEVEL_DAYS = [15, 45, 90, 180, 360] // days required for level 1..5 (TODO: confirm this is universal, not per-skill, with Andy)
@@ -651,7 +653,10 @@ export async function processTurn(gameId: string): Promise<{
   turnNumber: number
   registrations: { created: number; skipped: string[] }
   eventCount: number
+  reportsSent: string[]
+  reportErrors: string[]
 }> {
+
   const { data: game, error: gameError } = await supabase.from('games').select('*').eq('id', gameId).single()
   if (gameError || !game) throw new Error(`Game not found: ${gameError?.message}`)
 
@@ -696,12 +701,51 @@ export async function processTurn(gameId: string): Promise<{
     }
   }
 
-  if (ctx.eventLog.length > 0) {
+if (ctx.eventLog.length > 0) {
     await supabase.from('turn_events').insert(ctx.eventLog)
   }
 
-  // NOTE: wages/upkeep/desertion, outlaw spawning, report generation/emailing,
-  // and turn_number increment are NOT done here yet — Stage 4.
+  // NOTE: wages/upkeep/desertion and outlaw spawning are still stubbed — Stage 4b.
+  // Report generation/emailing and the turn_number increment below close the loop.
 
-  return { turnNumber: game.turn_number, registrations, eventCount: ctx.eventLog.length }
+  const reportsSent: string[] = []
+  const reportErrors: string[] = []
+
+  const activeFactions = Array.from(ctx.factionsById.values()).filter(f => !f.is_npc)
+  const playerIds = activeFactions.map(f => f.player_id).filter((id): id is string => !!id)
+
+  const { data: players } = playerIds.length > 0
+    ? await supabase.from('players').select('id, email').in('id', playerIds)
+    : { data: [] as { id: string; email: string }[] }
+  const emailByPlayerId = new Map((players || []).map(p => [p.id, p.email]))
+
+  for (const faction of activeFactions) {
+    const email = faction.player_id ? emailByPlayerId.get(faction.player_id) : null
+    if (!email) {
+      reportErrors.push(`${faction.faction_code}: no player email on file, report not sent`)
+      continue
+    }
+    try {
+      const report = await generateTurnReport(faction.id)
+      await sendEmail({
+        to: email,
+        subject: `New Overlord — Turn ${ctx.turnNumber} Report [${faction.faction_code}]`,
+        text: report,
+      })
+      reportsSent.push(faction.faction_code)
+    } catch (err: any) {
+      console.error(`Report generation/send failed for ${faction.faction_code}:`, err)
+      reportErrors.push(`${faction.faction_code}: ${err.message}`)
+    }
+  }
+
+  await supabase.from('games').update({ turn_number: game.turn_number + 1 }).eq('id', gameId)
+
+  return {
+    turnNumber: game.turn_number,
+    registrations,
+    eventCount: ctx.eventLog.length,
+    reportsSent,
+    reportErrors,
+  }
 }
