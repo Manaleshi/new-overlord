@@ -167,7 +167,7 @@ async function handleOrders(from: string, body: string) {
     .eq('turn_number', game.turn_number)
 
   if (parsed.factionOrders.length > 0) {
-    await supabase.from('orders').insert({
+    const { error: factionOrderError } = await supabase.from('orders').insert({
       faction_id: faction.id,
       unit_id: null,
       turn_number: game.turn_number,
@@ -175,6 +175,7 @@ async function handleOrders(from: string, body: string) {
       orders_parsed: parsed.factionOrders,
       submitted_at: new Date().toISOString(),
     })
+    if (factionOrderError) console.error('Faction order insert failed:', factionOrderError)
   }
 
   for (const unitOrder of parsed.unitOrders) {
@@ -190,7 +191,7 @@ async function handleOrders(from: string, body: string) {
       continue
     }
 
-    await supabase.from('orders').insert({
+   const { error: unitOrderError } = await supabase.from('orders').insert({
       faction_id: faction.id,
       unit_id: unit.id,
       turn_number: game.turn_number,
@@ -198,6 +199,7 @@ async function handleOrders(from: string, body: string) {
       orders_parsed: unitOrder.orders,
       submitted_at: new Date().toISOString(),
     })
+    if (unitOrderError) console.error(`Unit order insert failed for ${unitOrder.unitCode}:`, unitOrderError)
   }
 
   const syntaxReport = formatSyntaxCheck(parsed)
