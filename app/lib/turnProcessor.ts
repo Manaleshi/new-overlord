@@ -18,7 +18,7 @@ import { supabase } from './supabase'
 import bcrypt from 'bcryptjs'
 import type { ParsedOrder } from './orderParser'
 import { generateTurnReport } from './turnReport'
-import { sendEmail } from './email''
+import { sendEmail } from './email'
 
 const DAYS_PER_TURN = 30
 const SKILL_LEVEL_DAYS = [15, 45, 90, 180, 360] // days required for level 1..5 (TODO: confirm this is universal, not per-skill, with Andy)
@@ -282,10 +282,18 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
   if (unitsError) throw new Error(`Failed to load units: ${unitsError.message}`)
 
   const unitIds = (units || []).map(u => u.id)
-  const safeUnitIds = unitIds.length > 0 ? unitIds : ['00000000-0000-0000-0000-000000000000']
 
-  const { data: unitSkillRows, error: unitSkillsError } = await supabase.from('unit_skills').select('*').in('unit_id', safeUnitIds)
-  if (unitSkillsError) throw new Error(`Failed to load unit_skills: ${unitSkillsError.message}`)
+  // Chunked to avoid Supabase's URL length limit on large .in() lists —
+  // with NPC units across a 50x50 world, unitIds can run into the hundreds.
+  const unitSkillRows: any[] = []
+  const CHUNK_SIZE = 150
+  for (let i = 0; i < unitIds.length; i += CHUNK_SIZE) {
+    const chunk = unitIds.slice(i, i + CHUNK_SIZE)
+    const { data, error } = await supabase.from('unit_skills').select('*').in('unit_id', chunk)
+    if (error) throw new Error(`Failed to load unit_skills (rows ${i}-${i + chunk.length}): ${error.message}`)
+    if (data) unitSkillRows.push(...data)
+  }
+
   const unitSkills = new Map<string, Map<string, UnitSkillRow>>()
   for (const row of unitSkillRows || []) {
     if (!unitSkills.has(row.unit_id)) unitSkills.set(row.unit_id, new Map())
