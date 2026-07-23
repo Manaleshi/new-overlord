@@ -168,6 +168,7 @@ async function handleOrders(from: string, body: string) {
 
   if (parsed.factionOrders.length > 0) {
     const { error: factionOrderError } = await supabase.from('orders').insert({
+      game_id: game.id,
       faction_id: faction.id,
       unit_id: null,
       turn_number: game.turn_number,
@@ -192,6 +193,7 @@ async function handleOrders(from: string, body: string) {
     }
 
    const { error: unitOrderError } = await supabase.from('orders').insert({
+      game_id: game.id,
       faction_id: faction.id,
       unit_id: unit.id,
       turn_number: game.turn_number,
