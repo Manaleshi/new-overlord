@@ -1,0 +1,179 @@
+1st fire magics [fire]: The element of the Fire relates to battle,
+  destructive magics and predisposes to magical alteration. Requires 15 days
+  and $3/day to reach the level. Only leaders may study this skill. Requires
+  1st magecraft [mage] to learn. Gives +1 to maximum mana.
+
+2nd fire magics [fire]: Advanced Fire mastery. Requires 45 days and $3/day
+  to reach the level. Only leaders may study this skill. Gives +2 to maximum
+  mana.
+
+3rd fire magics [fire]: Deeper Fire mysteries. Requires 90 days and $3/day
+  to reach the level. Gives +3 to maximum mana
+
+1st fire works [fwrk]: The mage may use fireworks to entertain people, as if
+  he had the 2nd level in entertainment skill. Requires 15 days and $3/day
+  to reach the level. Only leaders may study this skill. Requires 1st fire
+  magics [fire] to learn. This is a magic skill. Use requires: 1 mana
+  [mana]. Use produces 2 coins [coin] per day. Gives +1 to maximum mana.
+
+2nd fire works [fwrk]: At this level, the mage has the equivalent of 4th
+  level in entertainment. Requires 45 days and $3/day to reach the level.
+  Only leaders may study this skill. This is a magic skill. Use requires: 1
+  mana [mana]. Use produces 4 coins [coin] per day. Gives +2 to maximum
+  mana.
+
+1st fire steed [fstd]: Mastery of the fire's currents allow the mage to
+  mutate a horse into a fearsome fire-snorting creature, fast, and deadly.
+  Requires 15 days and $3/day to reach the level. Only leaders may study
+  this skill. Requires 1st fire works [fwrk] to learn. This is a magic
+  skill. Use requires: 1 horse [hrse], 9 mana [mana]. Use produces 1 fire
+  steed [fste] in 15 days. Gives +1 to maximum mana.
+
+2nd fire steed [fstd]: At this level, a horse may be mutated in half the
+  time. Requires 45 days and $3/day to reach the level. Only leaders may
+  study this skill. This is a magic skill. Use requires: 1 horse [hrse], 9
+  mana [mana]. Use produces 1 fire steed [fste] in 8 days. Gives +1 to
+  maximum mana.
+
+1st hot hail [hhai]: Mastery of the fire allows the inclined mage to send a
+  rain of hot hail into a province. All life products will be reduced by 5%.
+  Requires 15 days and $3/day to reach the level. Only leaders may study
+  this skill. Requires 1st fire steed [fstd] to learn. This is a magic
+  skill. Use requires: 1 horse [hrse], 9 mana [mana]. Use produces 1 hot
+  hail in 15 days. Gives +1 to maximum mana.
+
+1st enchant fire wand [efwd]: The mage uses his knowledged of pyrotechnics
+  to create a wand shooting fire. Requires 30 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st fire works [fwrk]
+  to learn. This is a magic skill. Use requires: 1 fighting staff [staf], 6
+  mana [mana]. Use produces 1 wand of fire [wfir] in 8 days. Gives +1 to
+  maximum mana.
+
+1st fire touch [ftch]: During combat, the caster may inflict severe fire
+  damage to his foes. Requires 15 days and $3/day to reach the level. Only
+  leaders may study this skill. Requires 1st fire magics [fire] to learn.
+  This is a magic skill. Use requires: 2 mana [mana]. Gives +1 to maximum
+  mana. This is a combat action. Initiative +3. Target: opposing unit.
+  Range: melee. Effect: melee attack with modifiers 10 melee, +4 hits, +3
+  life, fire damage.
+
+2nd fire touch [ftch]: At this level, the touch is more painful than ever.
+  Requires 45 days and $3/day to reach the level. Only leaders may study
+  this skill. This is a magic skill. Use requires: 2 mana [mana]. Gives +2
+  to maximum mana. This is a combat action. Initiative +3. Target: opposing
+  unit. Range: melee. Effect: melee attack with modifiers 11 melee, +5 hits,
+  +1 damage, +3 life, fire damage.
+
+1st fire throw [ftrw]: During combat, the caster may hurl fire upon his
+  foes. Requires 30 days and $3/day to reach the level. Only leaders may
+  study this skill. Requires 1st fire touch [ftch] to learn. This is a magic
+  skill. Use requires: 2 mana [mana]. Gives +1 to maximum mana. This is a
+  combat action. Initiative +2. Target: opposing unit. Range: ranged.
+  Effect: ranged attack with modifiers 4 missile, +4 hits, 3 damage, +10
+  life, fire damage.
+
+2nd fire throw [ftrw]: At this level, the mage may throws bigger flames upon
+  his ennemies. Requires 90 days and $3/day to reach the level. This is a
+  magic skill. Use requires: 2 mana [mana]. Gives +2 to maximum mana. This
+  is a combat action. Initiative +2. Target: opposing unit. Range: ranged.
+  Effect: ranged attack with modifiers 5 missile, +5 hits, 5 damage, +10
+  life, fire damage.
+
+1st fire rain [frai]: During combat, the caster may rain fire upon his foes.
+  Requires 45 days and $3/day to reach the level. Only leaders may study
+  this skill. Requires 1st fire throw [ftrw] to learn. This is a magic
+  skill. Use requires: 2 mana [mana]. Gives +1 to maximum mana. This is a
+  combat action. Initiative +3. Target: opposing unit. Range: . Effect:
+  ranged attack with modifiers 4 missile, +4 hits, +3 life, fire damage.
+
+1st fire wall [fwal]: This potent spell creates a moving wall of fire on the
+  same location as the mage, which then moves forward, burning all ennemies
+  in its passage. Requires 60 days and $3/day to reach the level. Only
+  leaders may study this skill. Requires 1st fire rain [frai] to learn. This
+  is a magic skill. Use requires: 10 mana [mana]. Gives +1 to maximum mana.
+  This is a combat action. Target: battlefield. Effect: special.
+
+2nd fire wall [fwal]: At this level, it takes less mana to create a fire
+  wall. Requires 180 days and $3/day to reach the level. This is a magic
+  skill. Use requires: 7 mana [mana]. Gives +2 to maximum mana. This is a
+  combat action. Target: . Effect: special.
+
+1st inflame sword [iswd]: The caster concentrates the flow of elemental fire
+  on a sword's edge. Requires 15 days and $3/day to reach the level. Only
+  leaders may study this skill. Requires 1st fire throw [ftrw] to learn.
+  This is a magic skill. Use requires: 1 sword [swrd], 9 mana [mana]. Use
+  produces 1 flaming sword [fswd] in 15 days. Gives +1 to maximum mana.
+
+1st transmute iron to silver [itos]: The basics of the alchemy, enabling the
+  mage to extract purified precious metal from base iron. Requires 30 days
+  and $3/day to reach the level. Only leaders may study this skill. Requires
+  1st fire magics [fire] to learn. This is a magic skill. Use requires: 1
+  iron [iron], 3 mana [mana]. Use produces 1 silver [silv] in 4 days. Gives
+  +1 to maximum mana.
+
+1st transmute iron to gold [itog]: The aim of the alchemical arts, or so
+  it's said, enabling the mage to create pure gold out of mundane iron.
+  Requires 45 days and $3/day to reach the level. Only leaders may study
+  this skill. Requires 1st transmute iron to silver [itos] to learn. This is
+  a magic skill. Use requires: 1 iron [iron], 5 mana [mana]. Use produces 1
+  gold [gold] in 5 days. Gives +1 to maximum mana.
+
+1st blind [blnd]: The caster may inflict a severe blindness to a unit.
+  Requires 15 days and $3/day to reach the level. Only leaders may study
+  this skill. Requires 1st fire magics [fire] to learn. This is a magic
+  skill. Use targets a unit. Use requires: 1 herbs [herb], 2 mana [mana].
+  Use produces 3 days of blindness per day. Gives +1 to maximum mana.
+
+2nd blind [blnd]: At this level, the mage makes blindness last longer.
+  Requires 45 days and $3/day to reach the level. Only leaders may study
+  this skill. This is a magic skill. Use targets a unit. Use requires: 1
+  herbs [herb], 2 mana [mana]. Use produces 6 days of blindness per day.
+  Gives +2 to maximum mana.
+
+1st enchant ring of true sight [ersi]: The mage uses his knowledge of fire
+  to create this ring whose light can only be seen by its wearer. It shows
+  the shadows around all living beings. Requires 15 days and $3/day to reach
+  the level. Only leaders may study this skill. Requires 1st blind [blnd] to
+  learn. This is a magic skill. Use requires: 1 iron ring [irng], 8 mana
+  [mana]. Use produces 1 ring of true sight [rtsi] in 15 days. Gives +1 to
+  maximum mana.
+
+1st summon lesser fire elemental [slfe]: The caster tries to summon a fire
+  elemental from the elemental planes into the world. The targeted unit must
+  consist of lesser fire elementals, or be a new unit. Requires 45 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  fire magics [fire] to learn. This is a magic skill. Use targets a unit.
+  Use requires: 1 iron [iron], 8 mana [mana]. Use produces 1 summoning in 10
+  days. Gives +1 to maximum mana.
+
+2nd summon lesser fire elemental [slfe]: At this level, experience with
+  elementals allow the mage to pop fire elementals in five days. Requires
+  135 days and $3/day to reach the level. This is a magic skill. Use targets
+  a unit. Use requires: 1 iron [iron], 8 mana [mana]. Use produces 1
+  summoning in 5 days. Gives +2 to maximum mana.
+
+1st summon fire sprite [sfsp]: The caster tries to summon a fire sprite from
+  the elemental planes into the world. The targeted unit must consist of
+  fire sprites, or be a new unit. Requires 45 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st summon lesser fire
+  elemental [slfe] to learn. This is a magic skill. Use targets a unit. Use
+  requires: 1 iron [iron], 8 mana [mana]. Use produces 1 summoning in 10
+  days. Gives +1 to maximum mana.
+
+1st fire cloak [fclo]: The caster surrounds himself with a fiery cloak. All
+  ranged attack strength on him are reduced by 3, and all melee attacks
+  produce a similar attack in reverse. The mage may then produce another
+  combat action at +2 initiative penalty. Requires 45 days and $3/day to
+  reach the level. Only leaders may study this skill. Requires 2nd fire
+  magics [fire] to learn. This is a magic skill. Use requires: 3 mana
+  [mana]. Gives +1 to maximum mana. This is a combat action. Target: self.
+  Effect: special.
+
+1st enchant ring of fire [erfi]: The caster uses his knowledge of fire's
+  energy to enchant a magical ring. Requires 45 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 2nd fire magics [fire]
+  to learn. This is a magic skill. Use requires: 1 silver ring [srng], 18
+  mana [mana]. Use produces 1 ring of fire [rfir] in 30 days. Gives +1 to
+  maximum mana.
+
+

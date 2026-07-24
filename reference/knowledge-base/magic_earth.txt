@@ -1,0 +1,37 @@
+1st earth magics [eart]: The element of the Earth relates to growth, nature
+  and animals. Requires 15 days and $3/day to reach the level. Only leaders
+  may study this skill. Requires 1st magecraft [mage] to learn. Gives +1 to
+  maximum mana.
+
+1st strength of the boar [sboa]: During combat, the caster may inflict
+  multiple hits to his foes and resist punishment. Requires 15 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  earth magics [eart] to learn. This is a magic skill. Use requires: 2 mana
+  [mana]. Gives +1 to maximum mana. This is a combat action. Initiative +1.
+  Target: opposing unit. Range: melee. Effect: melee attack with modifiers
+  +5 melee, +4 hits, +4 life.
+
+1st enchant ring of strength [erst]: The caster uses his knowledge of
+  earth's strength to enchant a lesser ring. Requires 15 days and $3/day to
+  reach the level. Only leaders may study this skill. Requires 1st strength
+  of the boar [sboa] to learn. This is a magic skill. Use requires: 1 iron
+  ring [irng], 6 mana [mana]. Use produces 1 ring of strength [rtst] in 15
+  days. Gives +1 to maximum mana.
+
+1st floraison [flor]: While the mage concentrates, all units harvesting live
+  products in the same region will produce an additional 50% products. Takes
+  effect only on units appearing after the mage in the arrival order.
+  Requires 15 days and $3/day to reach the level. Only leaders may study
+  this skill. Requires 1st earth magics [eart] to learn. This is a magic
+  skill. Use requires: 1 mana [mana]. Gives +1 to maximum mana.
+
+1st gaia transformation [gaet]: The user of this spell calls forth the earth
+  spirit itself, pledging itself for earth. The mage is transformed upon
+  this into an avatar of gaea, a special life form, unmistakable. The mage
+  will forget skills of the air and water elements at the beginning of each
+  turn, randomly. Requires 30 days and $3/day to reach the level. Only
+  leaders may study this skill. This is a specialist skill. Requires 1st
+  earth magics [eart] to learn. This is a magic skill. Use requires: 1 grain
+  [grai], 1 wood [wood], 1 herbs [herb], 1 stone [ston], 15 mana [mana]. Use
+  produces 1 metamorphosis in 30 days. Gives +1 to maximum mana.
+

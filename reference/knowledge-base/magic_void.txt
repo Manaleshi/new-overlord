@@ -1,0 +1,153 @@
+1st void magics [void]: The element of the Void relates to magic itself,
+  gaining arcane knowledge and death. Requires 15 days and $3/day to reach
+  the level. Only leaders may study this skill. Requires 1st magecraft
+  [mage] to learn. Gives +1 to maximum mana.
+
+2nd void magics [void]: Advanced Void mastery. Requires 45 days and $3/day
+  to reach the level. Only leaders may study this skill. Gives +2 to maximum
+  mana.
+
+1st read auras [raur]: The mage skilled in aura reading may detect a unit's
+  faction as if he had two observation levels higher. Requires 15 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  void magics [void] to learn This is a magic skill. Gives +1 to maximum
+  mana.
+
+2nd read auras [raur]: At this level, the detection of the faction proceed
+  as if the mage had three observation levels higher. Requires 45 days and
+  $3/day to reach the level. Only leaders may study this skill. This is a
+  magic skill. Gives +2 to maximum mana.
+
+1st see resources [sres]: The mage that knows how to see resources always
+  see all local resources, even if he cannot harvest these. Requires 30 days
+  and $3/day to reach the level. Only leaders may study this skill. Requires
+  1st read auras [raur] to learn. This is a magic skill. Gives +1 to maximum
+  mana.
+
+1st magic eye [meye]: A mage that masters this skill will automatically know
+  the vital statistics of any unit he encounters. Requires 45 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  see resources [sres] to learn. This is a magic skill. Gives +1 to maximum
+  mana.
+
+1st read minds [rmin]: By using this skill, the mage drains the knowledge of
+  another unit. He'll get 1.5 days of study in a skill he can learn, picked
+  at random. The skill is picked among magical skills first, if possible,
+  then combat skills if no magical skill can be learned, then craft skills.
+  Requires 30 days and $3/day to reach the level. Only leaders may study
+  this skill. Requires 1st read auras [raur] to learn. This is a magic
+  skill. Use targets a unit. Use requires: 1 mana [mana]. Use produces 1
+  mind reading per day. Gives +1 to maximum mana.
+
+2nd read minds [rmin]: Further progress in mind reading does not yield
+  additional benefits. Requires 90 days and $3/day to reach the level. This
+  is a magic skill. Use targets a unit. Use requires: 2 coins [coin], 1 mana
+  [mana]. Use produces 1 mind reading per day. Gives +2 to maximum mana.
+
+1st meeting of minds [mmnd]: By using this skill, the mage may enhance the
+  study of any skill he knows by another leader. The target unit will enjoy
+  an additional 50% experience if it is studying a skill. The target need
+  not be at the same location. Requires 45 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st read minds [rmin]
+  to learn. This is a magic skill. Use targets a unit. Use requires: 1 mana
+  [mana]. Gives +1 to maximum mana.
+
+1st inspire dread [idre]: The mage skilled in inspiring unnatural dread from
+  his simple presence behaves in combat as if he was 4 stealth levels
+  higher, thus avoiding being targeted by units if possible. Requires 30
+  days and $3/day to reach the level. Only leaders may study this skill.
+  Requires 1st void magics [void] to learn. This is a magic skill. Gives +1
+  to maximum mana.
+
+2nd inspire dread [idre]: At this level, the aura of dread spreads further,
+  and mage enjoys 5 stealth levels of bonus, avoiding all but the most
+  perceptive of opponents. Requires 90 days and $3/day to reach the level.
+  Only leaders may study this skill. This is a magic skill. Gives +2 to
+  maximum mana.
+
+1st enchant ring of invisibility [eriv]: The mage uses his knowledge of void
+  to create this ring who imparts non-beingness upon all others. Requires 15
+  days and $3/day to reach the level. Only leaders may study this skill.
+  Requires 1st inspire dread [idre] to learn. This is a magic skill. Use
+  requires: 1 iron ring [irng], 8 mana [mana]. Use produces 1 ring of minor
+  invisibility [rtiv] in 15 days. Gives +1 to maximum mana.
+
+1st mind pressure [mprs]: The mage skilled in pushing its strength of mind
+  over another will target an ennemy leader, reducing its initiative by 15
+  for this round. Requires 30 days and $3/day to reach the level. Only
+  leaders may study this skill. Requires 1st inspire dread [idre] to learn.
+  This is a magic skill. Use requires: 4 mana [mana]. Gives +1 to maximum
+  mana. This is a combat action. Target: opposing leader. Range: . Effect:
+  special.
+
+1st confuse minds [cnfm]: The mage instills confusion in an opposing unit.
+  Confused units will either move at random, or reshuffle their order list
+  for the rest of the battle. Requires 30 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st inspire dread
+  [idre] to learn. This is a magic skill. Use requires: 5 mana [mana]. Gives
+  +1 to maximum mana. This is a combat action. Target: opposing unit. Range:
+  ranged. Effect: special.
+
+1st drain life [drlf]: During combat, the mage can drain life points from
+  units that have more than the extra amount. Drain life will target up to
+  20 figures in a unit that has more than 1 life, and divide their life
+  total by two for the rest of the battle. Requires 30 days and $3/day to
+  reach the level. Only leaders may study this skill. Requires 1st void
+  magics [void] to learn. This is a magic skill. Gives +1 to maximum mana.
+  This is a combat action. Target: opposing unit. Range: . Effect: special.
+
+2nd drain life [drlf]: At this level, the mages may target up to 40 figures
+  in a single unit. Requires 90 days and $3/day to reach the level. This is
+  a magic skill. Gives +2 to maximum mana. This is a combat action. Target:
+  opposing unit. Range: battlefield. Effect: special.
+
+1st enchant dark shield [edsh]: Using the essence of the void, the caster
+  imbues a shield with the power to absord blows. Requires 30 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  drain life [drlf] to learn. This is a magic skill. Use requires: 1 tower
+  shield [tshd], 10 mana [mana]. Use produces 1 dark shield [dshd] in 15
+  days. Gives +1 to maximum mana.
+
+1st enchant staff [estf]: Using the essence of the void, the caster imbues a
+  simple wooden staff with the flexibility and durability. Requires 15 days
+  and $3/day to reach the level. Only leaders may study this skill. Requires
+  1st drain life [drlf] to learn. This is a magic skill. Use requires: 1
+  fighting staff [staf], 10 mana [mana]. Use produces 1 staff of void [stfv]
+  in 15 days. Gives +1 to maximum mana.
+
+1st summon lesser void elemental [slve]: The caster tries to summon a void
+  elemental from the elemental planes into the world. The targeted unit must
+  consist of lesser void elementals, or be a new unit. Requires 45 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  void magics [void] to learn. This is a magic skill. Use targets a unit.
+  Use requires: 1 iron [iron], 8 mana [mana]. Use produces 1 summoning in 10
+  days. Gives +1 to maximum mana.
+
+1st far eye [feye]: The caster of the far eye may survey an adjacent area as
+  if he was present. It takes 5 days to focus on the location. Requires 15
+  days and $3/day to reach the level. Only leaders may study this skill.
+  Requires 1st void magics [void] to learn. This is a magic skill. Use
+  targets a location. Use requires: 4 mana [mana]. Gives +1 to maximum
+  mana.
+
+2nd far eye [feye]: The caster of the far eye may survey an adjacent area as
+  if he was present. Requires 45 days and $3/day to reach the level. This is
+  a magic skill. Use targets a location. Use requires: 4 mana [mana]. Use
+  produces 1 far eye sighting in 3 days. Gives +1 to observation, +2 to
+  maximum mana.
+
+1st make magic compass [mkco]: From seeing its surrounding to having a
+  device to detect large structures is only a single step. Requires 15 days
+  and $3/day to reach the level. Only leaders may study this skill. Requires
+  1st far eye [feye] to learn. This is a magic skill. Use requires: 1 wood
+  [wood], 1 iron [iron], 5 mana [mana]. Use produces 1 mystic compass [mcom]
+  in 15 days. Gives +1 to maximum mana.
+
+1st form of shadows [fors]: The caster uses his mastery of the void to
+  transform itself into a gaseous and insubstantial shape. Requires 30 days
+  and $3/day to reach the level. Only leaders may study this skill. This is
+  a specialist skill. Requires 2nd void magics [void] to learn. This is a
+  magic skill. Use requires: 1 mana [mana]. Use produces 4 days of shadowy
+  form per day. Gives +1 to maximum mana.
+
+

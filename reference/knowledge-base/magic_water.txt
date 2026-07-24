@@ -1,0 +1,130 @@
+1st water magics [wate]: The element of Water relates to healing, production
+  activities and the seas. Requires 15 days and $3/day to reach the level.
+  Only leaders may study this skill. Requires 1st magecraft [mage] to learn.
+  Gives +1 to maximum mana.
+
+2nd water magics [wate]: Advanced Water mastery. Requires 45 days and
+  $3/day to reach the level. Only leaders may study this skill. Gives +2 to
+  maximum mana.
+
+1st quagmire [quag]: The caster may target a unit, dissolving the ground
+  under it and hampering greatly its efficiency. A unit with an initiative
+  of 0 or greater will receive a -5 initiative penalty, which will it will
+  regain at +1 per battle round. Requires 15 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st water magics [wate]
+  to learn. This is a magic skill. Use requires: 3 mana [mana]. Gives +1 to
+  maximum mana. This is a combat action. Initiative +2. Target: opposing
+  unit. Range: . Effect: special.
+
+2nd quagmire [quag]: Long experience with muddy grounds gives the caster an
+  advantage. The targeted unit will suffer a -4 initiative penaly, whatever
+  its starting initiative, which it will regain at +1 per battle round.
+  Requires 45 days and $3/day to reach the level. Only leaders may study
+  this skill. This is a magic skill. Use requires: 3 mana [mana]. Gives +1
+  to maximum mana. This is a combat action. Initiative +2. Target: opposing
+  unit. Range: . Effect: special.
+
+1st mishap [mish]: The caster may target a unit, covering it with excess
+  wetness and increasing the chances of mishap. Each figure in the unit with
+  an item equipped has 20% chance of dropping the equipment it holds. This
+  chance is reduced by 1% for each positive defense level. Dropped items are
+  reequipped after the end of battle. Requires 30 days and $3/day to reach
+  the level. Only leaders may study this skill. Requires 1st quagmire [quag]
+  to learn. This is a magic skill. Use requires: 3 mana [mana]. Gives +1 to
+  maximum mana. This is a combat action. Initiative -1. Target: opposing
+  unit. Range: ranged. Effect: special.
+
+1st battle flow [flow]: The caster may shift a unit to a position where it
+  can strike against a unit even if that unit was out of range. The effect
+  targets only units that have CHARGE as a battle move. Requires 30 days and
+  $3/day to reach the level. Only leaders may study this skill. This is a
+  specialist skill. Requires 1st quagmire [quag] to learn. This is a magic
+  skill. Use requires: 3 mana [mana]. Gives +1 to maximum mana. This is a
+  combat action. Initiative +4. Target: battlefield. Effect: special.
+
+1st make potions of healing [hpot]: The caster may use his knowledge of
+  chemicals to create potions of healing, to be used in battle against
+  wounds. Requires 15 days and $3/day to reach the level. Only leaders may
+  study this skill. Requires 1st water magics [wate] to learn. This is a
+  magic skill. Use requires: 1 herbs [herb], 2 mana [mana]. Use produces 1
+  potion of healing [poth] in 2 days. Gives +1 to maximum mana.
+
+2nd mix potions of healing [hpot]: At this level, the mage fills potions
+  like party cocktails glasses. Requires 45 days and $3/day to reach the
+  level. Only leaders may study this skill. This is a magic skill. Use
+  requires: 1 herbs [herb], 2 mana [mana]. Use produces 1 potion of healing
+  [poth] per day. Gives +2 to maximum mana.
+
+1st enchant amulet of life [eaml]: The caster can enchant an amulet, making
+  it into an amulet of life. Requires 30 days and $3/day to reach the level.
+  Only leaders may study this skill. Requires 1st make potions of healing
+  [hpot] to learn. This is a magic skill. Use requires: 1 amulet [amul], 8
+  mana [mana]. Use produces 1 amulet of life [amli] in 30 days. Gives +1 to
+  maximum mana.
+
+1st stinking cloud [stcl]: The mage casting this spell forces opposing
+  units to retreat one square. The unit will not advance again this round.
+  Each unit has 1% chance per figure to resist the cloud. Requires 15 days
+  and $3/day to reach the level. Only leaders may study this skill. Requires
+  1st make potions of healing [hpot] to learn. This is a magic skill. Use
+  requires: 1 potion of healing [poth], 3 mana [mana]. Gives +1 to maximum
+  mana. This is a combat action. Target: opposing unit. Range: melee.
+  Effect: special.
+
+1st wild growth [wgrw]: The wild growth increase permanently the amount of
+  live products from a region. After a month of rituals, 10% products are
+  added to all living ressources of the local area. Requires 30 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  water magics [wate] to learn. This is a magic skill. Use requires: 10 mana
+  [mana]. Gives +1 to maximum mana.
+
+2nd wild growth [wgrw]: At this level, the ritual takes only half normal
+  time. Requires 90 days and $3/day to reach the level. This is a magic
+  skill. Use requires: 10 mana [mana]. Use produces 1 wild growth in 15
+  days. Gives +2 to maximum mana.
+
+1st clone mount [clon]: The caster creates of magical replica of whatever
+  mount he is currently riding. The newly clone is not equipped. Requires 30
+  days and $3/day to reach the level. Only leaders may study this skill.
+  Requires 1st wild growth [wgrw] to learn. This is a magic skill. Use
+  requires: 10 mana [mana]. Use produces 1 cloning in 20 days. Gives +1 to
+  maximum mana.
+
+1st summon lesser water elemental [slwe]: The caster tries to summon a water
+  elemental from the elemental planes into the world. The targeted unit must
+  consist of lesser water elementals, or be a new unit. Requires 45 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  water magics [wate] to learn. This is a magic skill. Use targets a unit.
+  Use requires: 1 fish [fish], 8 mana [mana]. Use produces 1 summoning in 10
+  days. Gives +1 to maximum mana.
+
+1st water walking [wwal]: The caster can walk over the waters. Requires 15
+  days and $3/day to reach the level. Only leaders may study this skill.
+  Requires 1st water magics [wate] to learn. This is a magic skill. Use
+  requires: 1 mana [mana]. Use produces 4 days of sailing per day. Gives +1
+  to maximum mana.
+
+2nd water walking [wwal]: At this level, the caster may sustain its walking
+  for longer durations. Requires 45 days and $3/day to reach the level. Only
+  leaders may study this skill. This is a magic skill. Use requires: 1 mana
+  [mana]. Use produces 8 days of sailing per day. Gives +2 to maximum mana.
+
+1st mutate sea horse [sshr]: The caster may change a normal horse into a sea
+  horse, a water-bound mount. Requires 30 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st water walking
+  [wwal] to learn. This is a magic skill. Use requires: 1 horse [hrse], 10
+  mana [mana]. Use produces 1 sea horse [seah] in 15 days. Gives +1 to
+  maximum mana.
+
+2nd mutate sea horse [sshr]: At this level, the water mage may change a
+  horse in half of the time. Requires 90 days and $3/day to reach the level.
+  This is a magic skill. Use requires: 1 horse [hrse], 10 mana [mana]. Use
+  produces 1 sea horse [seah] in 8 days. Gives +2 to maximum mana.
+
+1st magic ship [mshp]: The caster will enchant a boat, making it
+  self-supporting. Requires 45 days and $3/day to reach the level. Only
+  leaders may study this skill. Requires 1st mutate sea horse [sshr] to
+  learn. This is a magic skill. Use requires: 1 longboat [lgbt], 15 mana
+  [mana]. Use produces 1 magic ship [mlbt] in 30 days. Gives +1 to maximum
+  mana.
+

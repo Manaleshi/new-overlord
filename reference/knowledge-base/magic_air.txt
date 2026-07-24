@@ -1,0 +1,47 @@
+1st air magics [airs]: The element of the Air relates to movement, life,
+  creatures and knowledge. Requires 15 days and $3/day to reach the level.
+  Only leaders may study this skill. Requires 1st magecraft [mage] to learn.
+  Gives +1 to maximum mana.
+
+2nd air magics [airs]: Advanced Air mastery. Requires 45 days and $3/day
+  to reach the level. Only leaders may study this skill. Gives +2 to maximum
+  mana.
+
+1st tame beasts [tame]: The caster magically tries to tame a beast attacking
+  it. This battle action works only on low-level creature units. The chance
+  of success for each attempt is 90%, minus 5% for each creature in the
+  unit. Requires 15 days and $3/day to reach the level. Only leaders may
+  study this skill. Requires 1st air magics [airs] to learn. This is a magic
+  skill. Use requires: 3 mana [mana]. Gives +1 to maximum mana. This is a
+  combat action. Target: opposing unit. Range: long range. Effect: special.
+
+1st summon lesser air elemental [slae]: The caster tries to summon an air
+  elemental from the elemental planes into the world. The targeted unit must
+  consist of lesser air elementals, or be a new unit. Lesser elemental has
+  no skills, and has 3 life, 5 melee, 2 defense, 4 initiative, 1 stealth and
+  is flying. It takes 10 days for the elemental to appear. Requires 45 days
+  and $3/day to reach the level. Only leaders may study this skill. Requires
+  1st air magics [airs] to learn. This is a magic skill. Use targets a unit.
+  Use requires: 1 horse [hrse], 8 mana [mana]. Gives +1 to maximum mana.
+
+1st summon air sprite [sspr]: The caster tries to summon an air sprite
+  from the elemental planes into the world. The targeted unit must consist
+  of air sprites, or be a new unit. Air sprites are lesser air elementals
+  that know all scouting skills, including ambush. It takes 10 days for the
+  sprite to appear. Requires 45 days and $3/day to reach the level. Only
+  leaders may study this skill. Requires 1st summon lesser air elemental
+  [slae] to learn. This is a magic skill. Use targets a unit. Use requires:
+  1 horse [hrse], 8 mana [mana]. Gives +1 to maximum mana.
+
+1st enchant wagon [ewag]: Creates a wagon that moves at riding speeds on
+  its own. Requires 15 days and $3/day to reach the level. Only leaders may
+  study this skill. Requires 1st air magics [airs] to learn. This is a magic
+  skill. Use requires: 1 wagon [wago], 6 mana [mana]. Use produces 1 magic
+  wagon [mwag] in 20 days. Gives +1 to maximum mana.
+
+1st speed of the wind [sped]: The caster can use the speed of the wind and
+  move a running speed for a while. Requires 15 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st air magics [airs]
+  to learn. This is a magic skill. Use requires: 1 mana [mana]. Use produces
+  2 days of riding speed per day. Gives +1 to maximum mana.
+

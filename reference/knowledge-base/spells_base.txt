@@ -1,0 +1,965 @@
+MAGECRAFT 
+ 
+1st magecraft [mage]: The basic magic skill. Knowledge  
+of 1st level allows the mage to study one element. Requires  
+15 days and $3/day to reach the level. Only  leaders may  
+study this skill. This is a basic skill. This is a magic skill. 
+Gives +1 to maximum mana. 
+  
+  1st meditation [medi]: Meditation allows the mage to  
+  regain mana faster, and  supercharge before major magics. 
+  Requires 15 days and $3/day to reach the  level. Only  
+  leaders may study this skill. Requires 1st magecraft [mage]  
+  to learn. This is a magic skill. Use requires: 1 herbs  
+  [herb]. Use produces 1 mana [mana] per day. Gives +1 to  
+  maximum mana. 
+  
+    2nd meditation [medi]: At this level, the mage gains mana  
+    faster than ever. Requires 45 days and $3/day to reach the  
+    level. Only leaders may study this skill. This is a magic  
+    skill. Use requires: 1 herbs [herb]. Use produces 2 mana  
+    [mana] per day. Gives +2 to maximum mana. 
+  
+    1st ritual [ritu]: By joining in a ritual, the mage lends its  
+    mana to the focus of a major spell. Requires 30 days and  
+    $3/day to reach the level. Only leaders may study this skill.  
+    Requires 1st meditation [medi] to learn. This is a magic  
+    skill. Use targets a unit. Use requires: 1 mana [mana]. Use  
+    produces 1 mana [mana] per day. Gives +1 to maximum  
+    mana. 
+  
+2nd magecraft [mage]: Advanced magic abilities.  
+Knowledge of 2nd level allows the mage to study a second  
+element. Requires 45 days and $3/day to reach the level.  
+Only leaders may study this skill. This is a magic skill.  
+Gives +2  to maximum mana. 
+  
+  1st make mage keys [mkky]: Creates a mage key out of  
+  precious metals. Requires 15 days and $3/day to reach the  
+  level. Only leaders may study this skill. Requires 2nd  
+  magecraft [mage] to learn. This is a magic skill. Use  
+  requires: 10 mana [mana], 1 silver [silv]. Use produces 1  
+  mage key [mkey] in 15 days. Gives +1 to maximum mana. 
+
+    1st consecrate magical tower [ctow]: Only a mage can put 
+    the finishing touch to a mage tower. Proper tradition has it 
+    that the key is the last element added to a mage guild. 
+    Requires 15 days and $1/day to reach the level. Requires 
+    1st make mage keys [mkky] to learn. Use targets a structure. 
+    Use requires: 1 mage key [mkey]. Use produces 1 magical 
+    consecration per day.
+
+    2nd make mage keys [mkky]: At this level, creating a mage 
+    key is a lot easier. Requires 45 days and $3/day to reach the 
+    level. Only leaders may study this skill. This is a magic skill. 
+    Use requires: 10 mana [mana], 1 silver [silv]. Use produces 
+    1 mage key [mkey] in 8 days. Gives +2 to maximum mana.
+  
+3rd magecraft [mage]: Experienced magics. Knowledge of  
+3rd level allows the mage to study a third element. Requires  
+90 days and $3/day to reach the level. Only leaders may  
+study this skill. This is a magic skill. Gives +3 to maximum  
+mana. 
+  
+  
+VOID MAGICS  
+  
+1st void magics [void]: The element of the Void relates to  
+magic itself, arcane knowledge and death. Requires 15 days  
+and $3/day to reach  the level. Only leaders may study this  
+skill. Requires 1st magecraft  [mage] to learn. Gives +1 to  
+maximum mana. 
+  
+  1st drain life [drlf]: During combat, the mage can drain life  
+  points from  units that have more than the extra amount.  
+  Drain life will target up to  20 figures in a unit that has more  
+  than 1 life, and divide their life  total by two for the rest of  
+  the battle. Requires 30 days and $3/day to  reach the level.  
+  Only leaders may study this skill. Requires 1st void  magics  
+  [void] to learn. This is a magic skill. Gives +1 to maximum  
+  mana. This is a combat action. Target: opposing unit.  
+  Range: Effect: special. 
+  
+  1st far eye [feye]: The caster of the far eye may survey an  
+  adjacent area as  if he was present. It takes 5 days to focus  
+  on the location. Requires 15  days and $3/day to reach the  
+  level. Only leaders may study this skill. Requires 1st void  
+  magics [void] to learn. This is a magic skill. Use  targets a  
+  location. Use requires: 4 mana [mana]. Gives +1 to  
+  maximum  mana. 
+  
+    2nd far eye [feye]: The caster of the far eye may survey an  
+    adjacent area as if he was present. If takes 4 days to focus on  
+    the location. Requires 45 days and $3/day to reach the level.  
+    Only leaders may study this skill. This is a magic skill. Use  
+    targets a location. Use requires: 4 mana [mana]. Gives +1  
+    to observation, +2 to maximum mana. 
+  
+    1st make magic compass [mkco]: From seeing its  
+    surrounding to having a device to detect large structures is  
+    only a single step. Requires 15 days and $3/day to reach the  
+    level. Only leaders may study this skill. Requires 1st far eye  
+    [feye] to learn. This is a magic skill. Use requires: 1 wood  
+    [wood], 1 iron [iron], 5 mana [mana]. Use produces 1 magic  
+    compass [mcom] in 15 days. Gives +1 to maximum mana. 
+  
+      2nd make magic compass [mkco]: At this level, a compass  
+      is the easiest thing to be made. Requires 45 days and $3/day  
+      to reach the level. Only leaders may study this skill. This is  
+      a magic skill. Use requires: 1 wood [wood], 1 iron [iron], 5  
+      mana [mana]. Use produces 1 mystic compass [mcom] in   
+      8 days. Gives +2 to maximum mana. 
+  
+  1st inspire dread [idre]: The mage skilled in inspiring  
+  unnatural dread from  his simple presence behaves in combat  
+  as if he was 4 stealth levels  higher, thus avoiding being  
+  targeted by units if possible. Requires 30  days and $3/day to  
+  reach the level. Only leaders may study this skill. Requires  
+  1st void magics [void] to learn. This is a magic skill. Gives  
+  +1  to maximum mana. 
+  
+  1st read auras [raur]: The mage skilled in aura reading may  
+  detect a unit's  faction as if he had two observation levels  
+  higher. Requires 15 days and  $3/day to reach the level.  
+  Only leaders may study this skill. Requires 1st void magics  
+  [void] to learn. This is a magic skill. Gives +1 to maximum   
+  mana. 
+
+    1st read minds [rmin]: By using this skill, the mage drains the
+    knowledge of another unit. He'll get 1.5 days of study in a skill 
+    he can learn, picked at random. The skill is picked among magical 
+    skills first, if possible, then combat skills if no magical skill 
+    can be learned, then craft skills. Requires 30 days and $3/day 
+    to reach the level. Only leaders may study this skill. Requires 
+    1st read auras [raur] to learn. This is a magic skill. Use targets 
+    a unit. Use requires: 2 coins [coin], 1 mana [mana]. Use produces 
+    1 mind reading per day. Gives +1 to maximum mana.
+  
+  1st summon lesser void elemental [slve]: The caster tries to  
+  summon a void  elemental from the elemental planes into the  
+  world. The targeted unit must consist of lesser void  
+  elementals, or be a new unit. Lesser elemental has no skills  
+  and 2 hits, 2 life, 4 melee, 1 defense, 1 observation, and is   
+  flying. It takes 10 days for the elemental to appear.  
+  Requires 45 days and  $3/day to reach the level. Only  
+  leaders may study this skill. Requires 1st void magics  
+  [void] to learn. This is a magic skill. Use targets a unit.  
+  Use requires: 1 iron [iron], 8 mana [mana]. Gives +1 to  
+  maximum mana. 
+  
+2nd void magics [void]: Advanced Void mastery. Requires  
+45 days and $3/day  to reach the level. Only leaders may  
+study this skill. Gives +2 to maximum  mana. 
+  
+  
+WATER MAGICS  
+  
+1st water magics [wate]: The element of Water relates to  
+healing, production activities and the seas. Requires 15 days  
+and $3/day to reach the level. Only leaders may study this  
+skill. Requires 1st magecraft [mage] to learn. Gives +1 to  
+maximum mana. 
+  
+  1st make potions of healing [hpot]: The caster may use his  
+  knowledge of chemicals to create potions of healing, to be  
+  used in battle against wounds. Requires 15 days and $3/day  
+  to reach the level. Only leaders may  study this skill.  
+  Requires 1st water magics [wate] to learn. This is a  magic  
+  skill. Use requires: 1 herbs [herb], 2 mana [mana]. Use  
+  produces 1  potion of healing [poth] in 2 days. Gives +1 to  
+  maximum mana. 
+  
+    1st enchant amulet of life [eaml]: The caster can enchant  
+    an amulet, making  it into an amulet of life. Requires 30  
+    days and $3/day to reach the level. Only leaders may study  
+    this skill. Requires 1st make potions of healing  [hpot] to  
+    learn. This is a magic skill. Use requires: 1 amulet [amul],  
+    8 mana [mana]. Use produces 1 amulet of life [amli] in 30  
+    days. Gives +1 to maximum mana. 
+
+      2nd enchant amulet of life [eaml]: At this level, enchanting 
+      an amulet of life becomes easier. Requires 90 days and 
+      $3/day to reach the level. Only leaders may study this skill. 
+      This is a magic skill. Use requires: 1 amulet [amul], 8 mana 
+      [mana]. Use produces 1 amulet of life [amli] in 15 days. 
+      Gives +1 to maximum mana.
+
+      1st heal [heal]: The caster may heal a unit during battle. 
+      All wounds are erased, and a 2D6 random amount of hit 
+      points are restored. Requires 45 days and $3/day to reach 
+      the level. Only leaders may study this skill. Requires 1st 
+      enchant amulet of life [eaml] to learn. This is a magic skill. 
+      Use requires: 1 potion of healing [poth], 4 mana [mana]. 
+      Gives +1 to maximum mana. This is a combat action. 
+      Target: battlefield. Effect: special.
+  
+    2nd make potions of healing [hpot]: At this level, the mage  
+    mixes potions like party cocktails. Requires 45 days and  
+    $3/day to reach the level. Only leaders may study this skill.  
+    This is a magic skill. Use requires: 1 herbs [herb], 2 mana  
+    [mana]. Use produces 1 potion of healing [poth] per day.  
+    Gives +2 to maximum mana. 
+  
+    1st stinking cloud [stcl]: The mage casting this spell forces  
+    opposing units to retreat one square. The unit will not   
+    advance again this round. Each unit has 1% chance per  
+    figure to resist the cloud. Requires 15 days and $3/day to  
+    reach the level. Only leaders may study this skill. Requires  
+    1st make potions of healing [hpot] to learn. This is a magic  
+    skill. Use requires: 1 potion of healing [poth], 3 mana  
+    [mana]. Gives +1 to maximum mana. This is a combat  
+    action. Target: opposing unit. Range: melee. Effect:  
+    special.
+
+      1st fog cover [fogc]: The mage casting this spell creates a 
+      magical fog covering one square. The fog lasts four rounds. 
+      Units within the fog cannot discriminate between friendly 
+      and enemy targets for melee or missile, but any melee or 
+      ranged strike against them is at half attack strength only. 
+      Requires 30 days and $3/day to reach the level. Only 
+      leaders may study this skill. Requires 1st stinking cloud [stcl] 
+      to learn. This is a magic skill. Use requires: 1 herbs [herb], 
+      2 mana [mana]. Gives +1 to maximum mana. This is a combat 
+      action. Target: battlefield. Effect: special.
+
+      2nd stinking cloud [stcl]: At this level, the mage will 
+      automatically force a retreat of any unit of less than 15 figures, 
+      and let the unit resist with 1% chance thereafter. Requires 45 
+      days and $3/day to reach the level. Only leaders may study this 
+      skill. This is a magic skill. Use requires: 1 potion of healing 
+      [poth], 3 mana [mana]. Gives +2 to maximum mana. This is a 
+      combat action. Target: opposing unit. Range: melee. Effect: special.
+
+  1st quagmire [quag]: The caster may target a unit,  
+  dissolving the ground under it and hampering greatly its  
+  efficiency. A unit with an initiative of 0 or greater will  
+  receive a -5 initiative penalty, which will it will regain at +1  
+  per battle round. Requires 15 days and $3/day to reach the  
+  level. Only leaders may study this skill. Requires 1st water  
+  magics [wate] to learn. This is a magic skill. Use requires:  
+  3 mana [mana]. Gives +1 to maximum mana. This is a  
+  combat action. Initiative +2. Target: opposing unit.  
+  Range:  Effect: special. 
+
+    1st battle flow [flow]: The caster may shift a unit to a position 
+    where it can strike against a unit even if that unit was out of 
+    range. The effect targets only units that have CHARGE as a 
+    battle move. Requires 30 days and $3/day to reach the level. 
+    Only leaders may study this skill. This is a specialist skill,
+    available in Atnos (L44). Requires 1st quagmire [quag] to learn.
+    This is a magic skill. Use requires: 3 mana [mana]. Gives +1 to 
+    maximum mana. This is a combat action. Initiative +4. Target: 
+    battlefield. Effect: special.
+
+    1st mishap [mish]: The caster may target a unit, covering it with 
+    excess wetness and increasing the chances of mishap. Each figure 
+    in the unit with an item equipped has 20% chance of dropping the 
+    equipment it holds. This chance is reduced by 1% for each 
+    positive defense level. Dropped items are reequipped after the 
+    end of battle. Requires 30 days and $3/day to reach the level. 
+    Only leaders may study this skill. Requires 1st quagmire [quag] to 
+    learn. This is a magic skill. Use requires: 3 mana [mana]. Gives 
+    +1 to maximum mana. This is a combat action. Initiative -1. 
+    Target: opposing unit. Range: ranged. Effect: special.
+
+    2nd quagmire [quag]: Long experience with muddy grounds gives 
+    the caster an advantage. The targeted unit will suffer a -4 initiative 
+    penaly, whatever its starting initiative, which it will regain at +1 
+    per battle round. Requires 45 days and $3/day to reach the level. 
+    Only leaders may study this skill. This is a magic skill. Use 
+    requires: 3 mana [mana]. Gives +1 to maximum mana. This is 
+    a combat action. Initiative +2. Target: opposing unit. Range: . 
+    Effect: special.
+  
+  1st summon lesser water elemental [slwe]: The caster tries to 
+  summon a water elemental from the elemental planes into the world. 
+  The targeted unit must consist of lesser water elementals, or be a 
+  new unit. Lesser elemental has no skills and 3 life, 3 hits, 3 melee, 
+  6 defense, -1 initiative and is sailing. It takes 10 days for the 
+  elemental to appear. Requires 45 days and $3/day to reach the level. 
+  Only leaders may study this skill. Requires 1st water magics [wate] to 
+  learn. This is a magic skill. Use targets a unit. Use requires: 
+  1 fish [fish], 8 mana [mana]. Gives +1 to maximum mana.
+
+  1st water walking [wwal]: The caster can walk over the waters. 
+  Requires 15 days and $3/day to reach the level. Only leaders may 
+  study this skill. Requires 1st water magics [wate] to learn. This 
+  is a magic skill. Use requires: 1 mana [mana]. Use produces 4 days 
+  of sailing per day. Gives +1 to maximum mana.
+
+    1st mutate sea horse [sshr]: The caster may change a normal horse 
+    into a sea horse, a water-bound mount. Requires 30 days and $3/day 
+    to reach the level. Only leaders may study this skill. Requires 1st 
+    water walking [wwal] to learn. This is a magic skill. Use requires: 
+    1 horse [hrse], 10 mana [mana]. Use produces 1 sea horse [seah] 
+    in 15 days. Gives +1 to maximum mana.
+
+  1st wild growth [wgrw]: The wild growth permanently  
+  increases the amount of live products available from a  
+  region. After a month of rituals, 10% products are added to  
+  all living ressources of the local area. Requires 30 days and  
+  $3/day to reach the level. Only leaders may study this skill.  
+  Requires 1st water magics [wate] to learn. This is a magic  
+  skill. Use requires: 10 mana [mana]. Gives +1 to  
+  maximum mana. 
+
+    1st clone mount [clon]: The caster creates of magical replica of 
+    whatever mount he is currently riding. The newly clone is not 
+    equipped. Requires 30 days and $3/day to reach the level. Only 
+    leaders may study this skill. Requires 1st wild growth [wgrw]
+    to learn. This is a magic skill. Use requires: 10 mana [mana].
+    Use produces 1 cloning in 20 days. Gives +1 to maximum mana.
+
+    2nd wild growth [wgrw]: At this level, the ritual takes only half 
+    normal time. Requires 90 days and $3/day to reach the level. Only 
+    leaders may study this skill. This is a magic skill. Use requires: 
+    10 mana [mana]. Use produces 1 wild growth in 15 days. Gives 
+    +2 to maximum mana.
+  
+2nd water magics [wate]: Advanced Water mastery.  
+Requires 45 days and $3/day to reach the level. Only leaders  
+may study this skill. Gives +2 to maximum mana. 
+  
+  
+AIR MAGICS  
+  
+1st air magics [airs]: The element of the Air relates to  
+movement, life,  creatures and knowledge. Requires 15 days  
+and $3/day to reach the level. Only leaders may study this  
+skill. Requires 1st magecraft [mage] to learn. Gives +1 to  
+maximum mana. 
+
+  1st enchant wagon [ewag]: Creates a wagon that moves at  
+  riding speeds on its own. Requires 15 days and $3/day to  
+  reach the level. Only leaders may study this skill. Requires  
+  1st air magics [airs] to learn. This is a magic skill. Use  
+  requires: 1 wagon [wago], 6 mana [mana]. Use produces 1  
+  magic wagon [mwag] in 20 days. Gives +1 to maximum  
+  mana. 
+
+    1st airy armor [aarm]: From a simple and heavy armor, 
+    creates an airy, lightweight armor who enhances it's wearers 
+    prowess. Requires 30 days and $3/day to reach the level. Only 
+    leaders may study this skill. Requires 1st enchant wagon [ewag]
+    to learn. This is a magic skill. Use requires: 1 chain mail [chai], 
+    9 mana [mana]. Use produces 1 airy mail [amai] in 15 days. 
+    Gives +1 to maximum mana.
+
+    2nd enchant wagon [ewag]: At this level, a wagon's enchantment 
+    is faster. Requires 45 days and $3/day to reach the level. Only 
+    leaders may study this skill. This is a magic skill. Use requires: 
+    1 wagon [wago], 6 mana [mana]. Use produces 1 magic wagon [mwag] 
+    in 10 days. Gives +2 to maximum mana.
+
+  1st raise morale [rmor]: The caster magically raises the  
+  morale of troops, bolstering their confidence prior to battle.  
+  The troops will attack straight and true. Requires 15 days  
+  and $3/day to reach the level. Only leaders may study this  
+  skill. Requires 1st air magics [airs] to learn. This is a magic  
+  skill. Use targets a unit. Use requires: 1 mana [mana].  
+  Use produces  4 days of morale per day. Gives +1 to   
+  maximum mana. 
+
+    1st combat disaffection [cdis]: The caster fights against 
+    disaffection in a unit, causing the disaffection to disappear 
+    twice faster. Requires 30 days and $3/day to reach the level. 
+    Only leaders may study this skill. Requires 1st raise morale 
+    [rmor] to learn. This is a magic skill. Use targets a unit. 
+    Use requires: 1 mana [mana]. Use produces 1 day of disaffection 
+    per day. Gives +1 to maximum mana.
+
+    2nd raise morale [rmor]: At this level, morale is increased for 
+    a longer time. Requires 45 days and $3/day to reach the level. 
+    Only leaders may study this skill. This is a magic skill. Use 
+    targets a unit. Use requires: 1 mana [mana]. Use produces 8 
+    days of morale per day. Gives +2 to maximum mana.
+  
+  1st speed of the wind [sped]: The caster can use the speed  
+  of the wind and move at running speed for a while. Requires  
+  15 days and $3/day to reach the level. Only leaders may  
+  study this skill. Requires 1st air magics [airs] to learn. This  
+  is a magic skill. Use requires: 1 mana [mana]. Use  
+  produces 2 days of riding speed per day. Gives +1 to  
+  maximum mana. 
+
+    1st master weather [mwea]: The caster can master the winds, 
+    and create an unnatural calm in the province he stays. The next 
+    month will always have fair weather, regardless of the season. 
+    Requires 15 days and $3/day to reach the level. Only leaders 
+    may study this skill. Requires 1st speed of the wind [sped] to 
+    learn. This is a magic skill. Use requires: 5 mana [mana]. Use 
+    produces 1 fair weather in 5 days. Gives +1 to maximum mana.
+
+    2nd speed of the wind [sped]: At this level, the caster can 
+    moves with less effort. Requires 45 days and $3/day to reach 
+    the level. Only leaders may study this skill. This is a magic 
+    skill. Use requires: 1 mana [mana]. Use produces 4 days of 
+    riding speed per day. Gives +2 to maximum mana.
+
+  1st summon lesser air elemental [slae]: The caster tries to  
+  summon an air elemental from the elemental planes into the  
+  world. The targeted unit must consist of lesser air  
+  elementals, or be a new unit. Lesser elemental has no skills,  
+  and has 3 life, 5 melee, 2 defense, 4 initiative, 1 stealth and  
+  is flying. It takes 10 days for the elemental to appear.  
+  Requires 45 days and $3/day to reach the level. Only leaders  
+  may study this skill. Requires 1st air magics [airs] to learn.  
+  This is a magic skill. Use targets a unit. Use requires: 1  
+  horse [hrse], 8 mana [mana]. Gives +1 to maximum mana. 
+  
+    1st summon air sprite [sspr]: The caster tries to summon an  
+    air sprite from the elemental planes into the world. The  
+    targeted unit must consist of air sprites, or be a new unit.  
+    Air sprites are lesser air elementals that know all scouting  
+    skills, including ambush. It takes 10 days for the sprite to  
+    appear. Requires 45 days and $3/day to reach the level.  
+    Only leaders may study this skill. Requires 1st summon  
+    lesser air elemental [slae] to learn. This is a magic skill.  
+    Use targets a unit. Use requires: 1 horse [hrse], 8 mana  
+    [mana]. Gives +1 to maximum mana. 
+  
+  1st tame beasts [tame]: The caster magically tries to tame a  
+  beast attacking it. This battle action works only on low-level  
+  creature units. The chance of success for each attempt is  
+  90%, minus 5% for each creature in the unit. Requires 15  
+  days and $3/day to reach the level. Only leaders may study  
+  this skill. Requires 1st air magics [airs] to learn. This is a  
+  magic skill. Use requires: 3 mana [mana]. Gives +1 to  
+  maximum mana. This is a combat action. Target:  
+  opposing unit. Range: ranged. Effect: special. 
+  
+    1st subdue creatures [subd]: The caster magically tries to  
+    subdue a creature attacking it. This battle action works only  
+    on non-magical creature units. The chance of success for  
+    each attempt is 90%,  minus 5% for each creature in the  
+    unit. Requires 15 days and $3/day to reach the level. Only  
+    leaders may study this skill. Requires 1st tame beasts [tame]  
+    to learn. This is a magic skill. Use requires: 3 mana  
+    [mana]. Gives +1 to maximum mana. This is a combat  
+    action. Target: opposing unit. Range: ranged. Effect:  
+    special. 
+
+      1st capture beasts [capt]: The caster magically tries to capture a 
+      unit of low-level beasts. For each day the capture is attempted, 
+      the unit has 10% chance of being captured and stacking 
+      beneath the caster. Requires 15 days and $3/day to reach the 
+      level. Only leaders may study this skill. Requires 1st subdue 
+      creatures [subd] to learn. This is a magic skill. Use targets a
+      unit. Use requires: 2 mana [mana]. Use produces 1 capture attempt 
+      per day. Gives +1 to maximum mana.
+
+      1st control monsters [cmon]: The caster magically tries to 
+      subdue a  high-level monster attacking it. This battle action 
+      works on all monsters, including magical units. The chance 
+      of success for each attempt is 80%, minus 5% for each 
+      creature in the unit and 1% for each mana level of the unit. 
+      Requires 30 days and $3/day to reach the level. Only leaders may
+      study this skill. Requires 1st subdue creatures [subd] to learn. 
+      This is a magic skill. Use requires: 5 mana [mana]. Gives +1 
+      to maximum mana. This is a combat action. Target: 
+      opposing unit. Range: ranged. Effect: special.
+
+      2nd subdue creatures [subd]: At this level, the caster may subdue 
+      creatures from a longer range, and the penalty is only 4% per 
+      creature. Requires 45 days and $3/day to reach the level. Only 
+      leaders may study this skill. This is a magic skill. Use requires: 
+      3 mana [mana]. Gives +2 to maximum mana. This is a combat 
+      action. Target: opposing unit. Range: far range. Effect: special.
+
+    2nd tame beasts [tame]: At this level, the caster may tame  
+    beasts from a longer range, and the penalty is only 4% per  
+    creature. Requires 45 days and $3/day to reach the level.  
+    Only leaders may study this skill. This is a magic skill. Use  
+    requires: 3 mana [mana]. Gives +2 to maximum  
+    mana. This is a combat action. Target: opposing unit.  
+    Range: far range. Effect: special. 
+  
+2nd air magics [airs]: Advanced Air mastery. Requires 45  
+days and $3/day to reach the level. Only leaders may study  
+this skill. Gives +2 to maximum mana. 
+
+  1st enchant ring of air [erai]: The caster uses his knowledge 
+  of air's currents to enchant a magical ring. Requires 45 days 
+  and $3/day to reach the level. Only leaders may study this skill. 
+  Requires 2nd air magics [airs] to learn. This is a magic skill. 
+  Use requires: 1 silver ring [srng], 18 mana [mana]. Use produces 
+  1 ring of air [rair] in 30 days.  Gives +1 to maximum mana.
+
+  1st flight [flig]: The caster may cause any unit to fly unless it is
+  too loaded. Requires 15 days and $3/day to reach the level. Only 
+  leaders may study this skill. Requires 2nd air magics [airs] to learn. 
+  This is a magic skill. Use targets a unit. Use requires: 2 mana 
+  [mana]. Use produces 4 days of flying per day. Gives +1 to 
+  maximum mana.
+
+    1st enchant air ship [eash]: The caster will transform a simple 
+    sailing vessel into a magical airborne ship. Requires 45 days and 
+    $3/day to reach the level. Only leaders may study this skill. Requires 
+    1st flight [flig] to learn. This is a magic skill. Use requires: 1 mystic 
+    stone [msto], 1 longboat [lgbt], 25 mana [mana]. Use produces 1 
+    flying ship [flsh] in 30 days. Gives +1 to maximum mana.
+
+    2nd flight [flig]: At this level, the mage produces longer flight 
+    effects. Requires 45 days and $3/day to reach the level. Only 
+    leaders may study this skill. This is a magic skill. Use targets a 
+    unit. Use requires: 2 mana [mana]. Use produces 8 days of flying 
+    per day. Gives +2 to maximum mana.
+
+3rd air magics [airs]: Deeper Air mysteries. Requires 90 days and 
+$3/day to reach the level. Only leaders may study this skill. Gives 
++3 to maximum mana.
+
+  
+EARTH MAGICS  
+  
+1st earth magics [eart]: The element of the Earth relates to  
+growth, nature  and animals. Requires 15 days and $3/day  
+to reach the level. Only leaders  may study this skill.  
+Requires 1st magecraft [mage] to learn. Gives +1 to   
+maximum mana. 
+  
+  1st floraison [flor]: While the mage concentrates, all units  
+  harvesting live products in the same region will produce an  
+  additional 50% products. Takes effect only on units  
+  appearing after the mage in the arrival order. Requires 15  
+  days and $3/day to reach the level. Only leaders may study  
+  this skill. Requires 1st earth magics [eart] to learn. This is a  
+  magic skill. Use requires: 1 mana [mana]. Gives +1 to  
+  maximum mana. 
+  
+    2nd floraison [flor]: Advanced level in floraison does not  
+    produce more products. Requires 45 days and $3/day to  
+    reach the level. Only leaders may study this skill. This is a  
+    magic skill. Use requires: 1 mana [mana]. Gives +2 to  
+    maximum mana. 
+  
+    1st mutate horse [mhor]: Mastery of the earth's animals  
+    allow the mage to mutate a horse into a sturdy beast, slow,  
+    but almost invulnerable. Requires 15 days and $3/day to  
+    reach the level. Only leaders may study this skill. Requires  
+    1st floraison [flor] to learn. This is a magic skill. Use  
+    requires: 1 horse [hrse], 9 mana [mana]. Use produces 1  
+    stone horse [shrs] in 15 days. Gives +1 to maximum mana. 
+
+      1st call forth mount [cmou]: Mastery of the earth life allows 
+      the mage to call forth a mount. One elemental mount will come 
+      to his call. Requires 15 days and $3/day to reach the level. Only 
+      leaders may study this skill. Requires 1st mutate horse [mhor] 
+      to learn. This is a magic skill. Use requires: 10 mana [mana]. 
+      Use produces 1 random elemental mount in 15 days. Gives +1 
+      to maximum mana.
+
+        1st call familiars [cfam]: Mastery of the life allows the mage 
+        to call beasts upon his help. After a long period of attuning, 
+        a unit of normal beasts will appear, stacked beneath the mage. 
+        The target must specify a new unit for the beasts; the newly 
+        created beasts will immediately start executing orders. The 
+        amount of beasts and their race is random, with a total 
+        strength (melee+defense times hits) value of about 60. Requires 
+        30 days and $3/day to reach the level. Only leaders may study 
+        this skill. Requires 1st call forth mount [cmou] to learn. This 
+        is a magic skill. Use targets a unit. Use requires: 20 mana 
+        [mana]. Use produces 1 familiar beasts unit in 30 days. 
+        Gives +1 to maximum mana.
+
+        2nd call forth mount [cmou]: At this level, the mage may specify 
+        as a TARGET the type of elemental mount he wants to summon. 
+        He has now 50% chance of getting the required mount. Requires 
+        45 days and $3/day to reach the level. Only leaders may study 
+        this skill. This is a magic skill. Use requires: 15 mana [mana]. 
+        Use produces 1 random elemental mount in 20 days. Gives +2 
+        to maximum mana.
+
+      2nd mutate horse [mhor]: At this level, a horse may be mutated 
+      in half the time. Requires 45 days and $3/day to reach the level. 
+      Only leaders may study this skill. This is a magic skill. Use 
+      requires: 1 horse [hrse], 9 mana [mana]. Use produces 1 stone 
+      horse [shrs] in 8 days. Gives +1 to maximum mana.
+
+  1st gaia transformation [gaet]: The user of this spell calls forth the
+  earth spirit itself, pledging itself for earth. The mage is transformed 
+  upon this into an avatar of gaea, a special life form, unmistakable. 
+  The mage will forget skills of the air and water elements at the 
+  beginning of each turn, randomly. Requires 30 days and $3/day to 
+  reach the level. Only leaders may study this skill. This is a specialist 
+  skill. Requires 1st earth magics [eart] to learn. This is a magic skill. 
+  Use requires: 1 grain [grai], 1 wood [wood], 1 herbs [herb], 1 stone 
+  [ston], 15 mana [mana]. Use produces 1 metamorphosis in 30 days. 
+  Gives +1 to maximum mana.
+  
+  1st reshape earth [rshe]: By reshaping earth itself, the mage  
+  facilitates the mason's work, dividing by two the time a  
+  mason requires to work on a building. Requires 15 days and  
+  $3/day to reach the level. Only leaders may study this skill.  
+  Requires 1st earth magics [eart] to learn. This is a magic  
+  skill. Use targets a structure. Use requires: 1 mana [mana].  
+  Gives +1 to maximum mana. 
+  
+    1st cleave earth [clea]: The mage opens up fissures upon the  
+    battleground toward his enemies. All figures in the targeted  
+    square have a 5% chance of being swallowed by the earth  
+    itself. Requires 45 days and $3/day to reach the level. Only  
+    leaders may study this skill. Requires 1st reshape earth  
+    [rshe] to learn. This is a magic skill. Use requires: 5 mana  
+    [mana]. Gives +1 to maximum mana. This is a combat  
+    action. Initiative -1. Target: opposing unit. Range: long  
+    range. Effect: special. 
+  
+    2nd reshape earth [rshe]: Improving his skill of reshaping  
+    earth does not facilitate the mason's overmuch. Requires 45  
+    days and $3/day to reach the level. Only leaders may study  
+    this skill. This is a magic skill. Use targets a structure. Use  
+    requires: 1 mana [mana]. Gives  +2 to maximum mana. 
+  
+    1st stone to granite [stog]: Transmute mundane stone blocks  
+    into sturdy granite. Requires 30 days and $3/day to reach  
+    the level. Only leaders may study this skill. Requires 1st  
+    reshape earth [rshe] to learn. This is a magic skill. Use  
+    requires: 1 stone [ston], 4 mana [mana]. Use produces 1  
+    granite [gran] in 5 days. Gives +1 to maximum mana. 
+  
+  1st stone grasp [sgrp]: During combat, the caster fight with  
+  increased force, inclicting deadly damage. Requires 15 days  
+  and $3/day to reach the level. Only leaders may study this  
+  skill. Requires 1st earth magics [eart] to learn. This is a  
+  magic skill. Use requires: 2 mana [mana]. Gives +1 to   
+  maximum mana. This is a combat action. Initiative +1.  
+  Target: opposing unit. Range: melee. Effect: melee attack  
+  with modifiers +10 melee, 2 hits, +4 damage. 
+
+    1st enchant heavy wand [ehwd]: The caster infuses earth's rock 
+    essence into a wand. Requires 30 days and $3/day to reach the 
+    level. Only leaders may study this skill. Requires 1st stone 
+    grasp [sgrp] to learn. This is a magic skill. Use requires: 1 fighting 
+    staff [staf], 6 mana [mana]. Use produces 1 wand of heaviness 
+    [whev] in 8 days. Gives +1 to maximum mana.
+
+    2nd stone grasp [sgrp]: At this level, the mage hits more often. 
+    Requires 45 days and $3/day to reach the level. Only leaders 
+    may study this skill. This is a magic skill. Use requires: 2 mana 
+    [mana]. Gives +2 to maximum mana. This is a combat action. 
+    Initiative +1. Target: opposing unit. Range: melee. Effect: 
+    melee attack with modifiers +11 melee, 4 hits, +4 damage, 
+    earth damage.  
+
+    1st stone hail [shai]: During combat, the caster throws large 
+    stones, crushing his enemies from afar. Requires 15 days and 
+    $3/day to reach the level. Only leaders may study this skill. 
+    Requires 1st stone grasp [sgrp] to learn. This is a magic skill. 
+    Use requires: 1 stone [ston], 2 mana [mana]. Gives +1 to maximum 
+    mana. This is a combat action. Initiative -1. Target: opposing 
+    unit. Range: far range. Effect: ranged attack with modifiers 8 
+    missile, 4 damage, earth damage.
+
+  1st strength of the boar [sboa]: During combat, the caster  
+  may inflict multiple hits to his foes and resist punishment.  
+  Requires 15 days and $3/day to reach the level. Only leaders  
+  may study this skill. Requires 1st earth magics [eart] to  
+  learn. This is a magic skill. Use requires: 2 mana [mana].  
+  Gives +1 to maximum mana. This is a combat action.  
+  Initiative +1. Target: opposing unit. Range: melee.  
+  Effect: melee attack with modifiers +5 melee, +4 hits, +4  
+  life. 
+  
+    1st enchant ring of strength [erst]: The caster uses his  
+    knowledge of earth's strength to enchant a lesser ring.  
+    Requires 15 days and $3/day to reach the level. Only leaders  
+    may study this skill. Requires 1st strength of the boar [sboa]  
+    to learn. This is a magic skill. Use requires: 1 iron ring  
+    [irng], 8 mana [mana]. Use produces 1 ring of strength [rtst]  
+    in 15 days. Gives +1 to maximum mana. 
+
+      2nd enchant ring of strength [erst]: At this level, a ring is 
+      easier to enchant. Requires 45 days and $3/day to reach the 
+      level. Only leaders may study this skill. This is a magic skill. 
+      Use requires: 1 iron ring [irng], 8 mana [mana]. Use produces 
+      1 ring of strength [rtst] in 8 days. Gives +2 to maximum mana.
+  
+    2nd strength of the boar [sboa]: At this level, the caster hits  
+    more often, and stronger. Requires 45 days and $3/day to  
+    reach the level. Only leaders may study this skill. This is a  
+    magic skill. Use requires: 2 mana [mana]. Gives +2 to  
+    maximum mana. This is a combat action. Initiative +1.  
+    Target: opposing unit. Range: melee. Effect: melee attack  
+    with modifiers +7 melee, +6 hits, +4 life. 
+  
+    1st strength of the bull [sbul]: During combat, the caster  
+    may rush through his foes, causing disruption and damage.  
+    Requires 15 days and $3/day to reach the level. Only leaders  
+    may study this skill. Requires 1st strength of the boar [sboa]  
+    to learn. This is a magic skill. Use requires: 2 mana  
+    [mana]. Gives +1 to maximum mana. This is a combat  
+    action. Initiative +1. Target: opposing unit. Range:  
+    melee. Effect: melee attack with modifiers +4 melee, +9  
+    hits, 2 damage, +5 life. 
+
+      1st enchant war hammer [eham]: The caster uses his knowledge 
+      of earth's strength to empower a war hammer. Requires 30 days 
+      and $3/day to reach the level. Only leaders may study this skill. 
+      Requires 1st strength of the bull [sbul] to learn. This is a magic 
+      skill. Use requires: 1 war hammer [wham], 9 mana [mana]. Use 
+      produces 1 magical war hammer [mwam] in 15 days. Gives +1 to 
+      maximum mana.
+
+      2nd strength of the bull [sbul]: At this level, the caster hits more 
+      often, and stronger. Requires 45 days and $3/day to reach the level. 
+      Only leaders may study this skill. This is a magic skill. Use 
+      requires: 2 mana [mana]. Gives +2 to maximum mana. This is a 
+      combat action. Initiative +1. Target: opposing unit. Range: melee. 
+      Effect: melee attack with modifiers +6 melee, +12 hits, 2 damage, 
+      +5 life, earth damage.
+
+      1st strength of the ox [stox]: During combat, the caster may crush 
+      his foes. Requires 15 days and $3/day to reach the level. Only 
+      leaders may study this skill. Requires 1st strength of the bull [sbul] 
+      to learn. This is a magic skill. Use requires: 2 mana [mana]. Gives 
+      +1 to maximum mana. This is a combat action. Initiative +1. 
+      Target: opposing unit. Range: melee. Effect: melee attack with 
+      modifiers +5 melee, +6 hits, 4 damage, +5 life, earth damage.
+
+        1st earthen plate [epla]: The caster may imbue the earth's 
+        permanency to an armor. Requires 45 days and $3/day to reach 
+        the level. Only leaders may study this skill. Requires 1st strength 
+        of the ox [stox] to learn. This is a magic skill. Use requires: 1 plate 
+        mail [plat], 20 mana [mana]. Use produces 1 earth plate [plea] in 
+        30 days. Gives +1 to maximum mana.
+
+        1st strength of the elephant [stel]: During combat, the caster 
+        may flatten his foes. Requires 45 days and $3/day to reach the 
+        level. Only leaders may study this skill. Requires 1st strength 
+        of the ox [stox] to learn. This is a magic skill. Use requires: 
+        2 mana [mana]. Gives +1 to maximum mana. This is a combat 
+        action. Initiative -1. Target: opposing unit. Range: melee. 
+        Effect: melee attack with modifiers +5 melee, +5 defense, 
+        +4 hits, 10 damage, +6 life, earth damage.
+
+        2nd strength of the ox [stox]: At this level, the caster hits 
+        more forcefully. Requires 45 days and $3/day to reach the level. 
+        Only leaders may study this skill. This is a magic skill. Use 
+        requires: 2 mana [mana]. Gives +2 to maximum mana. This is 
+        a combat action. Initiative +1. Target: opposing unit. Range: 
+        melee. Effect: melee attack with modifiers +6 melee, +8 hits, 
+        4 damage, +5 life, earth damage.
+  
+  1st summon lesser earth elemental [slee]: The caster tries to  
+  summon an earth elemental from the elemental planes into  
+  the world. The targeted unit must consist of lesser earth  
+  elementals, or be a new unit. Lesser elemental has no skill,  
+  6 life, 6 melee, 6 defense, -4 initiative, does 2 damage and is  
+  strong. It takes 10 days for the elemental to appear.  
+  Requires 45 days and $3/day to reach the level. Only leaders  
+  may study this skill. Requires 1st earth magics [eart] to  
+  learn. This is a magic skill. Use targets a unit. Use  
+  requires: 1 stone [ston], 8 mana [mana]. Gives +1 to  
+  maximum mana. 
+
+    1st summon homunculi [shom]: The caster tries to summon a 
+    homunculus from the earth itself. The targeted unit must consist 
+    of homunculi, or be a new unit. Homunculi have all basic artisan 
+    skills at level 3, and all advanced artisan skills at level 1, but 
+    are generally weak and short-lived. It takes 15 days for the 
+    homunculus to appear. Requires 45 days and $3/day to reach the 
+    level. Only leaders may study this skill. Requires 1st summon 
+    lesser earth elemental [slee] to learn. This is a magic skill. Use 
+    targets a unit. Use requires: 1 stone [ston], 8 mana [mana]. Use 
+    produces 1 homunculus summoning in 15 days. Gives +1 to 
+    maximum mana.
+
+    2nd summon lesser earth elemental [slee]: At this level, any lesser 
+    elemental is summoned more quickly. Requires 135 days and $3/day 
+    to reach the level. Only leaders may study this skill. This is a 
+    magic skill. Use targets a unit. Use requires: 1 stone [ston], 8 mana 
+    [mana]. Use produces 1 lesser earth elemental summoning in 5 days. 
+    Gives +2 to maximum mana.
+  
+2nd earth magics [eart]: Advanced Earth mastery. Requires  
+45 days and $3/day to reach the level. Only leaders may  
+study this skill. Gives +2 to maximum mana. 
+  
+  
+FIRE MAGICS  
+  
+1st fire magics [fire]: The element of the Fire relates to  
+battle,  destructive magics and predisposes to magical  
+alteration. Requires 15 days  and $3/day to reach the level.  
+Only leaders may study this skill. Requires  1st magecraft  
+[mage] to learn. Gives +1 to maximum mana. 
+  
+  1st blind [blnd]: The caster may inflict a severe blindness to  
+  a unit. Requires 15 days and $3/day to reach the level. Only  
+  leaders may study this skill. Requires 1st fire magics [fire]  
+  to learn. This is a magic skill. Use targets a unit. Use  
+  requires: 1 herbs [herb], 2 mana [mana]. Use produces 3  
+  days of blindness per day. Gives +1 to maximum mana. 
+  
+    2nd blind [blnd]: At this level, the mage makes blindness  
+    last longer. Requires 45 days and $3/day to reach the level.  
+    Only leaders may study this skill. This is a magic skill. Use  
+    targets a unit. Use requires: 1 herbs [herb], 2 mana [mana].  
+    Use produces 6 days of blindness per day. Gives +2 to  
+    maximum mana. 
+  
+    1st enchant ring of true sight [ersi]: The mage uses his  
+    knowledge of fire to create this ring whose light can only be  
+    seen by its wearer. It shows the shadows around all living  
+    beings. Requires 15 days and $3/day to reach the level.  
+    Only leaders may study this skill. Requires 1st blind [blnd]  
+    to learn. This is a magic skill. Use requires: 1 iron ring  
+    [irng], 8 mana [mana]. Use produces 1 ring of true sight  
+    [rtsi] in 15 days. Gives +1 to maximum mana. 
+  
+  1st fire touch [ftch]: During combat, the caster may inflict  
+  severe fire damage to his foes. Requires 15 days and $3/day  
+  to reach the level. Only leaders may study this skill.  
+  Requires 1st fire magics [fire] to learn. This is a magic skill.  
+  Use requires: 2 mana [mana]. Gives +1 to maximum mana.  
+  This is a combat action. Initiative +3. Target: opposing  
+  unit. Range: melee. Effect: melee attack with modifiers 10  
+  melee, +4 hits, +3 life, fire damage. 
+
+    1st fire form [ffrm]: During combat, the mage mutates itself 
+    into a living man-shaped flame. Living flame is immune to 
+    ranged attacks and all figures striking the flame face a melee 
+    strike in return. The mage suffers one hit per unit of weight 
+    carried and one per item equipped. The mage may also strike 
+    normally. Requires 30 days and $3/day to reach the level. 
+    Only leaders may study this skill. This is a specialist skill, 
+    available in Dunbarton. Requires 1st fire touch [ftch] to learn. 
+    This is a magic skill. Use requires: 5 mana [mana]. Gives +1 to 
+    maximum mana. This is a combat action. Initiative +4. Target: 
+    opposing unit. Range: melee. Effect: melee attack with modifiers 
+    +5 melee, +5 defense, +1 damage, fire damage.
+  
+    1st fire throw [ftrw]: During combat, the caster may rain  
+    fire upon his foes. Requires 15 days and $3/day to reach the  
+    level. Only leaders may study this skill. Requires 1st fire  
+    touch [ftch] to learn. This is a magic skill. Use requires: 2  
+    mana [mana]. Gives +1 to maximum mana. This is a  
+    combat action. Initiative +3. Target: opposing unit.  
+    Range: ranged. Effect: ranged attack with modifiers 10  
+    missile,  +4 hits, +3 life, fire damage. 
+
+      1st fire rain [frai]: During combat, the caster may rain fire 
+      upon his foes. Requires 45 days and $3/day to reach the level. 
+      Only leaders may study this skill. Requires 1st fire throw [ftrw] 
+      to learn. This is a magic skill. Use requires: 2 mana [mana]. 
+      Gives +1 to maximum mana. This is a combat action. Initiative +3. 
+      Target: opposing unit. Range: . Effect: ranged attack with 
+      modifiers 4 missile, +4 hits, +3 life, fire damage.
+
+      2nd fire throw [ftrw]: At this level, the mage may throws 
+      bigger flames upon his enemies. Requires 90 days and $3/day 
+      to reach the level. Only leaders may study this skill. This is 
+      a magic skill. Use requires: 2 mana [mana]. Gives +2 to 
+      maximum mana. This is a combat action. Initiative +3. Target:
+      opposing unit. Range: ranged. Effect: ranged attack with 
+      modifiers 5 missile, +5 hits, 2 damage, +3 life, fire damage.
+
+      1st inflame sword [iswd]: The caster concentrates the flow of 
+      elemental fire on a sword's edge. Requires 15 days and $3/day 
+      to reach the level. Only leaders may study this skill. Requires 
+      1st fire throw [ftrw] to learn. This is a magic skill. Use requires: 
+      1 sword [swrd], 9 mana [mana]. Use produces 1 flaming sword 
+      [fswd] in 15 days. Gives +1 to maximum mana.
+  
+    2nd fire touch [ftch]: At this level, the touch is more painful  
+    than ever. Requires 45 days and $3/day to reach the level.  
+    Only leaders may study this skill. This is a magic skill. Use  
+    requires: 2 mana [mana]. Gives +2 to maximum mana.  
+    This is a combat action. Initiative +3. Target: opposing  
+    unit. Range: melee. Effect: melee attack with modifiers 11  
+    melee, +5 hits, +1 damage, +3 life, fire damage. 
+  
+  1st fire works [fwrk]: The mage may use fireworks to  
+  entertain people, as if he had the 2nd level in entertainment  
+  skill. Requires 15 days and $3/day to reach the level. Only  
+  leaders may study this skill. Requires 1st fire magics [fire]  
+  to learn. This is a magic skill. Use requires: 1 mana  
+  [mana]. Use produces 2 coins [coin] per day. Gives +1 to  
+  maximum mana. 
+
+    1st devastation [deva]: The mage uses calls upon the fire life 
+    energies on a location, draining its life. All life productions 
+    within the location, which may be adjacent, are reduced by 30%. 
+    Requires 30 days and $3/day to reach the level. Only leaders 
+    may study this skill. This is a specialist skill. Requires 1st fire 
+    works [fwrk] to learn. This is a magic skill. Use targets a 
+    location. Use requires: 1 herbs [herb], 15 mana [mana]. Use 
+    produces 1 devastation in 30 days. Gives +1 to maximum mana.
+  
+    1st enchant fire wand [efwd]: The mage uses his  
+    knowledged of pyrotechnics to create a wand shooting fire.  
+    Requires 30 days and $3/day to reach the level. Only leaders  
+    may study this skill. Requires 1st fire works [fwrk] to learn.  
+    This is a magic skill. Use requires: 1 fighting staff [staf], 6  
+    mana [mana]. Use produces 1 wand of fire [wfir] in 8 days.  
+    Gives +1 to maximum mana. 
+  
+    1st fire steed [fstd]: Mastery of the fire's currents allow 
+    the mage to mutate a horse into a fearsome fire-snorting 
+    creature, fast, and deadly. Requires 15 days and $3/day 
+    to reach the level. Only leaders may study this skill. Requires 
+    1st fire works [fwrk] to learn. This is a magic skill. Use 
+    requires: 1 horse [hrse], 9 mana [mana]. Use produces 1 fire
+    steed [fste] in 15 days. Gives +1 to maximum mana.
+
+    2nd fire works [fwrk]: At this level, the mage has the  
+    equivalent of 4th level in entertainment. Requires 45 days  
+    and $3/day to reach the level. Only leaders may study this  
+    skill. This is a magic skill. Use requires: 1 mana [mana].  
+    Use produces 4 coins [coin] per day. Gives +2 to maximum  
+    mana. 
+  
+  1st summon lesser fire elemental [slfe]: The caster tries to  
+  summon a fire elemental from the elemental planes into the  
+  world. The targeted unit must consist of lesser fire  
+  elementals, or be a new unit. Lesser elementals have no  
+  skills, 2 hits, 7 melee, and 7 defense and is riding. It takes  
+  10 days for the elemental to appear. Requires 45 days and  
+  $3/day to reach the level. Only leaders may study this skill.  
+  Requires 1st fire magics [fire] to learn. This is a magic skill.  
+  Use targets a unit. Use requires: 1 iron [iron], 8 mana  
+  [mana]. Gives +1 to maximum mana. 
+  
+    1st summon fire sprite [sfsp]: The caster tries to summon a  
+    fire sprite from the elemental planes into the world. The  
+    targeted unit must consist of fire sprites, or be a new unit.  
+    Fire are man-shaped lesser fire elementals that know all  
+    combat skills at 1st level, but no tactics. It takes 10 days for  
+    the sprite to appear. Requires 45 days and $3/day to reach  
+    the level. Only  leaders may study this skill. Requires 1st  
+    summon lesser fire elemental [slfe] to learn. This is a magic  
+    skill. Use targets a unit. Use requires: 1 iron [iron], 8 mana  
+    [mana]. Gives +1 to maximum mana. 
+   
+  1st transmute iron to silver [itos]: The basics of the  
+  alchemy, enabling the mage to extract purified precious  
+  metal from base iron. Requires 30 days and $3/day to reach  
+  the level. Only leaders may study this skill. Requires 1st  
+  fire magics [fire] to learn. This is a magic skill. Use  
+  requires: 1 iron [iron], 3 mana [mana]. Use produces 1  
+  silver [silv]  in 4 days. Gives +1 to maximum mana. 
+  
+    1st transmute iron to gold [itog]: The aim of the alchemical  
+    arts, or so it's said, enabling the mage to create pure gold out  
+    of mundane iron. Requires 45 days and $3/day to reach the  
+    level. Only leaders may study this skill. Requires 1st   
+    transmute iron to silver [itos] to learn. This is a magic skill.  
+    Use requires: 1 iron [iron], 5 mana [mana]. Use produces 1  
+    gold [gold] in 5 days. Gives +1 to maximum mana. 
+
+    2nd transmute iron to silver [itos]: At this level, making silver 
+    is almost instinctive. Requires 90 days and $3/day to reach 
+    the level. Only leaders may study this skill. This is a magic 
+    skill. Use requires: 1 iron [iron], 2 mana [mana], 1 iron [iron], 
+    3 mana [mana]. Use produces 1 silver [silv] in 3 days. Gives 
+    +2 to maximum mana.
+  
+2nd fire magics [fire]: Advanced Fire mastery. Requires 45  
+days and $3/day to reach the level. Only leaders may study  
+this skill. Gives +2 to maximum mana. 
+  
+  
+
+
+

@@ -1,0 +1,44 @@
+1st magecraft [mage]: The basic magic skill. Knowledge of 1st level allows
+  to study one element. Requires 15 days and $3/day to reach the level. Only
+  leaders may study this skill. This is a basic skill. This is a magic
+  skill. Gives +1 to maximum mana.
+
+2nd magecraft [mage]: Advanced magic abilities. Knowledge of 2nd level
+  allows to study a second element. Requires 45 days and $3/day to reach the
+  level. Only leaders may study this skill. This is a magic skill. Gives +2
+  to maximum mana.
+
+3rd magecraft [mage]: Experienced magics. Knowledge of 3rd level allows to
+  study a third element. Requires 90 days and $3/day to reach the level.
+  Only leaders may study this skill. This is a magic skill. Gives +3 to
+  maximum mana.
+
+1st meditation [medi]: Meditation allows the mage to regain mana faster, and
+  supercharge before major magics. Requires 15 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st magecraft [mage] to
+  learn. This is a magic skill. Use requires: 1 herbs [herb]. Use produces 1
+  mana [mana] per day. Gives +1 to maximum mana.
+
+2nd meditation [medi]: At this level, the mage gains mana faster than
+  ever. Requires 45 days and $3/day to reach the level. Only leaders may
+  study this skill. This is a magic skill. Use requires: 1 herbs [herb]. Use
+  produces 2 mana [mana] per day. Gives +2 to maximum mana.
+
+1st ritual [ritu]: By joining in a ritual, the mage lends its mana to the
+  focus of a major spell. Requires 30 days and $3/day to reach the level.
+  Only leaders may study this skill. Requires 1st meditation [medi] to
+  learn. This is a magic skill. Use targets a unit. Use requires: 1 mana
+  [mana]. Use produces 1 mana [mana] per day. Gives +1 to maximum mana.
+
+2nd ritual [ritu]: At this level, a mage transfers double amount of mana per
+  day. Requires 90 days and $3/day to reach the level. Only leaders may
+  study this skill. This is a magic skill. Use targets a unit. Use requires:
+  2 mana [mana]. Use produces 2 mana [mana] per day. Gives +1 to maximum
+  mana.
+
+1st make mage keys [mkky]: Creates a mage key out of precious metals.
+  Requires 15 days and $3/day to reach the level. Only leaders may study
+  this skill. Requires 2nd magecraft [mage] to learn. This is a magic skill.
+  Use requires: 10 mana [mana], 1 silver [silv]. Use produces 1 mage key
+  [mkey] in 15 days. Gives +1 to maximum mana.
+

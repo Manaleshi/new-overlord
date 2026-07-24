@@ -1,0 +1,1966 @@
+Overlord turn 18 for Ewelin's darlings [wb9g], priserka@atrey.karlin.mff.cuni.cz
+Faction fund: $140 ($100 reward this turn)
+Fate points: 0
+Control points: 45/200
+Orders deadline: Friday, November 20th, 09:00 GMT
+
+Rankings:
+      By faction size: 6th (380/693 figures)
+     By faction skill: 67th (25/369 days)
+  By faction strength: 60th (12/265 strength)
+    By faction magics: 20th (29/94 mana)
+      By faction mage: 7th (23/31 mana)
+    By faction titles: meaningless
+    By faction wealth: 55th (2688/15026$)
+     By faction worth: 12nd (26070/70656$)
+
+Attitude is Neutral
+Allies: The Imperials [npc1], The Mages Order [npc3]
+
+Units:
+
+Unit [64049]'s actions:
+1 - Recruited 1 leader for Unit [64049] at $570 each
+2 - Getting 3 coins [coin] from Bards [13406]
+2 - Unit [64049] enters Imperial school of Higher Magics [L9]
+2 - Unit [64049] stacks under Lady Ewelin [9365]
+2 - Unit studies magecraft [mage]
+3 - Getting 3 coins [coin] from Bards [13406]
+4 - Getting 3 coins [coin] from Bards [13406]
+5 - Getting 3 coins [coin] from Bards [13406]
+6 - Getting 3 coins [coin] from Bards [13406]
+7 - Getting 3 coins [coin] from Bards [13406]
+8 - Getting 3 coins [coin] from Bards [13406]
+9 - Getting 3 coins [coin] from Bards [13406]
+10 - Getting 3 coins [coin] from Bards [13406]
+11 - Getting 3 coins [coin] from Bards [13406]
+12 - Getting 3 coins [coin] from Bards [13406]
+13 - Getting 3 coins [coin] from Bards [13406]
+13 - Unit reached level 1 in magecraft [mage]
+14 - Getting 3 coins [coin] from Bards [13406]
+14 - Unit studies air magics [airs]
+15 - Getting 3 coins [coin] from Bards [13406]
+16 - Getting 3 coins [coin] from Bards [13406]
+17 - Getting 3 coins [coin] from Bards [13406]
+18 - Getting 3 coins [coin] from Bards [13406]
+19 - Getting 3 coins [coin] from Bards [13406]
+20 - Getting 3 coins [coin] from Bards [13406]
+21 - Getting 3 coins [coin] from Bards [13406]
+22 - Getting 3 coins [coin] from Bards [13406]
+23 - Getting 3 coins [coin] from Bards [13406]
+24 - Getting 3 coins [coin] from Bards [13406]
+25 - Getting 3 coins [coin] from Bards [13406]
+25 - Unit reached level 1 in air magics [airs]
+26 - Getting 3 coins [coin] from Bards [13406]
+26 - Unit studies magecraft [mage]
+27 - Getting 3 coins [coin] from Bards [13406]
+28 - Getting 3 coins [coin] from Bards [13406]
+29 - Getting 3 coins [coin] from Bards [13406]
+30 - Getting 3 coins [coin] from Bards [13406]
+30 - Ewelin's salesman [17887] lent $20 for Unit [64049]'s upkeep
+Unit [64049], 1 leader, has: 2 mana. Skills: 1st magecraft [mage] (23), 1st
+  air magics [airs] (15). May learn: summon lesser air elemental [slae],
+  tame beasts [tame], raise morale [rmor], enchant wagon [ewag], speed of
+  the wind [sped], meditation [medi]. Carry: 70/100. Stats: life:3, mana:2.
+  Upkeep: $20. Control: 2. Combat: avoid, rear, left, flee.
+
+Unit [39625]'s actions:
+1 - Recruited 1 leader for Unit [39625] at $566 each
+2 - Getting 3 coins [coin] from Bards [13406]
+2 - Unit [39625] enters Imperial school of Higher Magics [L9]
+2 - Unit [39625] stacks under Lady Ewelin [9365]
+2 - Unit studies magecraft [mage]
+3 - Getting 3 coins [coin] from Bards [13406]
+4 - Getting 3 coins [coin] from Bards [13406]
+5 - Getting 3 coins [coin] from Bards [13406]
+6 - Getting 3 coins [coin] from Bards [13406]
+7 - Getting 3 coins [coin] from Bards [13406]
+8 - Getting 3 coins [coin] from Bards [13406]
+9 - Getting 3 coins [coin] from Bards [13406]
+10 - Getting 3 coins [coin] from Bards [13406]
+11 - Getting 3 coins [coin] from Bards [13406]
+12 - Getting 3 coins [coin] from Bards [13406]
+13 - Getting 3 coins [coin] from Bards [13406]
+13 - Unit reached level 1 in magecraft [mage]
+14 - Getting 3 coins [coin] from Bards [13406]
+14 - Unit studies water magics [wate]
+15 - Getting 3 coins [coin] from Bards [13406]
+16 - Getting 3 coins [coin] from Bards [13406]
+17 - Getting 3 coins [coin] from Bards [13406]
+18 - Getting 3 coins [coin] from Bards [13406]
+19 - Getting 3 coins [coin] from Bards [13406]
+20 - Getting 3 coins [coin] from Bards [13406]
+21 - Getting 3 coins [coin] from Bards [13406]
+22 - Getting 3 coins [coin] from Bards [13406]
+23 - Getting 3 coins [coin] from Bards [13406]
+24 - Getting 3 coins [coin] from Bards [13406]
+24 - Unit reached level 1 in water magics [wate]
+25 - Getting 3 coins [coin] from Bards [13406]
+25 - Unit studies wild growth [wgrw]
+26 - Getting 3 coins [coin] from Bards [13406]
+27 - Getting 3 coins [coin] from Bards [13406]
+28 - Getting 3 coins [coin] from Bards [13406]
+29 - Getting 3 coins [coin] from Bards [13406]
+30 - Getting 3 coins [coin] from Bards [13406]
+30 - Ewelin's salesman [17887] lent $20 for Unit [39625]'s upkeep
+Unit [39625], 1 leader, has: 2 mana. Skills: 1st magecraft [mage] (17), 1st
+  water magics [wate] (16), novice wild growth [wgrw] (6). May learn: summon
+  lesser water elemental [slwe], mix potions of healing [hpot], quagmire
+  [quag], water walking [wwal], meditation [medi]. Carry: 70/100. Stats:
+  life:3, mana:2. Upkeep: $20. Control: 2. Combat: avoid, rear, left, flee.
+
+Unit [30018]'s actions:
+1 - Getting 3 coins [coin] from Bards [13406]
+1 - Unit studies summon lesser void elemental [slve]
+2 - Getting 3 coins [coin] from Bards [13406]
+3 - Getting 3 coins [coin] from Bards [13406]
+4 - Getting 3 coins [coin] from Bards [13406]
+5 - Getting 3 coins [coin] from Bards [13406]
+6 - Getting 3 coins [coin] from Bards [13406]
+7 - Getting 3 coins [coin] from Bards [13406]
+8 - Getting 3 coins [coin] from Bards [13406]
+9 - Getting 3 coins [coin] from Bards [13406]
+10 - Getting 3 coins [coin] from Bards [13406]
+11 - Getting 3 coins [coin] from Bards [13406]
+12 - Getting 3 coins [coin] from Bards [13406]
+13 - Getting 3 coins [coin] from Bards [13406]
+14 - Getting 3 coins [coin] from Bards [13406]
+15 - Getting 3 coins [coin] from Bards [13406]
+16 - Getting 3 coins [coin] from Bards [13406]
+17 - Getting 3 coins [coin] from Bards [13406]
+18 - Getting 3 coins [coin] from Bards [13406]
+19 - Getting 3 coins [coin] from Bards [13406]
+20 - Getting 3 coins [coin] from Bards [13406]
+21 - Getting 3 coins [coin] from Bards [13406]
+22 - Getting 3 coins [coin] from Bards [13406]
+23 - Getting 3 coins [coin] from Bards [13406]
+24 - Getting 3 coins [coin] from Bards [13406]
+25 - Getting 3 coins [coin] from Bards [13406]
+26 - Getting 3 coins [coin] from Bards [13406]
+27 - Getting 3 coins [coin] from Bards [13406]
+28 - Getting 3 coins [coin] from Bards [13406]
+29 - Getting 3 coins [coin] from Bards [13406]
+30 - Getting 3 coins [coin] from Bards [13406]
+30 - Ewelin's salesman [17887] lent $20 for Unit [30018]'s upkeep
+Unit [30018], 1 leader, has: 2 mana. Skills: 1st magecraft [mage] (20), 1st
+  void magics [void] (19), novice read auras [raur] (5), novice summon
+  lesser void elemental [slve] (30). May learn: drain life [drlf], inspire
+  dread [idre], far eye [feye], meditation [medi]. Carry: 70/100. Stats:
+  life:3, mana:2. Upkeep: $20. Control: 2. Combat: avoid, rear, left, flee.
+
+Miras Gate ambasador [57940]'s actions:
+1 - Miras Gate ambasador [57940] unstacks to move
+1 - Miras Gate ambasador [57940] departs to Datmus valley [L2]
+1 - Miras Gate ambasador [57940] arrived from Imperial City [L1]
+2 - Miras Gate ambasador [57940] departs to Helicona [L5]
+2 - Movement will take 9 days
+10 - Miras Gate ambasador [57940] arrived from Datmus valley [L2]
+11 - Miras Gate ambasador [57940] departs to Bone ridge [L314]
+11 - Movement will take 12 days
+22 - Miras Gate ambasador [57940] arrived from Helicona [L5]
+23 - Miras Gate ambasador [57940] departs to Miras road [L215]
+23 - Movement will take 10 days
+30 - Using $10 funds for upkeep
+Miras Gate ambasador [57940], 1 follower, moving in from Bone ridge [L314]
+  (8 days/10). Skills: 1st scouting [scou] (15). May learn: stealth [stea],
+  ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk [fowk],
+  hillswalk [hiwk], plainswalk [plwk]. Carry: 70/90. Stats: life:3. Upkeep:
+  $10. Control: 1. Combat: avoid, rear, left, flee.
+
+Autnos operative unit [29491]'s actions:
+1 - Handed 58 coins [coin] to Unit [47810]
+1 - Recruited 4 followers for Autnos operative unit [29491] at $53 each
+30 - Earns $267
+30 - Autnos operative unit [29491] lent $45 for Unit [85266]'s upkeep
+Autnos operative unit [29491], 15 followers, has: 72 coins [coin]. Carry:
+  1050/1350. Stats: life:3. Upkeep: $150. Control: 1. Combat: avoid, rear,
+  left, flee.
+
+Unit [47810]'s actions:
+1 - Getting 58 coins [coin] from Autnos operative unit [29491]
+1 - Unit studies parry [parr]
+1 - Recruited 4 followers for Autnos operative unit [29491] at $53 each
+2 - Getting 7 coins [coin] from Unit [85266]
+3 - Getting 7 coins [coin] from Unit [85266]
+4 - Getting 7 coins [coin] from Unit [85266]
+5 - Getting 7 coins [coin] from Unit [85266]
+6 - Getting 7 coins [coin] from Unit [85266]
+7 - Getting 7 coins [coin] from Unit [85266]
+8 - Getting 7 coins [coin] from Unit [85266]
+9 - Getting 7 coins [coin] from Unit [85266]
+10 - Getting 7 coins [coin] from Unit [85266]
+11 - Getting 7 coins [coin] from Unit [85266]
+12 - Getting 7 coins [coin] from Unit [85266]
+13 - Getting 7 coins [coin] from Unit [85266]
+14 - Getting 7 coins [coin] from Unit [85266]
+15 - Getting 7 coins [coin] from Unit [85266]
+15 - Unit reached level 1 in parry [parr]
+16 - Getting 7 coins [coin] from Unit [85266]
+16 - Unit studies blades [blde]
+17 - Getting 7 coins [coin] from Unit [85266]
+18 - Getting 7 coins [coin] from Unit [85266]
+19 - Getting 7 coins [coin] from Unit [85266]
+20 - Getting 7 coins [coin] from Unit [85266]
+21 - Getting 7 coins [coin] from Unit [85266]
+22 - Getting 7 coins [coin] from Unit [85266]
+23 - Getting 7 coins [coin] from Unit [85266]
+24 - Getting 7 coins [coin] from Unit [85266]
+25 - Getting 7 coins [coin] from Unit [85266]
+26 - Getting 7 coins [coin] from Unit [85266]
+27 - Getting 7 coins [coin] from Unit [85266]
+28 - Getting 7 coins [coin] from Unit [85266]
+29 - Getting 7 coins [coin] from Unit [85266]
+30 - Getting 7 coins [coin] from Unit [85266]
+30 - Unit reached level 1 in blades [blde]
+Unit [47810], 1 leader, has: 154 coins [coin]. Skills: 1st relationships
+  [rela] (19), 2nd marketing [mktg] (45), 1st combat [cmbt] (24), 2nd taxing
+  [taxe] (45), 1st scouting [scou] (15), 1st melee [mele] (15), 1st parry
+  [parr] (15), 1st blades [blde] (15). May learn: tactics [tact], stealth
+  [stea], ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk
+  [fowk], hillswalk [hiwk], plainswalk [plwk], observation [obse], mint
+  [mint], entertainment [ente], archery [arch], maneuvers [mane]. Carry:
+  1610(70)/2080(100). Stats: att:3, def:3, life:3. Upkeep: $20. Control: 1.
+  Combat: avoid, rear, left, flee.
+
+Unit [85266]'s actions:
+1 - 7 coins produced
+2 - Handed 7 coins [coin] to Unit [47810]
+2 - 7 coins produced
+3 - Handed 7 coins [coin] to Unit [47810]
+3 - 7 coins produced
+4 - Handed 7 coins [coin] to Unit [47810]
+4 - 7 coins produced
+5 - Handed 7 coins [coin] to Unit [47810]
+5 - 7 coins produced
+6 - Handed 7 coins [coin] to Unit [47810]
+6 - 7 coins produced
+7 - Handed 7 coins [coin] to Unit [47810]
+7 - 7 coins produced
+8 - Handed 7 coins [coin] to Unit [47810]
+8 - 7 coins produced
+9 - Handed 7 coins [coin] to Unit [47810]
+9 - 7 coins produced
+10 - Handed 7 coins [coin] to Unit [47810]
+10 - 7 coins produced
+11 - Handed 7 coins [coin] to Unit [47810]
+11 - 7 coins produced
+12 - Handed 7 coins [coin] to Unit [47810]
+12 - 7 coins produced
+13 - Handed 7 coins [coin] to Unit [47810]
+13 - 7 coins produced
+14 - Handed 7 coins [coin] to Unit [47810]
+14 - 7 coins produced
+15 - Handed 7 coins [coin] to Unit [47810]
+15 - 7 coins produced
+16 - Handed 7 coins [coin] to Unit [47810]
+16 - 7 coins produced
+17 - Handed 7 coins [coin] to Unit [47810]
+17 - 7 coins produced
+18 - Handed 7 coins [coin] to Unit [47810]
+18 - 7 coins produced
+19 - Handed 7 coins [coin] to Unit [47810]
+19 - 7 coins produced
+20 - Handed 7 coins [coin] to Unit [47810]
+20 - 7 coins produced
+21 - Handed 7 coins [coin] to Unit [47810]
+21 - 7 coins produced
+22 - Handed 7 coins [coin] to Unit [47810]
+22 - 7 coins produced
+23 - Handed 7 coins [coin] to Unit [47810]
+23 - 7 coins produced
+24 - Handed 7 coins [coin] to Unit [47810]
+24 - 7 coins produced
+25 - Handed 7 coins [coin] to Unit [47810]
+25 - 7 coins produced
+26 - Handed 7 coins [coin] to Unit [47810]
+26 - 7 coins produced
+27 - Handed 7 coins [coin] to Unit [47810]
+27 - 7 coins produced
+28 - Handed 7 coins [coin] to Unit [47810]
+28 - 7 coins produced
+29 - Handed 7 coins [coin] to Unit [47810]
+29 - 7 coins produced
+30 - Handed 7 coins [coin] to Unit [47810]
+30 - 7 coins produced
+30 - Earns $18
+30 - Autnos operative unit [29491] lent $45 for Unit [85266]'s upkeep
+Unit [85266], 7 followers. Skills: 1st relationships [rela] (34), 2nd
+  entertainment [ente] (50). May learn: observation [obse]. Carry: 490/630.
+  Stats: life:3. Upkeep: $70. Control: 1. Combat: avoid, rear, left, flee.
+
+Ewelin's salesman [17887]'s actions:
+1 - Getting 1162 coins [coin] from Workers [45306]
+1 - Getting 192 coins [coin] from Bards [13406]
+1 - Giving 1 horse [hrse] to Countess Andrea [69015]
+1 - Miras Gate ambasador [57940] unstacks to move
+1 - 1 coin produced
+1 - Recruited 1 follower for Workers [45306] at $70 each
+1 - Recruited 1 leader for Unit [39625] at $566 each
+1 - Recruited 1 leader for Unit [64049] at $570 each
+2 - 1 coin produced
+2 - Recruited 1 follower for Workers [45306] at $70 each
+3 - Needed $346 to complete purchase
+3 - Bought 0 plate mail for $0
+3 - Needed $400 to complete purchase
+3 - 1 coin produced
+4 - 1 coin produced
+5 - 1 coin produced
+6 - Needed $346 to complete purchase
+6 - Bought 0 plate mail for $0
+6 - Needed $400 to complete purchase
+6 - 1 coin produced
+7 - 1 coin produced
+8 - 1 coin produced
+9 - Needed $346 to complete purchase
+9 - Bought 0 plate mail for $0
+9 - Needed $400 to complete purchase
+9 - 1 coin produced
+10 - 1 coin produced
+11 - 1 coin produced
+12 - Needed $346 to complete purchase
+12 - Bought 0 plate mail for $0
+12 - Needed $400 to complete purchase
+12 - 1 coin produced
+13 - 1 coin produced
+14 - 1 coin produced
+15 - Needed $346 to complete purchase
+15 - Bought 0 plate mail for $0
+15 - Needed $400 to complete purchase
+15 - 1 coin produced
+16 - 1 coin produced
+17 - 1 coin produced
+18 - Needed $346 to complete purchase
+18 - Bought 0 plate mail for $0
+18 - Needed $400 to complete purchase
+18 - 1 coin produced
+19 - 1 coin produced
+20 - 1 coin produced
+21 - Needed $346 to complete purchase
+21 - Bought 0 plate mail for $0
+21 - Needed $400 to complete purchase
+21 - 1 coin produced
+22 - 1 coin produced
+23 - 1 coin produced
+24 - Needed $346 to complete purchase
+24 - Bought 0 plate mail for $0
+24 - Needed $400 to complete purchase
+24 - 1 coin produced
+25 - 1 coin produced
+26 - 1 coin produced
+27 - Needed $346 to complete purchase
+27 - Bought 0 plate mail for $0
+27 - Needed $400 to complete purchase
+27 - 1 coin produced
+28 - 1 coin produced
+29 - 1 coin produced
+30 - Needed $346 to complete purchase
+30 - Bought 0 plate mail for $0
+30 - Needed $400 to complete purchase
+30 - 1 coin produced
+30 - Ewelin's salesman [17887] lent $20 for Unit [39625]'s upkeep
+30 - Ewelin's salesman [17887] lent $20 for Unit [64049]'s upkeep
+30 - Ewelin's salesman [17887] lent $20 for Unit [30018]'s upkeep
+30 - Ewelin's salesman [17887] lent $20 for Gatherer of Knowledge [33099]'s
+     upkeep
+30 - Ewelin's salesman [17887] lent $8 for Map Mistress [22820]'s upkeep
+Ewelin's salesman [17887], 1 leader. Skills: 2nd relationships [rela] (78),
+  2nd marketing [mktg] (59), 2nd observation [obse] (90), 2nd entertainment
+  [ente] (50), 2nd mint [mint] (135). Carry: 22820(70)/29350(100). Stats:
+  life:3, obs:2. Upkeep: $20. Control: 1. Combat: avoid, rear, left, flee.
+
+Bards [13406]'s actions:
+1 - Handed 3 coins [coin] to Unit [30018]
+1 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+1 - Handed 2 coins [coin] to Map Mistress [22820]
+1 - Handed 3 coins [coin] to Lady Ewelin [9365]
+1 - Handed 1 coin [coin] to Countess Andrea [69015]
+1 - Handed 192 coins [coin] to Ewelin's salesman [17887]
+1 - 29 coins produced
+2 - Handed 3 coins [coin] to Unit [30018]
+2 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+2 - Handed 2 coins [coin] to Map Mistress [22820]
+2 - Handed 3 coins [coin] to Lady Ewelin [9365]
+2 - Handed 1 coin [coin] to Countess Andrea [69015]
+2 - Handed 3 coins [coin] to Unit [39625]
+2 - Handed 3 coins [coin] to Unit [64049]
+2 - 32 coins produced
+3 - Handed 3 coins [coin] to Unit [30018]
+3 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+3 - Handed 2 coins [coin] to Map Mistress [22820]
+3 - Handed 3 coins [coin] to Lady Ewelin [9365]
+3 - Handed 1 coin [coin] to Countess Andrea [69015]
+3 - Handed 3 coins [coin] to Unit [39625]
+3 - Handed 3 coins [coin] to Unit [64049]
+3 - 27 coins produced
+4 - Handed 3 coins [coin] to Unit [30018]
+4 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+4 - Handed 2 coins [coin] to Map Mistress [22820]
+4 - Handed 3 coins [coin] to Lady Ewelin [9365]
+4 - Handed 1 coin [coin] to Countess Andrea [69015]
+4 - Handed 3 coins [coin] to Unit [39625]
+4 - Handed 3 coins [coin] to Unit [64049]
+4 - 27 coins produced
+5 - Handed 3 coins [coin] to Unit [30018]
+5 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+5 - Handed 2 coins [coin] to Map Mistress [22820]
+5 - Handed 3 coins [coin] to Lady Ewelin [9365]
+5 - Handed 1 coin [coin] to Countess Andrea [69015]
+5 - Handed 3 coins [coin] to Unit [39625]
+5 - Handed 3 coins [coin] to Unit [64049]
+5 - 27 coins produced
+6 - Handed 3 coins [coin] to Unit [30018]
+6 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+6 - Handed 2 coins [coin] to Map Mistress [22820]
+6 - Handed 3 coins [coin] to Lady Ewelin [9365]
+6 - Handed 1 coin [coin] to Countess Andrea [69015]
+6 - Handed 3 coins [coin] to Unit [39625]
+6 - Handed 3 coins [coin] to Unit [64049]
+6 - 27 coins produced
+7 - Handed 3 coins [coin] to Unit [30018]
+7 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+7 - Handed 2 coins [coin] to Map Mistress [22820]
+7 - Handed 3 coins [coin] to Lady Ewelin [9365]
+7 - Handed 1 coin [coin] to Countess Andrea [69015]
+7 - Handed 3 coins [coin] to Unit [39625]
+7 - Handed 3 coins [coin] to Unit [64049]
+7 - 27 coins produced
+8 - Handed 3 coins [coin] to Unit [30018]
+8 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+8 - Handed 2 coins [coin] to Map Mistress [22820]
+8 - Handed 3 coins [coin] to Lady Ewelin [9365]
+8 - Handed 1 coin [coin] to Countess Andrea [69015]
+8 - Handed 3 coins [coin] to Unit [39625]
+8 - Handed 3 coins [coin] to Unit [64049]
+8 - 27 coins produced
+9 - Handed 3 coins [coin] to Unit [30018]
+9 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+9 - Handed 2 coins [coin] to Map Mistress [22820]
+9 - Handed 3 coins [coin] to Lady Ewelin [9365]
+9 - Handed 1 coin [coin] to Countess Andrea [69015]
+9 - Handed 3 coins [coin] to Unit [39625]
+9 - Handed 3 coins [coin] to Unit [64049]
+9 - 27 coins produced
+10 - Handed 3 coins [coin] to Unit [30018]
+10 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+10 - Handed 2 coins [coin] to Map Mistress [22820]
+10 - Handed 3 coins [coin] to Lady Ewelin [9365]
+10 - Handed 1 coin [coin] to Countess Andrea [69015]
+10 - Handed 3 coins [coin] to Unit [39625]
+10 - Handed 3 coins [coin] to Unit [64049]
+10 - 27 coins produced
+11 - Handed 3 coins [coin] to Unit [30018]
+11 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+11 - Handed 2 coins [coin] to Map Mistress [22820]
+11 - Handed 3 coins [coin] to Lady Ewelin [9365]
+11 - Handed 1 coin [coin] to Countess Andrea [69015]
+11 - Handed 3 coins [coin] to Unit [39625]
+11 - Handed 3 coins [coin] to Unit [64049]
+11 - 27 coins produced
+12 - Handed 3 coins [coin] to Unit [30018]
+12 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+12 - Handed 2 coins [coin] to Map Mistress [22820]
+12 - Handed 3 coins [coin] to Lady Ewelin [9365]
+12 - Handed 1 coin [coin] to Countess Andrea [69015]
+12 - Handed 3 coins [coin] to Unit [39625]
+12 - Handed 3 coins [coin] to Unit [64049]
+12 - 27 coins produced
+13 - Handed 3 coins [coin] to Unit [30018]
+13 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+13 - Handed 2 coins [coin] to Map Mistress [22820]
+13 - Handed 3 coins [coin] to Lady Ewelin [9365]
+13 - Handed 1 coin [coin] to Countess Andrea [69015]
+13 - Handed 3 coins [coin] to Unit [39625]
+13 - Handed 3 coins [coin] to Unit [64049]
+13 - 27 coins produced
+14 - Handed 3 coins [coin] to Unit [30018]
+14 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+14 - Handed 2 coins [coin] to Map Mistress [22820]
+14 - Handed 3 coins [coin] to Lady Ewelin [9365]
+14 - Handed 1 coin [coin] to Countess Andrea [69015]
+14 - Handed 3 coins [coin] to Unit [39625]
+14 - Handed 3 coins [coin] to Unit [64049]
+14 - 27 coins produced
+15 - Handed 3 coins [coin] to Unit [30018]
+15 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+15 - Handed 2 coins [coin] to Map Mistress [22820]
+15 - Handed 3 coins [coin] to Lady Ewelin [9365]
+15 - Handed 1 coin [coin] to Countess Andrea [69015]
+15 - Handed 3 coins [coin] to Unit [39625]
+15 - Handed 3 coins [coin] to Unit [64049]
+15 - 27 coins produced
+16 - Handed 3 coins [coin] to Unit [30018]
+16 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+16 - Handed 2 coins [coin] to Map Mistress [22820]
+16 - Handed 3 coins [coin] to Lady Ewelin [9365]
+16 - Handed 1 coin [coin] to Countess Andrea [69015]
+16 - Handed 3 coins [coin] to Unit [39625]
+16 - Handed 3 coins [coin] to Unit [64049]
+16 - 27 coins produced
+17 - Handed 3 coins [coin] to Unit [30018]
+17 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+17 - Handed 2 coins [coin] to Map Mistress [22820]
+17 - Handed 3 coins [coin] to Lady Ewelin [9365]
+17 - Handed 1 coin [coin] to Countess Andrea [69015]
+17 - Handed 3 coins [coin] to Unit [39625]
+17 - Handed 3 coins [coin] to Unit [64049]
+17 - 27 coins produced
+18 - Handed 3 coins [coin] to Unit [30018]
+18 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+18 - Handed 2 coins [coin] to Map Mistress [22820]
+18 - Handed 3 coins [coin] to Lady Ewelin [9365]
+18 - Handed 1 coin [coin] to Countess Andrea [69015]
+18 - Handed 3 coins [coin] to Unit [39625]
+18 - Handed 3 coins [coin] to Unit [64049]
+18 - 27 coins produced
+19 - Handed 3 coins [coin] to Unit [30018]
+19 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+19 - Handed 2 coins [coin] to Map Mistress [22820]
+19 - Handed 3 coins [coin] to Lady Ewelin [9365]
+19 - Handed 1 coin [coin] to Countess Andrea [69015]
+19 - Handed 3 coins [coin] to Unit [39625]
+19 - Handed 3 coins [coin] to Unit [64049]
+19 - 27 coins produced
+20 - Handed 3 coins [coin] to Unit [30018]
+20 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+20 - Handed 2 coins [coin] to Map Mistress [22820]
+20 - Handed 3 coins [coin] to Lady Ewelin [9365]
+20 - Handed 1 coin [coin] to Countess Andrea [69015]
+20 - Handed 3 coins [coin] to Unit [39625]
+20 - Handed 3 coins [coin] to Unit [64049]
+20 - 27 coins produced
+21 - Handed 3 coins [coin] to Unit [30018]
+21 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+21 - Handed 2 coins [coin] to Map Mistress [22820]
+21 - Handed 3 coins [coin] to Lady Ewelin [9365]
+21 - Handed 1 coin [coin] to Countess Andrea [69015]
+21 - Handed 3 coins [coin] to Unit [39625]
+21 - Handed 3 coins [coin] to Unit [64049]
+21 - 27 coins produced
+22 - Handed 3 coins [coin] to Unit [30018]
+22 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+22 - Handed 2 coins [coin] to Map Mistress [22820]
+22 - Handed 3 coins [coin] to Lady Ewelin [9365]
+22 - Handed 1 coin [coin] to Countess Andrea [69015]
+22 - Handed 3 coins [coin] to Unit [39625]
+22 - Handed 3 coins [coin] to Unit [64049]
+22 - 27 coins produced
+23 - Handed 3 coins [coin] to Unit [30018]
+23 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+23 - Handed 2 coins [coin] to Map Mistress [22820]
+23 - Handed 3 coins [coin] to Lady Ewelin [9365]
+23 - Handed 1 coin [coin] to Countess Andrea [69015]
+23 - Handed 3 coins [coin] to Unit [39625]
+23 - Handed 3 coins [coin] to Unit [64049]
+23 - 27 coins produced
+24 - Handed 3 coins [coin] to Unit [30018]
+24 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+24 - Handed 2 coins [coin] to Map Mistress [22820]
+24 - Handed 3 coins [coin] to Lady Ewelin [9365]
+24 - Handed 1 coin [coin] to Countess Andrea [69015]
+24 - Handed 3 coins [coin] to Unit [39625]
+24 - Handed 3 coins [coin] to Unit [64049]
+24 - 27 coins produced
+25 - Handed 3 coins [coin] to Unit [30018]
+25 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+25 - Handed 2 coins [coin] to Map Mistress [22820]
+25 - Handed 3 coins [coin] to Lady Ewelin [9365]
+25 - Handed 1 coin [coin] to Countess Andrea [69015]
+25 - Handed 3 coins [coin] to Unit [39625]
+25 - Handed 3 coins [coin] to Unit [64049]
+25 - 27 coins produced
+26 - Handed 3 coins [coin] to Unit [30018]
+26 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+26 - Handed 2 coins [coin] to Map Mistress [22820]
+26 - Handed 3 coins [coin] to Lady Ewelin [9365]
+26 - Handed 1 coin [coin] to Countess Andrea [69015]
+26 - Handed 3 coins [coin] to Unit [39625]
+26 - Handed 3 coins [coin] to Unit [64049]
+26 - 27 coins produced
+27 - Handed 3 coins [coin] to Unit [30018]
+27 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+27 - Handed 2 coins [coin] to Map Mistress [22820]
+27 - Handed 3 coins [coin] to Lady Ewelin [9365]
+27 - Handed 1 coin [coin] to Countess Andrea [69015]
+27 - Handed 3 coins [coin] to Unit [39625]
+27 - Handed 3 coins [coin] to Unit [64049]
+27 - 27 coins produced
+28 - Handed 3 coins [coin] to Unit [30018]
+28 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+28 - Handed 2 coins [coin] to Map Mistress [22820]
+28 - Handed 3 coins [coin] to Lady Ewelin [9365]
+28 - Handed 1 coin [coin] to Countess Andrea [69015]
+28 - Handed 3 coins [coin] to Unit [39625]
+28 - Handed 3 coins [coin] to Unit [64049]
+28 - 27 coins produced
+29 - Handed 3 coins [coin] to Unit [30018]
+29 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+29 - Handed 2 coins [coin] to Map Mistress [22820]
+29 - Handed 3 coins [coin] to Lady Ewelin [9365]
+29 - Handed 1 coin [coin] to Countess Andrea [69015]
+29 - Handed 3 coins [coin] to Unit [39625]
+29 - Handed 3 coins [coin] to Unit [64049]
+29 - 27 coins produced
+30 - Handed 3 coins [coin] to Unit [30018]
+30 - Handed 2 coins [coin] to Gatherer of Knowledge [33099]
+30 - Handed 2 coins [coin] to Map Mistress [22820]
+30 - Handed 3 coins [coin] to Lady Ewelin [9365]
+30 - Handed 1 coin [coin] to Countess Andrea [69015]
+30 - Handed 3 coins [coin] to Unit [39625]
+30 - Handed 3 coins [coin] to Unit [64049]
+30 - 27 coins produced
+30 - Earns $111
+30 - Bards [13406] lent $12 for Map Mistress [22820]'s upkeep
+Bards [13406], 30 followers, has: 123 coins [coin]. Skills: 1st
+  relationships [rela] (37), 2nd entertainment [ente] (73). May learn:
+  observation [obse]. Carry: 2100/2700. Stats: life:3. Upkeep: $300.
+  Control: 2. Combat: avoid, rear, left, flee.
+
+Workers [45306]'s actions:
+1 - Handed 1162 coins [coin] to Ewelin's salesman [17887]
+1 - Recruited 1 follower for Workers [45306] at $70 each
+2 - Recruited 1 follower for Workers [45306] at $70 each
+30 - Earns $4128
+Workers [45306], 295 followers, has: 1178 coins [coin]. Carry: 20650/26550.
+  Stats: life:3. Upkeep: $2950. Control: 15. Combat: avoid, rear, left,
+  flee.
+
+Gatherer of Knowledge [33099]'s actions:
+1 - Getting 2 coins [coin] from Bards [13406]
+1 - Gatherer of Knowledge studies pick pockets [ppoc]
+2 - Getting 2 coins [coin] from Bards [13406]
+3 - Getting 2 coins [coin] from Bards [13406]
+4 - Getting 2 coins [coin] from Bards [13406]
+5 - Getting 2 coins [coin] from Bards [13406]
+6 - Getting 2 coins [coin] from Bards [13406]
+7 - Getting 2 coins [coin] from Bards [13406]
+8 - Getting 2 coins [coin] from Bards [13406]
+9 - Getting 2 coins [coin] from Bards [13406]
+10 - Getting 2 coins [coin] from Bards [13406]
+11 - Getting 2 coins [coin] from Bards [13406]
+12 - Getting 2 coins [coin] from Bards [13406]
+13 - Getting 2 coins [coin] from Bards [13406]
+14 - Getting 2 coins [coin] from Bards [13406]
+15 - Getting 2 coins [coin] from Bards [13406]
+16 - Getting 2 coins [coin] from Bards [13406]
+17 - Getting 2 coins [coin] from Bards [13406]
+18 - Getting 2 coins [coin] from Bards [13406]
+19 - Getting 2 coins [coin] from Bards [13406]
+20 - Getting 2 coins [coin] from Bards [13406]
+21 - Getting 2 coins [coin] from Bards [13406]
+22 - Getting 2 coins [coin] from Bards [13406]
+22 - Gatherer of Knowledge reached level 1 in pick pockets [ppoc]
+23 - Getting 2 coins [coin] from Bards [13406]
+23 - Gatherer of Knowledge studies stealth [stea]
+24 - Getting 2 coins [coin] from Bards [13406]
+25 - Getting 2 coins [coin] from Bards [13406]
+26 - Getting 2 coins [coin] from Bards [13406]
+27 - Getting 2 coins [coin] from Bards [13406]
+28 - Getting 2 coins [coin] from Bards [13406]
+29 - Getting 2 coins [coin] from Bards [13406]
+30 - Getting 2 coins [coin] from Bards [13406]
+30 - Ewelin's salesman [17887] lent $20 for Gatherer of Knowledge [33099]'s
+     upkeep
+Gatherer of Knowledge [33099], 1 leader. Skills: 1st combat [cmbt] (16), 1st
+  taxing [taxe] (15), 1st scouting [scou] (34), 2nd plainswalk [plwk] (45),
+  2nd stealth [stea] (105), 1st beast mastery [beas] (15), 1st forestry
+  [fore] (16), 1st digging [digg] (16), 1st weaponsmith [weap] (15), 1st
+  building [buil] (21), 1st artisan [arti] (19), 1st armory [armo] (15), 1st
+  toolcraft [tolc] (16), 1st herbalist [herb] (15), 1st masonry [maso] (15),
+  1st carpentry [carp] (15), 1st shipcraft [ship] (15), 1st siegecraft
+  [sieg] (15), 1st wheelcraft [whee] (15), 1st make miner tools [mmtl] (15),
+  1st iron mining [mini] (15), 1st pick pockets [ppoc] (60). May learn:
+  shieldsmith [shsm], helmsman [helm], leathers [leat], bowyer [bowy],
+  staffsmith [stsm], hammersmith [hmsm], axesmith [axsm], bladesmith [blsm],
+  assemble ships [ashp], cover [cove], build anvils [banv], rig saw [rsaw],
+  forge hammers [fham], beat plows [bplw], pack training [pack], horse
+  breaking [hors], hunting [hunt], silver mining [smin], tactics [tact],
+  cheat merchant [chea], lift coins [lcoi], steal from market [smar], ambush
+  [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk [fowk], hillswalk
+  [hiwk], parry [parr], archery [arch], melee [mele], blades [blde],
+  lumberjack [lumb], maneuvers [mane]. Carry: 70/100, /20 riding. Stats:
+  ini:-1, att:1, def:1, life:3, ste:3. Upkeep: $20. Control: 1. Combat:
+  avoid, rear, left, flee.
+
+Map Mistress [22820]'s actions:
+1 - Getting 2 coins [coin] from Bards [13406]
+1 - Map Mistress studies assasinate [assa]
+2 - Getting 2 coins [coin] from Bards [13406]
+3 - Getting 2 coins [coin] from Bards [13406]
+4 - Getting 2 coins [coin] from Bards [13406]
+5 - Getting 2 coins [coin] from Bards [13406]
+6 - Getting 2 coins [coin] from Bards [13406]
+7 - Getting 2 coins [coin] from Bards [13406]
+8 - Getting 2 coins [coin] from Bards [13406]
+9 - Getting 2 coins [coin] from Bards [13406]
+10 - Getting 2 coins [coin] from Bards [13406]
+11 - Getting 2 coins [coin] from Bards [13406]
+12 - Getting 2 coins [coin] from Bards [13406]
+13 - Getting 2 coins [coin] from Bards [13406]
+14 - Getting 2 coins [coin] from Bards [13406]
+14 - Map Mistress reached level 1 in assasinate [assa]
+15 - Getting 2 coins [coin] from Bards [13406]
+15 - Map Mistress studies steal from market [smar]
+16 - Getting 2 coins [coin] from Bards [13406]
+17 - Getting 2 coins [coin] from Bards [13406]
+18 - Getting 2 coins [coin] from Bards [13406]
+19 - Getting 2 coins [coin] from Bards [13406]
+20 - Getting 2 coins [coin] from Bards [13406]
+21 - Getting 2 coins [coin] from Bards [13406]
+22 - Getting 2 coins [coin] from Bards [13406]
+23 - Getting 2 coins [coin] from Bards [13406]
+24 - Getting 2 coins [coin] from Bards [13406]
+25 - Getting 2 coins [coin] from Bards [13406]
+26 - Getting 2 coins [coin] from Bards [13406]
+27 - Getting 2 coins [coin] from Bards [13406]
+28 - Getting 2 coins [coin] from Bards [13406]
+28 - Map Mistress reached level 1 in steal from market [smar]
+29 - Getting 2 coins [coin] from Bards [13406]
+29 - Map Mistress studies stealth [stea]
+30 - Getting 2 coins [coin] from Bards [13406]
+30 - Map Mistress reached level 3 in scouting [scou]
+30 - Ewelin's salesman [17887] lent $8 for Map Mistress [22820]'s upkeep
+30 - Bards [13406] lent $12 for Map Mistress [22820]'s upkeep
+Map Mistress [22820], 1 hero. Skills: 3rd scouting [scou] (90), 1st combat
+  [cmbt] (15), 2nd plainswalk [plwk] (45), 3rd stealth [stea] (224), 1st
+  ambush [ambu] (45), 1st pick pockets [ppoc] (76), 1st cheat merchant
+  [chea] (15), 1st steal from market [smar] (45), 1st assasinate [assa]
+  (45). May learn: taxing [taxe], tactics [tact], icewalk [icwk], lift coins
+  [lcoi], swampwalk [swwk], desertwalk [dewk], forestwalk [fowk], hillswalk
+  [hiwk], parry [parr], archery [arch], melee [mele], blades [blde],
+  maneuvers [mane]. Carry: 140(70)/200(100), /60(40) riding. Stats: ini:1,
+  att:1, def:1, life:4, ste:3(5), obs:1. Upkeep: $20. Control: 2. Combat:
+  avoid, rear, left, flee.
+
+Lady Ewelin [9365]'s actions:
+1 - Getting 3 coins [coin] from Bards [13406]
+1 - Macek [67859] tried to stack beneath you!
+1 - Lady Ewelin studies meeting of minds [mmnd]
+2 - Getting 3 coins [coin] from Bards [13406]
+2 - Unit [39625] stacks under Lady Ewelin [9365]
+2 - Unit [64049] stacks under Lady Ewelin [9365]
+3 - Getting 3 coins [coin] from Bards [13406]
+3 - Lady Ewelin reached level 1 in meeting of minds [mmnd]
+4 - Getting 3 coins [coin] from Bards [13406]
+4 - Lady Ewelin studies consecrate magical tower [ctow]
+5 - Getting 3 coins [coin] from Bards [13406]
+6 - Getting 3 coins [coin] from Bards [13406]
+7 - Getting 3 coins [coin] from Bards [13406]
+8 - Getting 3 coins [coin] from Bards [13406]
+9 - Getting 3 coins [coin] from Bards [13406]
+10 - Getting 3 coins [coin] from Bards [13406]
+11 - Getting 3 coins [coin] from Bards [13406]
+12 - Getting 3 coins [coin] from Bards [13406]
+13 - Getting 3 coins [coin] from Bards [13406]
+14 - Getting 3 coins [coin] from Bards [13406]
+15 - Getting 3 coins [coin] from Bards [13406]
+16 - Getting 3 coins [coin] from Bards [13406]
+17 - Getting 3 coins [coin] from Bards [13406]
+17 - Lady Ewelin reached level 1 in consecrate magical tower [ctow]
+18 - Getting 3 coins [coin] from Bards [13406]
+18 - Lady Ewelin studies air magics [airs]
+19 - Getting 3 coins [coin] from Bards [13406]
+20 - Getting 3 coins [coin] from Bards [13406]
+21 - Getting 3 coins [coin] from Bards [13406]
+22 - Getting 3 coins [coin] from Bards [13406]
+23 - Getting 3 coins [coin] from Bards [13406]
+24 - Getting 3 coins [coin] from Bards [13406]
+25 - Getting 3 coins [coin] from Bards [13406]
+26 - Getting 3 coins [coin] from Bards [13406]
+27 - Getting 3 coins [coin] from Bards [13406]
+27 - Lady Ewelin reached level 1 in air magics [airs]
+28 - Getting 3 coins [coin] from Bards [13406]
+28 - Lady Ewelin studies enchant stone [esto]
+29 - Getting 3 coins [coin] from Bards [13406]
+30 - Getting 3 coins [coin] from Bards [13406]
+Lady Ewelin [9365], 1 hero, targetting Masheen Holth [12], has: 1 horse
+  [hrse] (equipped), 1 ring of true sight [rtsi] (equipped), 1 magic compass
+  [mcom], 23 mana, 8 coins [coin]. Skills: 3rd magecraft [mage] (115), 1st
+  void magics [void] (39), 1st water magics [wate] (31), 1st quagmire [quag]
+  (15), 1st read auras [raur] (28), 1st inspire dread [idre] (33), 1st read
+  minds [rmin] (46), 1st water walking [wwal] (25), 1st mutate sea horse
+  [sshr] (36), 1st far eye [feye] (15), 1st drain life [drlf] (30), 1st
+  magic ship [mshp] (45), 1st make magic compass [mkco] (15), novice sink
+  ships [sink] (17), 1st mix potions of healing [hpot] (15), novice mind
+  swap [mswp] (15), 1st make mage keys [mkky] (17), 1st summon lesser water
+  elemental [slwe] (45), 1st meditation [medi] (15), 1st mind pressure
+  [mprs] (30), novice water boots [wbot] (5), 1st air magics [airs] (15),
+  1st draw mage circle [dmci] (30), novice enchant stone [esto] (12), novice
+  stinking cloud [stcl] (3), 1st meeting of minds [mmnd] (45), 1st
+  consecrate magical tower [ctow] (15). May learn: summon lesser air
+  elemental [slae], tame beasts [tame], raise morale [rmor], enchant wagon
+  [ewag], speed of the wind [sped], summon lesser void elemental [slve],
+  enchant staff [estf], enchant dark shield [edsh], confuse minds [cnfm],
+  instill despair [ides], enchant ring of invisibility [eriv], impress mind
+  [impr], see resources [sres], make magic glasses [mkgl], summon tangle
+  kelp [stkl], wild growth [wgrw], enchant amulet of life [eaml], mishap
+  [mish], mageship [msip], magical galley [mgal], ritual [ritu]. Carry:
+  381(171)/520(220), /220 riding. Stats: ini:4, att:-1, def:-1, life:4,
+  obs:6(4), mana:23. Upkeep: $20. Control: 8. Combat: avoid, rear, left,
+  flee.
+
+Jesters [79997]'s actions:
+1 - Handed 440 coins [coin] to Mim [62935]
+1 - 19 coins produced
+2 - 22 coins produced
+3 - 18 coins produced
+4 - 18 coins produced
+5 - 18 coins produced
+6 - 18 coins produced
+7 - 18 coins produced
+8 - 18 coins produced
+9 - 18 coins produced
+10 - 18 coins produced
+11 - 18 coins produced
+12 - 18 coins produced
+13 - 18 coins produced
+14 - 18 coins produced
+15 - 18 coins produced
+16 - 18 coins produced
+17 - 18 coins produced
+18 - 18 coins produced
+19 - 18 coins produced
+20 - 18 coins produced
+21 - 18 coins produced
+22 - 18 coins produced
+23 - 18 coins produced
+24 - 18 coins produced
+25 - 18 coins produced
+26 - 18 coins produced
+27 - 18 coins produced
+28 - 18 coins produced
+29 - 18 coins produced
+30 - 18 coins produced
+30 - Earns $69
+Jesters [79997], 20 followers, has: 414 coins [coin]. Skills: 1st
+  relationships [rela] (36), 2nd entertainment [ente] (70). May learn:
+  observation [obse]. Carry: 1400/1800. Stats: life:3. Upkeep: $200.
+  Control: 1. Combat: avoid, rear, left, flee.
+
+Ewelin's scout [14034]'s actions:
+1 - Ewelin's scout studies combat [cmbt]
+9 - Ewelin's scout reached level 1 in combat [cmbt]
+10 - Ewelin's scout studies taxing [taxe]
+24 - Ewelin's scout reached level 1 in taxing [taxe]
+25 - Ewelin's scout [14034] departs to Dant savannah [L46]
+25 - Ewelin's scout [14034] arrived from Autnos [L44]
+26 - 1 coin produced
+27 - 1 coin produced
+28 - 1 coin produced
+29 - 1 coin produced
+30 - 1 coin produced
+Ewelin's scout [14034], 1 follower, has: 35 coins [coin]. Skills: 1st
+  scouting [scou] (18), 1st combat [cmbt] (16), 1st plainswalk [plwk] (26),
+  1st taxing [taxe] (15). May learn: stealth [stea], ambush [ambu],
+  swampwalk [swwk], desertwalk [dewk], forestwalk [fowk], hillswalk [hiwk],
+  parry [parr], archery [arch], melee [mele], blades [blde], maneuvers
+  [mane]. Carry: 70/90, /10 riding. Stats: ini:-1, att:1, def:1, life:3.
+  Upkeep: $10. Control: 1. Combat: avoid, rear, left, flee.
+
+Ewelin's scout [29748]'s actions:
+1 - Invalid USE order
+1 - Ewelin's scout [29748] departs to Thelor hills [L153]
+1 - Movement will take 13 days
+13 - Ewelin's scout [29748] arrived from Thelor hills [L156]
+14 - Invalid USE order
+30 - Earns $7
+Ewelin's scout [29748], 1 follower, has: 41 coins [coin]. Skills: 1st
+  scouting [scou] (18), 1st hillswalk [hiwk] (30). May learn: stealth
+  [stea], ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk
+  [fowk], plainswalk [plwk]. Carry: 70/100. Stats: life:3. Upkeep: $10.
+  Control: 1. Combat: avoid, rear, left, flee.
+
+Countess Andrea [69015]'s actions:
+1 - Getting 1 coin [coin] from Bards [13406]
+1 - Received 1 horse [hrse] from Ewelin's salesman [17887]
+1 - Now equipped 1 horse [hrse]
+1 - Countess Andrea studies combat [cmbt]
+2 - Getting 1 coin [coin] from Bards [13406]
+3 - Getting 1 coin [coin] from Bards [13406]
+4 - Getting 1 coin [coin] from Bards [13406]
+5 - Getting 1 coin [coin] from Bards [13406]
+6 - Getting 1 coin [coin] from Bards [13406]
+7 - Getting 1 coin [coin] from Bards [13406]
+8 - Getting 1 coin [coin] from Bards [13406]
+9 - Getting 1 coin [coin] from Bards [13406]
+10 - Getting 1 coin [coin] from Bards [13406]
+11 - Getting 1 coin [coin] from Bards [13406]
+12 - Getting 1 coin [coin] from Bards [13406]
+13 - Getting 1 coin [coin] from Bards [13406]
+14 - Getting 1 coin [coin] from Bards [13406]
+15 - Getting 1 coin [coin] from Bards [13406]
+16 - Getting 1 coin [coin] from Bards [13406]
+17 - Getting 1 coin [coin] from Bards [13406]
+18 - Getting 1 coin [coin] from Bards [13406]
+19 - Getting 1 coin [coin] from Bards [13406]
+19 - Countess Andrea reached level 4 in combat [cmbt]
+20 - Getting 1 coin [coin] from Bards [13406]
+20 - Countess Andrea studies parry [parr]
+21 - Getting 1 coin [coin] from Bards [13406]
+22 - Getting 1 coin [coin] from Bards [13406]
+23 - Getting 1 coin [coin] from Bards [13406]
+24 - Getting 1 coin [coin] from Bards [13406]
+25 - Getting 1 coin [coin] from Bards [13406]
+26 - Getting 1 coin [coin] from Bards [13406]
+27 - Getting 1 coin [coin] from Bards [13406]
+28 - Getting 1 coin [coin] from Bards [13406]
+29 - Getting 1 coin [coin] from Bards [13406]
+30 - Getting 1 coin [coin] from Bards [13406]
+Countess Andrea [69015], 1 hero, has: 37 coins [coin], 1 horse [hrse]
+  (equipped). Skills: 4th combat [cmbt] (151), 3rd tactics [tact] (188), 1st
+  strategy [stra] (62), 2nd nobility [nobl] (16), 1st blades [blde] (15),
+  2nd melee [mele] (45), 1st taxing [taxe] (15), 1st parry [parr] (27), 1st
+  maneuvers [mane] (15), 1st martial arts [mart] (15). May learn: fanaticism
+  [fana], archery [arch]. Carry: 310(170)/420(220), /280(220) riding. Stats:
+  ini:4, att:6, def:6, life:4, obs:1. Upkeep: $20. Control: 2. Combat:
+  avoid, rear, left, flee.
+
+Mim [62935]'s actions:
+1 - Getting 440 coins [coin] from Jesters [79997]
+1 - 1 coin produced
+2 - 1 coin produced
+3 - 1 coin produced
+4 - 1 coin produced
+5 - 1 coin produced
+6 - 1 coin produced
+7 - 1 coin produced
+8 - 1 coin produced
+9 - 1 coin produced
+10 - 1 coin produced
+11 - 1 coin produced
+12 - 1 coin produced
+13 - 1 coin produced
+14 - 1 coin produced
+15 - 1 coin produced
+16 - 1 coin produced
+17 - 1 coin produced
+18 - 1 coin produced
+19 - 1 coin produced
+20 - 1 coin produced
+21 - 1 coin produced
+22 - 1 coin produced
+23 - 1 coin produced
+24 - 1 coin produced
+25 - 1 coin produced
+26 - 1 coin produced
+27 - 1 coin produced
+28 - 1 coin produced
+29 - 1 coin produced
+30 - 1 coin produced
+Mim [62935], 1 leader, has: 486 coins [coin]. Skills: 2nd relationships
+  [rela] (63), 2nd marketing [mktg] (58), 2nd entertainment [ente] (49), 2nd
+  observation [obse] (90), 2nd mint [mint] (135). Carry: 1470(70)/1900(100).
+  Stats: life:3, obs:2. Upkeep: $20. Control: 1. Combat: avoid, rear, left,
+  flee.
+
+
+Locations:
+Imperial City [L1], city located in Datmus valley [L2], plains.
+This turn was autumn fair, next turn should be autumn windy.
+Title: Overlord [over] (overlord, $10000, requires 5th combat [cmbt]), held
+       by The Emperor [1].
+Population: 30008. Wages: $14, entertainment: $12485, tax income: $75020.
+For hire: 200 followers [man] at $67, 15 leaders [ldr] at $537, 1 hero
+          [hero] at $1000.
+For sale: 34 iron [iron] at $18, 20 clubs [club] at $33, 8 longbows [lbow]
+          at $85, 6 war hammers [wham] at $180, 1 pegasus [pega] at $257, 16
+          mules [mule] at $110, 37 plows [plow] at $53.
+Buying: 7 stones [ston] at $29, 7 horses [hrse] at $268, 5 grain [grai] at
+        $81, 18 granite [gran] at $37, 20 wood [wood] at $13, 27 fishes
+        [fish] at $33, 35 hides [hide] at $23, 18 saws [saws] at $66, 39
+        food [food] at $10, 10 coifs [coif] at $90, 21 anvils [anvi] at $66,
+        1 longboat [lgbt] at $3136.
+Market days: 3rd, 6th, 9th, 12nd, 15th, 18th, 21st, 24th, 27th, 30th.
+Directions:
+   Out, to Datmus valley [L2], plains, 1 day
+>From outer location:
+   SouthEast, to Dargon range [L8], mountains, impassable
+   NorthWest, to Dargon range [L7], mountains, impassable
+   SouthWest, to Dargon range [L6], mountains, impassable
+   South, to Dargon range [L4], mountains,  impassable
+   NorthEast, to Helicona [L5], plains, 9 days
+   North, to Norman road [L3], plains, 7 days
+Events during turn:
+1 - Th'luk [55773] enters Imperial city market [L10]
+1 - Miras Gate ambasador [57940] departs to Datmus valley [L2]
+1 - Unit [20939] departs to Datmus valley [L2]
+1 - Oblivion [48286] departs to Datmus valley [L2]
+2 - Unit [90288] leaves Imperial granaries [L85]
+2 - Imperial Instructor [46167] leaves Imperials smithy [L88]
+2 - Unit [39625] enters Imperial school of Higher Magics [L9]
+2 - Unit [64049] enters Imperial school of Higher Magics [L9]
+2 - Imperial Instructor [46167] enters Imperial artisans syndicate [L11]
+2 - Zeus [94421] departs to Imperial Heraldry [L171]
+2 - Zeus [94421] arrived from Imperial City [L1]
+3 - Xander Hotkolt [64567] arrived from Datmus valley [L2]
+4 - Odin [79657] arrived from Datmus valley [L2]
+6 - Frankie d'Trak [3525] arrived from Datmus valley [L2]
+8 - Plains Scout [3717] arrived from Datmus valley [L2]
+16 - Xander Hotkolt [64567] departs to Datmus valley [L2]
+18 - Frankie d'Trak [3525] departs to Datmus valley [L2]
+
+- The Emperor [1], The Imperials [npc1], 1 hero, Overlord of Imperial City
+  [L1], has: 1 sword [swrd], 1 horse [hrse], 1 plate mail [plat], 1 coif
+  [coif], 1 tower shield [tshd], 1 amulet of life [amli], 1 mana. Leading:
+  - Imperial Archers [203], The Imperials [npc1], 50 followers, has: 50 war
+    horses [whrs], 50 compound bows [cbow], 50 leather jerkins [leat], 50
+    coifs [coif].
+  - The Imperial Guard [3], The Imperials [npc1], 100 followers, standing
+    guard, friend, has: 100 horses [hrse], 100 war hammers [wham], 100 tower
+    shields [tshd].
+  - Unit [40208], Krotan's Heritage [mug6], 30 followers.
+- Emperor's adviser [2], The Mages Order [npc3], 1 hero, has: 25 mana.
+  Leading:
+  - Woodsman [78782], Whispers from the Void [p2qs], 1 leader.
+- Algirdas [67102], Kaukai [ar3t], 1 hero. Leading:
+  - Unit [96439], Kaukai [ar3t], 1 leader, has: 1 horse [hrse].
+- Imperial City Company [77428], Kaukai [ar3t], 49 followers, has: 1517
+  coins [coin].
+- The Grey Knight [48885], Whispers from the Void [p2qs], 1 hero, has: 193
+  coins [coin]. Leading:
+  - 2nd Followers [33669], Whispers from the Void [p2qs], 50 followers.
+  - 1st Followers [57586], Whispers from the Void [p2qs], 50 followers.
+* Mim [62935], 1 leader, has: 486 coins [coin]. Skills: 2nd relationships
+  [rela] (63), 2nd marketing [mktg] (58), 2nd entertainment [ente] (49), 2nd
+  observation [obse] (90), 2nd mint [mint] (135). Carry: 1470(70)/1900(100).
+  Leading:
+  * Jesters [79997], 20 followers, has: 414 coins [coin]. Skills: 1st
+    relationships [rela] (36), 2nd entertainment [ente] (70). Carry:
+    1400/1800.
+* Ewelin's salesman [17887], 1 leader. Skills: 2nd relationships [rela]
+  (78), 2nd marketing [mktg] (59), 2nd observation [obse] (90), 2nd
+  entertainment [ente] (50), 2nd mint [mint] (135). Carry:
+  22820(70)/29350(100). Leading:
+  * Bards [13406], 30 followers, has: 123 coins [coin]. Skills: 1st
+    relationships [rela] (37), 2nd entertainment [ente] (73). Carry:
+    2100/2700.
+  * Workers [45306], 295 followers, has: 1178 coins [coin]. Carry:
+    20650/26550.
+- Unit [18265], Zarya Guild [zq2z], 1 leader, has: 66 coins [coin], 1 market
+  study. Leading:
+  - Imperial workers [10705], Zarya Guild [zq2z], 34 followers, has: 131
+    coins [coin].
+  - Minstrels [77507], Zarya Guild [zq2z], 10 followers, has: 171 coins
+    [coin].
+- Garion's jugglers [73583], Malloreans [c5on], 40 followers, has: 1480
+  coins [coin].
+- Unit [24558], Kaukai [ar3t], 1 follower, has: 8 coins [coin].
+- Imperial base [60108], Zarya Guild [zq2z], 1 follower, has: 38 coins
+  [coin].
+- Imperial Lands Explorer [13021], Zarya Guild [zq2z], 1 follower.
+- Azurites [43737], Vitkovci [le5y], 1 follower, has: 1 horse [hrse], 32
+  coins [coin].
+- Cu Chulainn [39217], Tuatha De Danann [vmx8], 1 hero, has: 1 horse [hrse].
+  Leading:
+  - Unit [29552], Tuatha De Danann [vmx8], 162 followers, has: 50 food
+    [food], 644 coins [coin].
+- Unit [27669], Kaukai [ar3t], 8 followers, has: 228 coins [coin].
+- Red Salamander [56724], Dancing Salamanders [w4th], 1 follower, has: 1
+  amulet of speed [amsp], 5 coins [coin].
+- Scott [14727], The Followers of Bessu-Ka [rj1o], 1 follower, Financial
+  Times reporter, has: 42 coins [coin].
+- Unit [95089], Kaukai [ar3t], 10 followers, has: 8 iron [iron].
+- Unit [90288], Kaukai [ar3t], 4 followers.
+- Odin [79657], The Viking Raid [v8ne], 1 hero, has: 1 horse [hrse], 1 sword
+  [swrd], 1 plate mail [plat], 3409 coins [coin].
+- Plains Scout [3717], Master Merchants [f3yg], 1 follower, has: 36 coins
+  [coin].
+
+> Imperial school of Higher Magics [L9], mage's guild.
+  Skills available: 2nd magecraft [mage], 1st void magics [void], 1st
+                    inspire dread [idre], 1st make magic compass [mkco], 1st
+                    water magics [wate], 1st quagmire [quag], 1st stinking
+                    cloud [stcl], 1st earth magics [eart], 1st floraison
+                    [flor], 1st enchant ring of strength [erst], 1st fire
+                    magics [fire], 1st fire works [fwrk], 1st transmute iron
+                    to gold [itog], 1st air magics [airs], 1st tame beasts
+                    [tame], 1st mutate sea horse [sshr]
+  - Masheen Holth [12], The Mages Order [npc3], 1 leader, has: 1 amulet of
+    life [amli], 34 mana. Leading:
+    * Lady Ewelin [9365], 1 hero, targetting Masheen Holth [12], has: 1
+      horse [hrse] (equipped), 1 ring of true sight [rtsi] (equipped), 1
+      magic compass [mcom], 23 mana, 8 coins [coin]. Skills: 3rd magecraft
+      [mage] (115), 1st void magics [void] (39), 1st water magics [wate]
+      (31), 1st quagmire [quag] (15), 1st read auras [raur] (28), 1st
+      inspire dread [idre] (33), 1st read minds [rmin] (46), 1st water
+      walking [wwal] (25), 1st mutate sea horse [sshr] (36), 1st far eye
+      [feye] (15), 1st drain life [drlf] (30), 1st magic ship [mshp] (45),
+      1st make magic compass [mkco] (15), novice sink ships [sink] (17), 1st
+      mix potions of healing [hpot] (15), novice mind swap [mswp] (15), 1st
+      make mage keys [mkky] (17), 1st summon lesser water elemental [slwe]
+      (45), 1st meditation [medi] (15), 1st mind pressure [mprs] (30),
+      novice water boots [wbot] (5), 1st air magics [airs] (15), 1st draw
+      mage circle [dmci] (30), novice enchant stone [esto] (12), novice
+      stinking cloud [stcl] (3), 1st meeting of minds [mmnd] (45), 1st
+      consecrate magical tower [ctow] (15). Carry: 381(171)/520(220), /220
+      riding. Leading:
+      * Unit [30018], 1 leader, has: 2 mana. Skills: 1st magecraft [mage]
+        (20), 1st void magics [void] (19), novice read auras [raur] (5),
+        novice summon lesser void elemental [slve] (30). Carry: 70/100.
+      * Unit [39625], 1 leader, has: 2 mana. Skills: 1st magecraft [mage]
+        (17), 1st water magics [wate] (16), novice wild growth [wgrw] (6).
+        Carry: 70/100.
+      * Unit [64049], 1 leader, has: 2 mana. Skills: 1st magecraft [mage]
+        (23), 1st air magics [airs] (15). Carry: 70/100.
+    - The Whisperer [57445], Whispers from the Void [p2qs], 1 hero, has: 1
+      ring of minor invisibility [rtiv], 23 mana, 1 silver ring [srng], 4128
+      coins [coin], 2 iron rings [irng].
+    - Farall, grandson of Krotan [32230], Krotan's Heritage [mug6], 1 hero,
+      has: 1 horse [hrse], 1 wand of fire [wfir], 24 mana, 228 coins [coin].
+      Leading:
+      - Lava [47890], Krotan's Heritage [mug6], 1 leader, has: 5 mana.
+      - Unit [13083], Krotan's Heritage [mug6], 16 followers.
+    - Apprentice [61040], Whispers from the Void [p2qs], 1 leader, has: 13
+      mana.
+    - Vinfrid Senanne [29067], Hvanetians [d9ma], 1 hero, has: 22 mana, 65
+      coins [coin]. Leading:
+      - Manfred Gotheim [97761], Hvanetians [d9ma], 1 leader, has: 18 mana,
+        44 coins [coin].
+      - Sigvald Selding [23253], Hvanetians [d9ma], 1 leader, has: 13 mana,
+        27 coins [coin].
+      - Hergast Himber [70210], Hvanetians [d9ma], 1 leader, has: 12 mana,
+        95 coins [coin], 1 ring of levitation [rlev].
+      - Hlodvig Sigamber [54090], Hvanetians [d9ma], 1 leader, has: 7 mana,
+        44 coins [coin], 8 iron [iron], 2 silver [silv].
+    - Talia Brandwitch [76768], Dancing Salamanders [w4th], 1 hero, has: 1
+      horse [hrse], 10 mana, 40 coins [coin], 1 fire steed [fste]. Leading:
+      - Workers [97397], Dancing Salamanders [w4th], 116 followers, has: 535
+        coins [coin].
+      - Kina Firedrop [79282], Dancing Salamanders [w4th], 1 leader, has: 9
+        mana.
+    - Master Astolphe [24860], Whispers from the Void [p2qs], 1 leader, has:
+      109 coins [coin], 4 mana.
+    - The Speaker of the Stone [11326], Whispers from the Void [p2qs], 1
+      leader, Heavily cowled, has: 7 mana.
+    - The Sea Spirit [9278], Whispers from the Void [p2qs], 1 leader, Wispy
+      and ethereal, has: 6 mana.
+    - Macek [67859], Brotherhood of Cat's Paw [ys7k], 1 leader, has: 38 food
+      [food], 7 mana.
+    - Elrond [4411], Malloreans [c5on], 1 leader, has: 24 mana, 40 coins
+      [coin]. Leading:
+      - Polgara [1147], Malloreans [c5on], 1 leader, has: 41 coins [coin],
+        14 mana. Leading:
+        - Mandorallen [77431], Malloreans [c5on], 1 leader, has: 5 coins
+          [coin], 5 mana.
+        - Silk [65751], Malloreans [c5on], 1 leader, has: 8 coins [coin], 5
+          mana.
+      - Garion [23371], Malloreans [c5on], 1 hero, has: 1 horse [hrse], 1
+        ring of true sight [rtsi], 1 amulet of life [amli], 31 mana, 50
+        coins [coin]. Leading:
+        - Garion's workers [95345], Malloreans [c5on], 91 followers, has:
+          366 coins [coin].
+  - Dorien Van Kheijn [3330], The Children of the Phenix [zra8], 1 hero,
+    has: 1 horse [hrse], 1 magic wagon [mwag], 1 ring of levitation [rlev],
+    4 mana. Leading:
+    - The Fire-Eaters [35047], The Children of the Phenix [zra8], 50
+      followers, has: 12273 coins [coin].
+    - Drakh, The Fiery Knight [4928], The Children of the Phenix [zra8], 1
+      leader.
+  - Kobal [19792], The Children of the Phenix [zra8], 1 leader, has: 3
+    mana.
+  - Belgafon [90748], The Children of the Phenix [zra8], 1 leader, has: 5
+    mana.
+  - Unit [11181], Kaukai [ar3t], 1 leader, has: 4 mana. Leading:
+    - Unit [91383], Kaukai [ar3t], 20 followers, has: 72 coins [coin].
+
+> Imperial city market [L10], marketplace.
+  - Antalus Sleazeyes [13], The Citizens [npc2], 1 leader, has: 1 coif
+    [coif], 14 horses [hrse], 1440 coins [coin]. Leading:
+    - Merchant [93143], Whispers from the Void [p2qs], 1 leader, has: 9692
+      coins [coin], 21 iron [iron], 5 mana, 71 stones [ston], 4 horses
+      [hrse], 2 hides [hide].
+    - Th'luk [55773], Krotan's Heritage [mug6], 1 leader, has: 1 magic wagon
+      [mwag], 20 iron [iron], 6 swords [swrd], 13 horses [hrse], 1013 coins
+      [coin].
+  - Imperial City Tradesman [13987], Kaukai [ar3t], 1 leader, has: 1480
+    coins [coin], 62 iron [iron], 8 horses [hrse], 11 grain [grai], 50 food
+    [food], 1 plate mail [plat], 1 longbow [lbow], 6 coifs [coif], 3 market
+    studies, 3 mules [mule]. Leading:
+    - Unit [28409], Kaukai [ar3t], 20 followers.
+  - Unit [26022], Krotan's Heritage [mug6], 10 followers, has: 40 coins
+    [coin].
+
+> Imperial artisans syndicate [L11], guild hall.
+  Skills available: 1st artisan [arti], 1st wheelcraft [whee]
+  - Otto Kar [14], The Citizens [npc2], 1 leader, has: 1 tool [tool].
+    Leading:
+    - Imperial Instructor [46167], Kaukai [ar3t], 1 leader.
+  - The Cave Finders [3436], The Children of the Phenix [zra8], 20
+    followers, has: 1074 coins [coin].
+
+> Imperial mining corp [L12], guild hall.
+  Skills available: 1st iron mining [mini], 1st silver mining [smin]
+  - Tanto Obirom [15], The Citizens [npc2], 1 leader, has: 1 pickaxe [pick].
+    Leading:
+    - Berthram Kvalder [68379], Hvanetians [d9ma], 1 leader, has: 1 hammer
+      [hamm], 35 coins [coin], 1 iron [iron].
+  - The Seeker [6967], Whispers from the Void [p2qs], 1 hero, has: 1 horse
+    [hrse], 1 magic compass [mcom]. Leading:
+    - A foreigner [79972], Whispers from the Void [p2qs], 1 hero, has: 1
+      sword [swrd].
+
+> Imperial stables [L84], guild hall.
+  Skills available: 3rd horse breaking [hors]
+  - Amombobo [16], The Citizens [npc2], 1 leader, has: 1 horse [hrse].
+
+> Imperial granaries [L85], guild hall.
+  Skills available: 3rd farming [farm]
+  - Ancalagon [17], The Citizens [npc2], 1 leader, has: 3 cattle [catt].
+
+> Pizza Palace [L86], guild hall.
+  Skills available: 3rd baker [bake]
+  - Pundit Allia [18], The Citizens [npc2], 1 leader.
+
+> Imperial works [L87], guild hall.
+  Skills available: 3rd building [buil]
+  - Quageesh Sheesh [19], The Citizens [npc2], 1 leader. Leading:
+    - Master Blackwood [34776], Whispers from the Void [p2qs], 1 leader.
+    - Unit [87222], Kaukai [ar3t], 1 leader.
+
+> Imperials smithy [L88], guild hall.
+  Skills available: 3rd weaponsmith [weap], 3rd armory [armo]
+  - Bunthar Meltit [20], The Citizens [npc2], 1 leader, has: 1 hammer
+    [hamm].
+
+> Imperial Heraldry [L171], guild hall.
+  Skills available: 1st nobility [nobl]
+  - Ulthon, Marquis of Carabas [25], The Imperials [npc1], 1 hero. Leading:
+    * Countess Andrea [69015], 1 hero, has: 37 coins [coin], 1 horse [hrse]
+      (equipped). Skills: 4th combat [cmbt] (151), 3rd tactics [tact] (188),
+      1st strategy [stra] (62), 2nd nobility [nobl] (16), 1st blades [blde]
+      (15), 2nd melee [mele] (45), 1st taxing [taxe] (15), 1st parry [parr]
+      (27), 1st maneuvers [mane] (15), 1st martial arts [mart] (15). Carry:
+      310(170)/420(220), /280(220) riding. Leading:
+      * Map Mistress [22820], 1 hero. Skills: 3rd scouting [scou] (90), 1st
+        combat [cmbt] (15), 2nd plainswalk [plwk] (45), 3rd stealth [stea]
+        (224), 1st ambush [ambu] (45), 1st pick pockets [ppoc] (76), 1st
+        cheat merchant [chea] (15), 1st steal from market [smar] (45), 1st
+        assasinate [assa] (45). Carry: 140(70)/200(100), /60(40) riding.
+        Leading:
+        * Gatherer of Knowledge [33099], 1 leader. Skills: 1st combat [cmbt]
+          (16), 1st taxing [taxe] (15), 1st scouting [scou] (34), 2nd
+          plainswalk [plwk] (45), 2nd stealth [stea] (105), 1st beast
+          mastery [beas] (15), 1st forestry [fore] (16), 1st digging [digg]
+          (16), 1st weaponsmith [weap] (15), 1st building [buil] (21), 1st
+          artisan [arti] (19), 1st armory [armo] (15), 1st toolcraft [tolc]
+          (16), 1st herbalist [herb] (15), 1st masonry [maso] (15), 1st
+          carpentry [carp] (15), 1st shipcraft [ship] (15), 1st siegecraft
+          [sieg] (15), 1st wheelcraft [whee] (15), 1st make miner tools
+          [mmtl] (15), 1st iron mining [mini] (15), 1st pick pockets [ppoc]
+          (60). Carry: 70/100, /20 riding.
+    - Sir Theobald [27907], Krotan's Heritage [mug6], 1 leader, has: 7 coins
+      [coin].
+    - Niky Flameaxe [7907], Dancing Salamanders [w4th], 1 leader.
+    - Wabi [91292], Brotherhood of Cat's Paw [ys7k], 1 hero, has: 1 sword
+      [swrd], 1 plate mail [plat], 1 horse [hrse], 1305 coins [coin], 40
+      food [food]. Leading:
+      - Unit [43313], Brotherhood of Cat's Paw [ys7k], 20 followers.
+    - Ethelstan Reuth [83476], Hvanetians [d9ma], 1 hero, has: 77 coins
+      [coin], 1 sword [swrd]. Leading:
+      - Reuth Guardsmen [46563], Hvanetians [d9ma], 10 followers, has: 30
+        coins [coin].
+      - Senanne Guardsmen [39091], Hvanetians [d9ma], 10 followers, has: 31
+        coins [coin].
+      - Reuth Bards [4947], Hvanetians [d9ma], 10 followers, has: 86 coins
+        [coin].
+      - Tenkter Jesters [22591], Hvanetians [d9ma], 10 followers, has: 86
+        coins [coin].
+      - Isolde Brukter [90872], Hvanetians [d9ma], 1 leader, has: 1 magic
+        wagon [mwag], 5 coins [coin], 1 pegasus [pega]. Leading:
+        - Brukter Dancers [84417], Hvanetians [d9ma], 10 followers, has: 85
+          coins [coin].
+        - Hvanet Workers [31172], Hvanetians [d9ma], 115 followers, has: 474
+          coins [coin], 10 pickaxes [pick], 10 plows [plow].
+        - Senanne Entertainers [38247], Hvanetians [d9ma], 30 followers,
+          has: 604 coins [coin].
+        - Hrothgar Dregmann [51766], Hvanetians [d9ma], 1 leader, has: 50
+          coins [coin].
+        - Vinbald Jutling [12641], Hvanetians [d9ma], 1 leader, has: 36
+          coins [coin], 5 iron [iron].
+    - Unit [27903], Kaukai [ar3t], 1 leader. Leading:
+      - Burthala [77253], Kaukai [ar3t], 1 hero, has: 1 hammer [hamm], 1
+        pickaxe [pick].
+  - Zeus [94421], Greek Gods [q0if], 1 hero, has: 1 horse [hrse], 1 plate
+    mail [plat], 1 sword [swrd], 502 coins [coin]. Leading:
+    - Olympus Jesters [99552], Greek Gods [q0if], 55 followers, has: 3005
+      coins [coin].
+    - Ares [82763], Greek Gods [q0if], 1 leader, has: 1851 coins [coin].
+      Leading:
+      - Ares' Hordes [91624], Greek Gods [q0if], 92 followers, has: 381
+        coins [coin].
+    - Hades [77658], Greek Gods [q0if], 1 hero, has: 10 mana, 579 coins
+      [coin].
+    - Hermes [48662], Greek Gods [q0if], 1 leader, has: 5 mana, 13 coins
+      [coin]. Leading:
+      - Hermes' Messengers [56503], Greek Gods [q0if], 5 followers, has: 17
+        coins [coin].
+
+
+Datmus valley [L2], plains.
+This turn was autumn fair, next turn should be autumn windy.
+Population: 562. Wages: $12, entertainment: $243, tax income: $1405.
+For hire: 14 followers [man] at $73.
+Resources: 2 wood [wood], 2 stones [ston], 1 horse [hrse].
+Directions:
+   SouthEast, to Dargon range [L8], mountains, impassable
+   NorthWest, to Dargon range [L7], mountains, impassable
+   SouthWest, to Dargon range [L6], mountains, impassable
+   South, to Dargon range [L4], mountains,  impassable
+   NorthEast, to Helicona [L5], plains, 9 days
+   North, to Norman road [L3], plains, 7 days
+Events during turn:
+1 - Miras Gate ambasador [57940] arrived from Imperial City [L1]
+1 - Unit [20939] arrived from Imperial City [L1]
+1 - Oblivion [48286] arrived from Imperial works [L87]
+2 - Miras Gate ambasador [57940] departs to Helicona [L5]
+2 - Unit [20939] departs to Norman road [L3]
+2 - Oblivion [48286] departs to Helicona [L5]
+3 - Odin [79657] arrived from Norman road [L3]
+3 - Xander Hotkolt [64567] departs to Imperial City [L1]
+4 - Odin [79657] departs to Imperial City [L1]
+5 - Frankie d'Trak [3525] arrived from Norman road [L3]
+
+> Imperial City [L1], city, inner location (1 day).
+  Title: Overlord [over] (overlord, $10000, requires 5th combat [cmbt]),
+         held by The Emperor [1].
+
+
+Helicona [L5], plains.
+This turn was autumn fair, next turn should be autumn fair.
+Population: 568. Wages: $13, entertainment: $271, tax income: $1420.
+For hire: 14 followers [man] at $50, 1 leader [ldr] at $400.
+Resources: 5 stones [ston], 22 horses [hrse], 10 hides [hide], 108 grain
+           [grai].
+Directions:
+   SouthEast, to Bone ridge [L315], hills, 12 days
+   NorthEast, to Bone ridge [L314], hills, 12 days
+   North, to Bone pass [L295], hills, 12 days
+   South, to Dargon range [L8], mountains, impassable
+   NorthWest, to Norman road [L3], plains, 9 days
+   SouthWest, to Datmus valley [L2], plains, 9 days
+Events during turn:
+9 - Courier [84114] arrived from Bone pass [L295]
+10 - Miras Gate ambasador [57940] arrived from Datmus valley [L2]
+10 - Oblivion [48286] arrived from Datmus valley [L2]
+11 - Miras Gate ambasador [57940] departs to Bone ridge [L314]
+11 - Oblivion [48286] departs to Bone ridge [L314]
+
+
+Autnos [L44], city located in Dant savannah [L46], plains.
+This turn was autumn sunny, next turn should be autumn stormy.
+Title: marquis [marq] (major, $2000, requires 1st nobility [nobl]).
+Population: 5166. Wages: $18, entertainment: $2459, tax income: $12915.
+For hire: 129 followers [man] at $50, 6 leaders [ldr] at $652.
+Directions:
+   Out, to Dant savannah [L46], plains, 1 day
+   SouthWest, to Dant bay [L50], ocean, 4 days sailing
+   South, to Dant bay [L48], ocean, 3 days sailing
+>From outer location:
+   SouthEast, to Dant savannah [L52], plains, 9 days
+   NorthWest, to White cliffs [L51], hills, 12 days
+   SouthWest, to Dant bay [L50], ocean, 6 days sailing
+   NorthEast, to Dant savannah [L49], plains, 9 days
+   South, to Dant bay [L48], ocean, 6 days sailing
+   North, to Wild fringe [L47], forest, 13 days
+Events during turn:
+1 - Dr_April_Mucosa [51970] leaves Autnos' magic emporium [L45]
+1 - Nirmal_Yadav [38732] departs to Dant savannah [L46]
+1 - Colonel_Griffith [90665] departs to Dant savannah [L46]
+1 - A-1 scout [78558] departs to Dant savannah [L46]
+1 - Scout 3 [51633] departs to Dant savannah [L46]
+1 - Dr_April_Mucosa [51970] departs to Dant savannah [L46]
+1 - Aralin [86346] is now Head of Guild of Autnos' magic emporium [L45]!
+2 - Dawon Mirabilis [10] departs to Dant savannah [L46]
+17 - Sea Scout [55539] departs to Dant bay [L48]
+18 - Courrier [25507] arrived from Dant savannah [L46]
+22 - Hagen [36304] arrived from Dant savannah [L46]
+25 - Ewelin's scout [14034] departs to Dant savannah [L46]
+
+- Autnos Militia [34], The Free Peoples [npc4], 50 followers, standing
+  guard, friend, has: 50 battle axes [baxe], 50 hide shields [hshd], 50
+  coifs [coif].
+- Entertainers [73418], Master Merchants [f3yg], 40 followers.
+- Unit [60881], 237 followers.
+- Unit [65039], 1 leader. Leading:
+  - Unit [14691], 50 followers.
+- Unit [49504], 20 followers.
+- Sergeant_Blightman [66927], 1 leader, has: 2 wood [wood], 1 hide [hide].
+  Leading:
+  - The_Reconstructed [12269], 10 followers.
+- Dainty Biberveldt [65957], 1 leader, has: 35 horses [hrse].
+- Vitek z Landstejna [85880], 1 leader, has: 1 horse [hrse].
+- Sibal [45709], 1 leader, has: 1 horse [hrse]. Leading:
+  - Fools [20246], 40 followers.
+  - Work force [24482], 290 followers.
+  - Unit [6344], 1 leader.
+* Unit [47810], 1 leader, has: 154 coins [coin]. Skills: 1st relationships
+  [rela] (19), 2nd marketing [mktg] (45), 1st combat [cmbt] (24), 2nd taxing
+  [taxe] (45), 1st scouting [scou] (15), 1st melee [mele] (15), 1st parry
+  [parr] (15), 1st blades [blde] (15). Carry: 1610(70)/2080(100). Leading:
+  * Unit [85266], 7 followers. Skills: 1st relationships [rela] (34), 2nd
+    entertainment [ente] (50). Carry: 490/630.
+  * Autnos operative unit [29491], 15 followers, has: 72 coins [coin].
+    Carry: 1050/1350.
+- Unit [96918], 1 follower.
+- Workers [58186], The Outlaws [npc5], 20 followers.
+- Ramas lonely townboy [23533], 1 follower.
+- Tellico Dudu Penstock [79300], 1 leader, has: 1 horse [hrse], 3 iron
+  [iron]. Leading:
+  - Dudu's Constructors [43334], 10 followers.
+- Unit [78593], 1 leader. Leading:
+  - Unit [16606], 5 followers.
+  - Unit [7349], 10 followers.
+  - Unit [82781], 2 followers.
+- Courrier [25507], 1 follower, has: 8 horses [hrse].
+- Hagen [36304], 1 leader, has: 13 horses [hrse].
+- Dunwa_Saleem [50908], 1 leader, moving in from Dant savannah [L46] (4
+  days/5), has: 5 wood [wood]. Leading:
+  - PubOrd_Foresters [86938], 4 followers, has: 20 wood [wood].
+
+> Autnos' magic emporium [L45], mage's guild.
+  Title: Head of Guild [hgld] (standard, $1000, requires 2nd magecraft
+         [mage]), held by Aralin [86346].
+  Skills available: 1st water magics [wate], 1st enchant amulet of life
+                    [eaml], 1st battle flow [flow]
+  - Aralin [86346], 1 hero, Head of Guild of Autnos' magic emporium [L45],
+    has: 1 horse [hrse], 1 magic compass [mcom]. Leading:
+    - Larian [29180], 1 leader.
+    - Arnatar [34909], 1 leader.
+    - Cydrok [74136], 1 leader.
+    - Cypran [82279], 1 leader.
+  - Unit [86567], 1 leader. Leading:
+    - Unit [73828], 1 leader.
+  - PubOrd_Laborers [25509], 20 followers.
+  - Silgil [50115], 1 leader. Leading:
+    - Ariel [85876], 1 leader.
+    - Aladin [25561], 1 leader.
+
+> Autnos Shipyards [L176], guild hall.
+  Skills available: 1st sailing [sail], 1st shipcraft [ship]
+  - Ole' Mannis [28], The Free Peoples [npc4], 1 leader.
+
+
+Dant savannah [L46], plains.
+This turn was autumn sunny, next turn should be autumn stormy.
+Population: 587. Wages: $13, entertainment: $286, tax income: $1467.
+For hire: 14 followers [man] at $71, 1 leader [ldr] at $560.
+Resources: 30 grain [grai], 5 wood [wood], 7 horses [hrse].
+Directions:
+   SouthEast, to Dant savannah [L52], plains, 9 days
+   NorthWest, to White cliffs [L51], hills, 12 days
+   SouthWest, to Dant bay [L50], ocean, 6 days sailing
+   NorthEast, to Dant savannah [L49], plains, 9 days
+   South, to Dant bay [L48], ocean, 6 days sailing
+   North, to Wild fringe [L47], forest, 13 days
+Events during turn:
+25 - Ewelin's scout [14034] arrived from Autnos [L44]
+26 - Dunwa_Saleem [50908] arrived from Wild fringe [L47]
+27 - Dunwa_Saleem [50908] departs to Autnos [L44]
+
+- Lawyers A1 [38304], 30 followers.
+- Haremheb [27257], 1 leader. Leading:
+  - Unit [85052], 7 followers.
+  - Scout 1 [34148], 1 follower.
+  - Unit [5705], 10 followers.
+- Unit [58911], 1 leader. Leading:
+  - Unit [62672], 20 followers.
+  - Ambasador [87915], 1 follower.
+- Nirmal_Yadav [38732], 1 hero, has: 1 horse [hrse], 1 sword [swrd], 1 plate
+  mail [plat]. Leading:
+  - BuroMil_Elite [63615], 10 followers.
+  - Encephalon Screamers [39557], 10 followers.
+- Colonel_Griffith [90665], 1 leader. Leading:
+  - Tactical_Team_Alpha [38463], 10 followers.
+  - Tactical_Team_Beta [68156], 10 followers.
+- Dr_April_Mucosa [51970], 1 leader.
+* Ewelin's scout [14034], 1 follower, has: 35 coins [coin]. Skills: 1st
+  scouting [scou] (18), 1st combat [cmbt] (16), 1st plainswalk [plwk] (26),
+  1st taxing [taxe] (15). Carry: 70/90, /10 riding.
+
+> Autnos [L44], city, inner location (1 day).
+  Title: marquis [marq] (major, $2000, requires 1st nobility [nobl]).
+
+
+Thelor hills [L153], hills.
+This turn was autumn fair, next turn should be autumn fair.
+Population: 432. Wages: $13, entertainment: $187, tax income: $1080.
+For hire: 10 followers [man] at $50, 1 leader [ldr] at $400.
+Resources: 8 fishes [fish], 55 stones [ston], 9 cattle [catt].
+Directions:
+   SouthEast, to Elephant Grasses [L293], plains, 10 days
+   NorthEast, to The Wastes [L292], desert, 14 days
+   North, to The Wastes [L291], desert, 14 days
+   South, to Thelor hills [L156], hills, 13 days
+   NorthWest, to Salt lake [L151], lake, 7 days sailing
+   SouthWest, to Thelor hills [L150], hills, 13 days
+Events during turn:
+13 - Ewelin's scout [29748] arrived from Thelor hills [L156]
+
+- Thelor vicar [14050], 1 leader. Leading:
+  - Thelor taxers [72029], 10 followers, has: 10 battle axes [baxe].
+  - Entertainers [26666], 5 followers.
+  - Cowboys [26740], 4 followers.
+  - Cookers [98185], 3 followers, has: 19 food [food].
+  - Ienifer [51306], 1 leader.
+* Ewelin's scout [29748], 1 follower, has: 41 coins [coin]. Skills: 1st
+  scouting [scou] (18), 1st hillswalk [hiwk] (30). Carry: 70/100.
+
+
+Thelor hills [L156], hills.
+This turn was autumn fair, next turn should be autumn rainy.
+Population: 421. Wages: $13, entertainment: $172, tax income: $1052.
+For hire: 10 followers [man] at $50.
+Resources: 31 stones [ston], 17 wood [wood], 5 cattle [catt].
+Directions:
+   SouthEast, to Elephant Grasses [L425], plains, 10 days
+   NorthEast, to Elephant Grasses [L293], plains, 10 days
+   South, to Elephant Grasses [L290], plains, 10 days
+   NorthWest, to Thelor hills [L150], hills, 13 days
+   SouthWest, to Thelor hills [L152], hills, 13 days
+   North, to Thelor hills [L153], hills, 13 days
+Events during turn:
+1 - Ewelin's scout [29748] departs to Thelor hills [L153]
+
+
+Miras road [L215], plains.
+This turn was autumn sunny, next turn should be autumn rainy.
+Population: 549. Wages: $13, entertainment: $234, tax income: $1372.
+For hire: 13 followers [man] at $50, 1 leader [ldr] at $400.
+Resources: 8 stones [ston], 21 iron [iron], 88 grain [grai].
+Directions:
+   SouthEast, to Mantis Fields [L337], plains, 9 days
+   South, to Mantis Fields [L321], plains, 9 days
+   SouthWest, to Bone ridge [L314], hills, 12 days
+   NorthEast, to Munus Range [L219], mountains, impassable
+   NorthWest, to Mantis Fields [L217], plains, 9 days
+   North, to Miras Pass [L212], hills, 12 days
+Events during turn:
+30 - nothing notable
+
+- Imperial Rangers [66], The Imperials [npc1], 20 followers, standing guard,
+  friend, has: 20 swords [swrd], 20 hide shields [hshd], 20 leather jerkins
+  [leat].
+- Eridan Flambeau [70697], 1 leader.
+* Miras Gate ambasador [57940], 1 follower, moving in from Bone ridge [L314]
+  (8 days/10). Skills: 1st scouting [scou] (15). Carry: 70/90.
+
+
+Bone ridge [L314], hills.
+This turn was autumn sunny, next turn should be autumn rainy.
+Population: 431. Wages: $13, entertainment: $196, tax income: $1077.
+For hire: 10 followers [man] at $50.
+Resources: 33 wood [wood], 33 stones [ston].
+Directions:
+   SouthEast, to Mantis Fields [L321], plains, 10 days
+   South, to Bone ridge [L315], hills, 13 days
+   NorthWest, to Bone pass [L295], hills, 13 days
+   SouthWest, to Helicona [L5], plains, 10 days
+   NorthEast, to Miras road [L215], plains, 10 days
+   North, to Mantis Fields [L217], plains, 10 days
+Events during turn:
+22 - Miras Gate ambasador [57940] arrived from Helicona [L5]
+22 - Oblivion [48286] arrived from Helicona [L5]
+23 - Miras Gate ambasador [57940] departs to Miras road [L215]
+
+
+
+Item knowledge:
+
+magical consecration: The turning of the key on the final day of a magical
+  structure. Require 1 mage key to effect.
+
+circle drawing: The making of a magic protecting circle, for high levels
+  spells. Require 1 mystic stone to power.
+
+hide streched: Hides, tanned and stretched over a frame for a basic
+  coverage. Typically require 1 hide to make.
+
+fortification: Stonework applied to military uses. Typically require 1 stone
+  to make.
+
+wood structure: The basic wood beams supporting a structure or a floor.
+  Typically require 1 wood to make.
+
+stonework: The basic stone making up walls and floors. Typically require 1
+  stone to make.
+
+upkeep ration: Food and drinks made from the land, basic, but consumed
+  immediately. Equipment category: food, 1 per figure.
+
+day of riding speed: capacity: 75/riding. While under the effect, a unit has
+  an intrinsic capacity for riding.
+
+day of morale: While under the effect, a unit has its initiative enhanced.
+  Equipment gives +2 to initiative.
+
+herbs [hrbs]: weight 1. Magical herbs, for potions, rituals and other. Worth
+  $24.
+
+Race knowledge:
+
+lesser air elemental [lael]: weight 10, capacity: 10/walking, 12/flying.
+  Flightly and light, these unskilled creatures are quick and stealthy. Base
+  recruit price: $160. Upkeep: $6 per figure. Require 1 control points per
+  fraction of 20 figures. Stats: ini:4, att:5, def:2, life:10, ste:1.
+
+hero [hero]: weight 70, capacity: 100/walking, 20/riding. The heroes are
+  characters of outstanding military prowess. They are also considered
+  leaders. Base recruit price: $1000. Upkeep: $20 per figure. Require 2
+  control points per fraction of 20 figures. Stats: ini:1, life:4, obs:1.
+  Skills: +5% to magecraft skills, +5% to scouting skills.
+
+Skill knowledge:
+
+1st impress mind [impr]: By using this skill, the mage may transfer his
+  knowledge to any other unit. The target unit gains the equivalent of one
+  half day of study in one random skill it could learn on its own, while it
+  is free to pursue another full-day skill. If the unit has more than one
+  figure in it, only one figure will gain experience. Requires 45 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  meeting of minds [mmnd] to learn. This is a magic skill. Use targets a
+  local unit. Use requires: 1 mana. Use produces 1 mind impression per day.
+  Gives +1 to maximum mana.
+
+1st speed of the wind [sped]: The caster can use the speed of the wind and
+  move a running speed for a while. Requires 15 days and $3/day to reach the
+  level. Only leaders may study this skill. Requires 1st air magics [airs]
+  to learn. This is a magic skill. Use requires: 1 mana. Use produces 2 days
+  of riding speed per day. Gives +1 to maximum mana.
+
+1st enchant wagon [ewag]: Creates a wagon that moves at riding speeds on its
+  own. Requires 15 days and $3/day to reach the level. Only leaders may
+  study this skill. Requires 1st air magics [airs] to learn. This is a magic
+  skill. Use requires: 1 wagon [wago], 6 mana. Use produces 1 magic wagon
+  [mwag] in 20 days. Gives +1 to maximum mana.
+
+1st raise morale [rmor]: The caster magically raises the morale of troops,
+  bolstering their confidence prior to battle. The troop will attack
+  straight and true. Requires 15 days and $3/day to reach the level. Only
+  leaders may study this skill. Requires 1st air magics [airs] to learn.
+  This is a magic skill. Use targets a local unit. Use requires: 1 mana. Use
+  produces 4 days of morale per day. Gives +1 to maximum mana.
+
+1st summon lesser air elemental [slae]: The caster tries to summon an air
+  elemental from the elemental planes into the world. The targeted unit must
+  consist of lesser air elementals, or be a new unit. Requires 45 days and
+  $3/day to reach the level. Only leaders may study this skill. Requires 1st
+  air magics [airs] to learn. This is a magic skill. Use targets a local
+  unit. Use requires: 1 horse [hrse], 8 mana. Use produces 1 summoning in 10
+  days. Gives +1 to maximum mana.
+
+2nd assasinate [assa]: At this level, assasinations yield a better chance of
+  success (6% per stealth difference), +2 in tactics and the event takes
+  less time to plan. Requires 90 days and $2/day to reach the level. Use
+  targets a local unit. Use produces 1 attempt in 8 days. Gives +1 to
+  stealth.
+
+2nd consecrate magical tower [ctow]: No further progress is possible in
+  consecrate tower. This skill cannot be studied. Use targets a local
+  structure. Use requires: 1 mage key [mkey]. Use produces 1 magical
+  consecration per day.
+
+2nd steal from market [smar]: At this level, the chance of success is
+  reduced only by 2% per unit of weight. Requires 135 days and $2/day to
+  reach the level. This is a combat skill. Use produces 1 attempt in 5 days.
+  Gives +1 to stealth.
+
+2nd meeting of minds [mmnd]: Further progress in meeting of minds does not
+  yield added benefits. Requires 135 days and $3/day to reach the level.
+  This is a magic skill. Use targets a unit. Use requires: 1 mana. Use
+  produces 1 evtmmnd per day. Gives +2 to maximum mana.
+
+4th scouting [scou]: Exceptional exploration skill. The skilled scout may
+  reconnoiter an adjacent location without having to enter it. Requires 150
+  days and $1/day to reach the level. Use produces 1 sighting in 10 days.
+  Gives +1 to stealth.
+
+2nd air magics [airs]: Advanced Air mastery. Requires 45 days and $3/day to
+  reach the level. Gives +2 to maximum mana.
+
+
+#GAME wb9g misutka
+
+UNIT 64049
+;     Unit [64049], in Imperial school of Higher Magics [L9], stacked under
+;     Lady Ewelin [9365]
+; Unit [64049], 1 leader, has: 2 mana. Skills: 1st magecraft [mage] (23), 1st
+; air magics [airs] (15). May learn: summon lesser air elemental [slae], tame
+; beasts [tame], raise morale [rmor], enchant wagon [ewag], speed of the wind
+; [sped], meditation [medi]. Carry: 70/100. Combat: avoid, rear, left, flee.
+; pending order stack:
+@get 13406 coin 3
+@study mage 2
+@study sped 1
+
+UNIT 39625
+;     Unit [39625], in Imperial school of Higher Magics [L9], stacked under
+;     Lady Ewelin [9365]
+; Unit [39625], 1 leader, has: 2 mana. Skills: 1st magecraft [mage] (17), 1st
+; water magics [wate] (16), novice wild growth [wgrw] (6). May learn: summon
+; lesser water elemental [slwe], mix potions of healing [hpot], quagmire
+; [quag], water walking [wwal], meditation [medi]. Carry: 70/100. Combat:
+; avoid, rear, left, flee.
+; pending order stack:
+@get 13406 coin 3
+@study wgrw 1
+@study eaml 1
+@study mish 1
+@study mage 2
+
+UNIT 30018
+;     Unit [30018], in Imperial school of Higher Magics [L9], stacked under
+;     Lady Ewelin [9365]
+; Unit [30018], 1 leader, has: 2 mana. Skills: 1st magecraft [mage] (20), 1st
+; void magics [void] (19), novice read auras [raur] (5), novice summon lesser
+; void elemental [slve] (30). May learn: drain life [drlf], inspire dread
+; [idre], far eye [feye], meditation [medi]. Carry: 70/100. Combat: avoid,
+; rear, left, flee.
+; pending order stack:
+@get 13406 coin 3
+@study slve 1
+-synchro 9365
+--synchro 9365
+--+@teach 9365 slve
+@study raur 1
+@study rmin 1
+
+UNIT 57940
+;     Miras Gate ambasador [57940], in Miras road [L215]
+; Miras Gate ambasador [57940], 1 follower, moving in from Bone ridge [L314]
+; (8 days/10). Skills: 1st scouting [scou] (15). May learn: stealth [stea],
+; ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk [fowk],
+; hillswalk [hiwk], plainswalk [plwk]. Carry: 70/90. Combat: avoid, rear,
+; left, flee.
+; pending order stack:
+get 79997 coin 50
+move L212
+move L208
+@study rela 1
+@study ente 1
+@use ente
+
+UNIT 29491
+;     Autnos operative unit [29491], in Autnos [L44], stacked under Unit
+;     [47810]
+; Autnos operative unit [29491], 15 followers, has: 72 coins [coin]. Carry:
+; 1050/1350. Combat: avoid, rear, left, flee.
+
+UNIT 47810
+;     Unit [47810], in Autnos [L44]
+; Unit [47810], 1 leader, has: 154 coins [coin]. Skills: 1st relationships
+; [rela] (19), 2nd marketing [mktg] (45), 1st combat [cmbt] (24), 2nd taxing
+; [taxe] (45), 1st scouting [scou] (15), 1st melee [mele] (15), 1st parry
+; [parr] (15), 1st blades [blde] (15). May learn: tactics [tact], stealth
+; [stea], ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk
+; [fowk], hillswalk [hiwk], plainswalk [plwk], observation [obse], mint
+; [mint], entertainment [ente], archery [arch], maneuvers [mane]. Carry:
+; 1610(70)/2080(100). Combat: avoid, rear, left, flee.
+; pending order stack:
+@get 85266 coin
+@d1 get 29491 coin
+@d1 recruit 29491 0 man 53
+@study mane 1
+@study rela 2
+@study obse 2
+
+UNIT 85266
+;     Unit [85266], in Autnos [L44], stacked under Unit [47810]
+; Unit [85266], 7 followers. Skills: 1st relationships [rela] (34), 2nd
+; entertainment [ente] (50). May learn: observation [obse]. Carry: 490/630.
+; Combat: avoid, rear, left, flee.
+; pending order stack:
+@use ente
+
+UNIT 17887
+;     Ewelin's salesman [17887], in Imperial City [L1]
+; Ewelin's salesman [17887], 1 leader. Skills: 2nd relationships [rela] (78),
+; 2nd marketing [mktg] (59), 2nd observation [obse] (90), 2nd entertainment
+; [ente] (50), 2nd mint [mint] (135). Carry: 22820(70)/29350(100). Combat:
+; avoid, rear, left, flee.
+; pending order stack:
+@d1 get 45306 coin
+@d1 get 13406 coin
+@d1 get 13406 coin
+buy 1 pega 400
+buy 1 plat 346
+give 69015 plat 1
+give 9365 pega 1
+@d1 recruit 45306 1 man 70
+@d2 recruit 45306 1 man 70
+@use ente
+
+UNIT 13406
+;     Bards [13406], in Imperial City [L1], stacked under Ewelin's salesman
+;     [17887]
+; Bards [13406], 30 followers, has: 123 coins [coin]. Skills: 1st
+; relationships [rela] (37), 2nd entertainment [ente] (73). May learn:
+; observation [obse]. Carry: 2100/2700. Combat: avoid, rear, left, flee.
+; pending order stack:
+@use ente
+
+UNIT 45306
+;     Workers [45306], in Imperial City [L1], stacked under Ewelin's salesman
+;     [17887]
+; Workers [45306], 295 followers, has: 1178 coins [coin]. Carry: 20650/26550.
+; Combat: avoid, rear, left, flee.
+
+UNIT 33099
+;     Gatherer of Knowledge [33099], in Imperial Heraldry [L171], stacked
+;     under Map Mistress [22820]
+; Gatherer of Knowledge [33099], 1 leader. Skills: 1st combat [cmbt] (16),
+; 1st taxing [taxe] (15), 1st scouting [scou] (34), 2nd plainswalk [plwk]
+; (45), 2nd stealth [stea] (105), 1st beast mastery [beas] (15), 1st forestry
+; [fore] (16), 1st digging [digg] (16), 1st weaponsmith [weap] (15), 1st
+; building [buil] (21), 1st artisan [arti] (19), 1st armory [armo] (15), 1st
+; toolcraft [tolc] (16), 1st herbalist [herb] (15), 1st masonry [maso] (15),
+; 1st carpentry [carp] (15), 1st shipcraft [ship] (15), 1st siegecraft [sieg]
+; (15), 1st wheelcraft [whee] (15), 1st make miner tools [mmtl] (15), 1st
+; iron mining [mini] (15), 1st pick pockets [ppoc] (60). May learn:
+; shieldsmith [shsm], helmsman [helm], leathers [leat], bowyer [bowy],
+; staffsmith [stsm], hammersmith [hmsm], axesmith [axsm], bladesmith [blsm],
+; assemble ships [ashp], cover [cove], build anvils [banv], rig saw [rsaw],
+; forge hammers [fham], beat plows [bplw], pack training [pack], horse
+; breaking [hors], hunting [hunt], silver mining [smin], tactics [tact],
+; cheat merchant [chea], lift coins [lcoi], steal from market [smar], ambush
+; [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk [fowk], hillswalk
+; [hiwk], parry [parr], archery [arch], melee [mele], blades [blde],
+; lumberjack [lumb], maneuvers [mane]. Carry: 70/100, /20 riding. Combat:
+; avoid, rear, left, flee.
+; pending order stack:
+@get 13406 coin 2
+@study stea 3
+@study chea 1
+@study lcoi 1
+@study smar 1
+
+UNIT 22820
+;     Map Mistress [22820], in Imperial Heraldry [L171], stacked under
+;     Countess Andrea [69015]
+; Map Mistress [22820], 1 hero. Skills: 3rd scouting [scou] (90), 1st combat
+; [cmbt] (15), 2nd plainswalk [plwk] (45), 3rd stealth [stea] (224), 1st
+; ambush [ambu] (45), 1st pick pockets [ppoc] (76), 1st cheat merchant [chea]
+; (15), 1st steal from market [smar] (45), 1st assasinate [assa] (45). May
+; learn: taxing [taxe], tactics [tact], icewalk [icwk], lift coins [lcoi],
+; swampwalk [swwk], desertwalk [dewk], forestwalk [fowk], hillswalk [hiwk],
+; parry [parr], archery [arch], melee [mele], blades [blde], maneuvers
+; [mane]. Carry: 140(70)/200(100), /60(40) riding. Combat: avoid, rear, left,
+; flee.
+; pending order stack:
+@get 13406 coin 2
+@study stea 4
+@study lcoi 1
+@study ambu 2
+@study ppoc 2
+
+UNIT 9365
+;     Lady Ewelin [9365], in Imperial school of Higher Magics [L9], stacked
+;     under Masheen Holth [12]
+; Lady Ewelin [9365], 1 hero, targetting Masheen Holth [12], has: 1 horse
+; [hrse] (equipped), 1 ring of true sight [rtsi] (equipped), 1 magic compass
+; [mcom], 23 mana, 8 coins [coin]. Skills: 3rd magecraft [mage] (115), 1st
+; void magics [void] (39), 1st water magics [wate] (31), 1st quagmire [quag]
+; (15), 1st read auras [raur] (28), 1st inspire dread [idre] (33), 1st read
+; minds [rmin] (46), 1st water walking [wwal] (25), 1st mutate sea horse
+; [sshr] (36), 1st far eye [feye] (15), 1st drain life [drlf] (30), 1st magic
+; ship [mshp] (45), 1st make magic compass [mkco] (15), novice sink ships
+; [sink] (17), 1st mix potions of healing [hpot] (15), novice mind swap
+; [mswp] (15), 1st make mage keys [mkky] (17), 1st summon lesser water
+; elemental [slwe] (45), 1st meditation [medi] (15), 1st mind pressure [mprs]
+; (30), novice water boots [wbot] (5), 1st air magics [airs] (15), 1st draw
+; mage circle [dmci] (30), novice enchant stone [esto] (12), novice stinking
+; cloud [stcl] (3), 1st meeting of minds [mmnd] (45), 1st consecrate magical
+; tower [ctow] (15). May learn: summon lesser air elemental [slae], tame
+; beasts [tame], raise morale [rmor], enchant wagon [ewag], speed of the wind
+; [sped], summon lesser void elemental [slve], enchant staff [estf], enchant
+; dark shield [edsh], confuse minds [cnfm], instill despair [ides], enchant
+; ring of invisibility [eriv], impress mind [impr], see resources [sres],
+; make magic glasses [mkgl], summon tangle kelp [stkl], wild growth [wgrw],
+; enchant amulet of life [eaml], mishap [mish], mageship [msip], magical
+; galley [mgal], ritual [ritu]. Carry: 381(171)/520(220), /220 riding.
+; Combat: avoid, rear, left, flee.
+; pending order stack:
+@get 13406 coin 3
+equip pega 1
+d1 accept 67859
+synchro 30018
+-@study slve 1
+--synchro 30018
+@study esto 1
+@study mkgl 1
+@study sres 1
+@study ides 1
+@study edsh 1
+@study cnfm 1
+@study estf 1
+
+UNIT 79997
+;     Jesters [79997], in Imperial City [L1], stacked under Mim [62935]
+; Jesters [79997], 20 followers, has: 414 coins [coin]. Skills: 1st
+; relationships [rela] (36), 2nd entertainment [ente] (70). May learn:
+; observation [obse]. Carry: 1400/1800. Combat: avoid, rear, left, flee.
+; pending order stack:
+@use ente
+
+UNIT 14034
+;     Ewelin's scout [14034], in Dant savannah [L46]
+; Ewelin's scout [14034], 1 follower, has: 35 coins [coin]. Skills: 1st
+; scouting [scou] (18), 1st combat [cmbt] (16), 1st plainswalk [plwk] (26),
+; 1st taxing [taxe] (15). May learn: stealth [stea], ambush [ambu], swampwalk
+; [swwk], desertwalk [dewk], forestwalk [fowk], hillswalk [hiwk], parry
+; [parr], archery [arch], melee [mele], blades [blde], maneuvers [mane].
+; Carry: 70/90, /10 riding. Combat: avoid, rear, left, flee.
+; pending order stack:
+@use taxe
+
+UNIT 29748
+;     Ewelin's scout [29748], in Thelor hills [L153]
+; Ewelin's scout [29748], 1 follower, has: 41 coins [coin]. Skills: 1st
+; scouting [scou] (18), 1st hillswalk [hiwk] (30). May learn: stealth [stea],
+; ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk [fowk],
+; plainswalk [plwk]. Carry: 70/100. Combat: avoid, rear, left, flee.
+
+UNIT 69015
+;     Countess Andrea [69015], in Imperial Heraldry [L171], stacked under
+;     Ulthon, Marquis of Carabas [25]
+; Countess Andrea [69015], 1 hero, has: 37 coins [coin], 1 horse [hrse]
+; (equipped). Skills: 4th combat [cmbt] (151), 3rd tactics [tact] (188), 1st
+; strategy [stra] (62), 2nd nobility [nobl] (16), 1st blades [blde] (15), 2nd
+; melee [mele] (45), 1st taxing [taxe] (15), 1st parry [parr] (27), 1st
+; maneuvers [mane] (15), 1st martial arts [mart] (15). May learn: fanaticism
+; [fana], archery [arch]. Carry: 310(170)/420(220), /280(220) riding. Combat:
+; avoid, rear, left, flee.
+; pending order stack:
+@get 13406 coin 1
+@study parr 2
+@study mart 2
+@study mane 2
+@study blde 2
+@study taxe 2
+
+UNIT 62935
+;     Mim [62935], in Imperial City [L1]
+; Mim [62935], 1 leader, has: 486 coins [coin]. Skills: 2nd relationships
+; [rela] (63), 2nd marketing [mktg] (58), 2nd entertainment [ente] (49), 2nd
+; observation [obse] (90), 2nd mint [mint] (135). Carry: 1470(70)/1900(100).
+; Combat: avoid, rear, left, flee.
+; pending order stack:
+@d1 get 79997 coin
+move "out"
+move L5
+move L295
+move L217
+move L212
+move L208
+@use ente
+move L5
+move L315
+move L323
+move L302
+move L57
+move L56
+move L53
+move L3
+move L296
+move L328
+move L468
+
+#END
