@@ -5,7 +5,126 @@ without losing context. Read this before touching any code.
 
 ---
 
-## 0. UPDATE — Phase 1 closed (session after original handover was written)
+## -1. UPDATE — Phase 2 data layer complete + world reset/lock (second session)
+
+Everything below was written after Phase 1 closed. This session (following
+day) focused on Phase 2 (real data) and infrastructure hardening. Summary:
+
+### Real data migrated from the 2010 engine source
+- **`item_defs`**: 122 real items from `items.rules`, replacing guessed
+  data. Required discovering the REAL live schema differs substantially
+  from assumptions (columns: `category`, `capacity_walk/ride/fly`,
+  `equip_slot`, `skill_required`+`skill_level_req` — not `plural`/
+  `description`/`price`/boolean flags as first assumed). `skill_required`
+  is a real FK into `skill_defs`; migration SQL wraps it in a
+  self-resolving subquery so it doesn't fail on not-yet-seeded skills and
+  self-heals on re-run.
+- **`race_defs`**: new table (didn't exist before), 59 real races (10
+  Leader, 8 Follower, 41 Creature) from `races.rules` — base stats,
+  movement capacities, study bonuses, starting skills.
+- **`skill_defs`**: 299 real skills from `skills.rules` (up from 27
+  placeholder rows), with proper `parent_skill_tag`/`unlocks` hierarchy
+  built from the source's `REQUIRES` chains. Added `level_days` (jsonb
+  array, real per-skill level progression) since the existing
+  `days_per_level` (single int) can't represent it — kept `days_per_level`
+  too, set to `level_days[0]`, for backward compatibility. **Also
+  populated real level-1 combat/stat `effects`** for 162 skills that have
+  them, extracted directly from source.
+
+### Real tag mismatches found and resolved (source vs. live app)
+Several source tags didn't match the app's existing convention for the
+same concept: `hrbs`→`herb`, `airs`→`air_`, `wate`→`watr`, `fshn`→`fish`.
+Renamed on insert to update the existing live rows rather than duplicate.
+Two live tags (`taxe`, `trad`) confirmed to not exist in the source at
+all — legitimate custom additions, left untouched. Two items (`fshi`,
+`yew_`) similarly custom, not in `items.rules`.
+
+### Real bugs found and fixed during this migration (worth knowing for future parsing work)
+- `REQUIRES` fields can appear *after* the first `LEVEL` block, not just in
+  a skill's header — missing this broke the entire parent/child tree on
+  first attempt.
+- Elemental magic schools (air/water/earth/fire/void) use a **different**
+  flag (`ELEMENTAL_MAGIC_SKILL`) than regular magic (`MAGIC_SKILL`) —
+  missed on first pass, caused all five elemental schools to be
+  miscategorized as non-magic production skills.
+- 12 creature-only abilities (`LEARNING_PARADIGM LEARNING_CREATURE`) don't
+  carry any of the normal combat/magic/basic flags — needed a dedicated
+  `creature` category rather than falling through to a wrong default.
+- **Unresolved**: at one point `cmbt`'s `effects` jsonb showed up empty
+  after a migration that should not have touched it (verified via direct
+  SQL, no duplicate row, no trigger found). No confirmed root cause. Not
+  worth chasing further — real level-1 effects were extracted from source
+  and re-populated regardless, so the data itself is fine; just flagging
+  the unexplained event for awareness.
+
+### Code wired to use the real data
+`app/lib/turnProcessor.ts`: STUDY logic now reads `skillDef.level_days`
+(real per-skill progression) instead of the old hardcoded
+`SKILL_LEVEL_DAYS = [15,45,90,180,360]` constant (removed entirely). New
+leader registration now pulls real `upkeep`/`initiative`/`life`/
+`observation` from `race_defs`'s `hero` row (upkeep is 20, confirmed
+against a real archived report — the old hardcoded `5` was provably
+wrong). Combat stats (melee/defense/etc.) for new heroes are still
+placeholder — `race_defs` genuinely doesn't define these; they come from
+learned skills/equipped items in the real design, which registration
+doesn't grant yet. `turnReport.ts` needed no changes — the migration set
+`days_per_level = level_days[0]` specifically so the existing display
+line already shows real data.
+
+**Open technical question, not resolved**: whether `level_days[N]` values
+represent *incremental* days-for-this-level-up or *cumulative* days-from-
+zero. Implemented as incremental (matches the app's existing
+`experience_days` reset-per-level pattern), but not independently
+confirmed against the C++ comparison logic. Worth checking if leveling
+speed looks off in actual play.
+
+### Resource contention rules clarified from RulesNew.txt (important for RECRUIT/USE, not yet built)
+Contrary to an initial assumption of "seniority"/first-dibs:
+- **WORK/wages**: no contention at all. Every unit earns independently
+  based on its own work-days × local wage rate. No shared pool.
+- **Harvesting (USE, not built yet)**: proportional sharing based on
+  harvesting capability when multiple units compete for the same limited
+  resource — not first-come-first-served. (15 grain, two units capable of
+  20/40 per turn → first gets 5, second gets 10.)
+- **Recruiting (RECRUIT, not built yet)**: pool depletes across the month,
+  doesn't refill — earlier *days* within the turn genuinely get priority
+  access (a natural consequence of day-ordered processing, not a separate
+  system). Same-day oversubscription triggers "market rules" (price rises)
+  rather than simple exclusion.
+- **A real "arrival order" concept does exist** in the source, just not
+  for the above: `PROMOTE` repositions units in report order; the
+  `floraison` spell only affects units arriving after the caster; upkeep
+  shortfalls get covered by same-faction, same-location units' spare cash
+  "in order of arrival." None of these require a cross-faction seniority
+  system — day-ordering (already implemented) plus a location-grouped view
+  (needed for combat anyway, Phase 4) covers all of them.
+
+### World reset + lock mechanism (infrastructure, not Phase 2, but done this session)
+Discovered `app/page.tsx` already had a working "Regenerate World" button
+predating this session (from before — not something introduced tonight),
+but it had two real gaps: **never deleted from `players`** (blocked
+re-registration of the same test emails after a reset — directly relevant
+to the "clear everything, 5 players register" workflow Andy described),
+and **no lock protection** at all. Both fixed:
+- `players` now included in the delete sequence
+- New `games.is_locked` boolean column (migration:
+  `05_add_world_lock.sql`)
+- Lock toggle button in the UI; "Regenerate World" visually disables when
+  locked, plus a server-side throw as the real enforcement layer
+- Added a proper pending/loading state (`RegenerateButton.tsx`, a client
+  component using `useFormStatus`) — the operation takes real time
+  (network round-trip per delete + ~15s generation) and previously gave
+  zero visual feedback, looking broken when it wasn't
+- Switched `revalidatePath` to `redirect('/')` after both the regenerate
+  and lock-toggle actions, since `revalidatePath` alone wasn't reliably
+  forcing the browser to show fresh data without a manual refresh
+
+**All of the above is verified working via direct testing this session**,
+not just written and assumed — genuine progress from Phase 1's lesson
+about the gap between "code looks right" and "actually confirmed working."
+
+---
+
 
 Everything below in this document was written before Phase 1 was actually
 verified end-to-end. It has now been run successfully **three consecutive
@@ -239,27 +358,39 @@ highest-value items for the next two phases:
 
 ---
 
-## 7. Suggested phase roadmap (Phase 1 now complete — see section 0)
+## 7. Suggested phase roadmap (updated after second session)
 
-1. ~~Close the loop~~ — **DONE.** Verified three consecutive turns, correct
-   math, real email delivery (Gmail confirmed; Yahoo pending DMARC
-   propagation re-test).
-2. **Regression-test against real playthrough data** — validate order
-   parsing and mechanic formulas against real archived data (see corrected
-   note in section 6, not a literal replay)
-3. **Real data pass** — cross-check `skill_defs`/`item_defs` against
-   `game/skills.rules`/`items.rules` from the 2010 archive
-4. **Minimum viable combat** — a small playtest will produce hex collisions
-   with Outlaws/wolves almost immediately; this can't stay a no-op long
-5. **Fill out order set** — RECRUIT, GIVE, USE, then TEACH (unlocks 3rd+
-   skill levels)
-6. **Playtest readiness** — real starting funds/upkeep numbers, GM admin dry
+1. ~~Close the loop~~ — **DONE.**
+2. **Real data pass** — **DATA LAYER DONE** (item_defs/race_defs/skill_defs
+   all real, migrated from 2010 source; STUDY logic and hero registration
+   wired to use it). Stage 2 (deeper per-level effects, combat actions,
+   produce/consume/summon mechanics) still unparsed — separate future work,
+   not blocking.
+3. **Two real gaps before "5 players register → GM assigns locations → run
+   turn 1" actually works, neither tested yet this session or prior:**
+   - GM admin location-assignment UI — described as built, never exercised
+   - Multi-faction simultaneous turn processing — the day loop is written
+     generally (not faction-specific), but has only ever run with one
+     faction (F8438) at a time. Should work, never proven.
+   Recommend: clear the world (now safe to do — reset mechanism fixed and
+   tested), create 2-3 fake pending registrations, walk through GM
+   assignment, run one turn, confirm each faction gets a correct
+   individual report. This is the natural next concrete milestone.
+4. **Minimum viable combat** — needs `engine/CombatDesign.txt` read first
+   (design doc, not code), then real design decisions from Andy before
+   implementation
+5. **Fill out order set** — RECRUIT, GIVE, USE now have real data + the
+   correct contention rules (see section -1) to build against correctly,
+   rather than guessing. TEACH unlocks 3rd+ skill levels.
+6. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
+   fixed via race_defs; starting funds still a placeholder), GM admin dry
    run, then actually recruit 5 people
 
-**Standing practice from here on, given tonight's deployment confusion:**
-after every push, check Vercel's Deployments tab is green before assuming a
-fix is live. It cost most of tonight's session to discover production had
-been silently broken for ~2 days.
+**Standing practice, reinforced this session**: verify things actually
+work via direct testing, not just "the code looks right" or "the build is
+green." Multiple real bugs this session were caught specifically by
+checking actual database state / actual UI behavior rather than trusting
+generated code alone.
 
 ---
 
