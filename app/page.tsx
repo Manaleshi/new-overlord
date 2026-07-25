@@ -1,6 +1,7 @@
 import { supabase } from './lib/supabase'
 import { generateWorld } from './lib/worldGenerator'
 import WorldMap from './components/WorldMap'
+import RegenerateButton from './components/RegenerateButton'
 import { revalidatePath } from 'next/cache'
 
 async function createNewWorld() {
@@ -90,7 +91,9 @@ export default async function Home() {
             </form>
           )}
 
-          {isLocked ? (
+          {isLocked ? (import WorldMap from './components/WorldMap'
+import RegenerateButton from './components/RegenerateButton'
+import { revalidatePath } from 'next/cache'
             <button
               type="button"
               disabled
@@ -101,12 +104,7 @@ export default async function Home() {
             </button>
           ) : (
             <form action={createNewWorld}>
-              <button
-                type="submit"
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-              >
-                ↻ Regenerate World
-              </button>
+              <RegenerateButton />
             </form>
           )}
         </div>
