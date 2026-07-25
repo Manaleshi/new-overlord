@@ -3,6 +3,7 @@ import { generateWorld } from './lib/worldGenerator'
 import WorldMap from './components/WorldMap'
 import RegenerateButton from './components/RegenerateButton'
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 async function createNewWorld() {
   'use server'
@@ -26,14 +27,16 @@ async function createNewWorld() {
   await supabase.from('games').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await generateWorld('Alpha', 50, 50)
   revalidatePath('/')
+  redirect('/')
 }
 
 async function toggleLock(formData: FormData) {
   'use server'
   const gameId = formData.get('gameId') as string
   const currentlyLocked = formData.get('currentlyLocked') === 'true'
-  await supabase.from('games').update({ is_locked: !currentlyLocked }).eq('id', gameId)
+ await supabase.from('games').update({ is_locked: !currentlyLocked }).eq('id', gameId)
   revalidatePath('/')
+  redirect('/')
 }
 
 async function fetchAllLocations() {
