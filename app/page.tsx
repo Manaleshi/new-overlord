@@ -5,7 +5,15 @@ import { revalidatePath } from 'next/cache'
 
 async function createNewWorld() {
   'use server'
-  // Delete in correct order to respect foreign keys
+
+  const { data: existingGames } = await supabase.from('games').select('id, is_locked').limit(1)
+  if (existingGames && existingGames.length > 0 && existingGames[0].is_locked) {
+    // Server-side guard -- the UI also hides/disables the button when locked,
+    // but this is the real enforcement point in case that's ever bypassed.
+    throw new Error('World is locked. Unlock it first before regenerating.')
+  }
+
+  // Delete in correct order to respect foreign keys.
   await supabase.from('unit_items').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('unit_skills').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('units').delete().neq('id', '00000000-0000-0000-0000-000000000000')
@@ -14,10 +22,21 @@ async function createNewWorld() {
   await supabase.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('turn_events').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('structures').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+  // FIXED: players was never cleared before, which blocked re-registration
+  // of the same test emails after a reset ("Already Registered" error).
+  await supabase.from('players').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('locations').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('worlds').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('games').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await generateWorld('Alpha', 50, 50)
+  revalidatePath('/')
+}
+
+async function toggleLock(formData: FormData) {
+  'use server'
+  const gameId = formData.get('gameId') as string
+  const currentlyLocked = formData.get('currentlyLocked') === 'true'
+  await supabase.from('games').update({ is_locked: !currentlyLocked }).eq('id', gameId)
   revalidatePath('/')
 }
 
@@ -46,19 +65,51 @@ async function fetchAllLocations() {
 export default async function Home() {
   const { data: games } = await supabase.from('games').select('*')
   const locations = await fetchAllLocations()
+  const currentGame = games && games.length > 0 ? games[0] : null
+  const isLocked = currentGame?.is_locked ?? false
 
   return (
     <main className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">New Overlord</h1>
-        <form action={createNewWorld}>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-          >
-            ↻ Regenerate World
-          </button>
-        </form>
+        <div className="flex items-center gap-3">
+          {currentGame && (
+            <form action={toggleLock}>
+              <input type="hidden" name="gameId" value={currentGame.id} />
+              <input type="hidden" name="currentlyLocked" value={String(isLocked)} />
+              <button
+                type="submit"
+                className={
+                  isLocked
+                    ? 'bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 text-sm'
+                    : 'bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 text-sm'
+                }
+              >
+                {isLocked ? '🔒 World Locked — Click to Unlock' : '🔓 Unlocked — Click to Lock'}
+              </button>
+            </form>
+          )}
+
+          {isLocked ? (
+            <button
+              type="button"
+              disabled
+              title="Unlock the world first before regenerating"
+              className="bg-gray-300 text-gray-500 px-6 py-2 rounded cursor-not-allowed"
+            >
+              ↻ Regenerate World
+            </button>
+          ) : (
+            <form action={createNewWorld}>
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+              >
+                ↻ Regenerate World
+              </button>
+            </form>
+          )}
+        </div>
       </div>
 
       <div className="mb-8">
@@ -72,9 +123,10 @@ export default async function Home() {
         )}
       </div>
 
-      {games && games.length > 0 && (
+      {currentGame && (
         <div className="mb-4 text-sm text-gray-500">
-          Game: {games[0].name} — Turn {games[0].turn_number} — {games[0].status}
+          Game: {currentGame.name} — Turn {currentGame.turn_number} — {currentGame.status}
+          {isLocked && <span className="ml-2 text-amber-600 font-medium">🔒 Locked</span>}
         </div>
       )}
     </main>
