@@ -21,7 +21,6 @@ import { generateTurnReport } from './turnReport'
 import { sendEmail } from './email'
 
 const DAYS_PER_TURN = 30
-const SKILL_LEVEL_DAYS = [15, 45, 90, 180, 360] // days required for level 1..5 (TODO: confirm this is universal, not per-skill, with Andy)
 const SELF_STUDY_MAX_LEVEL = 2 // levels above this require a teacher (Stage 3+)
 
 const DIRECTION_MAP: Record<string, string> = {
@@ -85,6 +84,7 @@ interface SkillDefRow {
   name: string
   category: string
   days_per_level: number | null
+  level_days: number[] | null  // real per-skill, per-level progression from skills.rules
   cost_per_day: number | null
   leader_only: boolean
   specialist: boolean
@@ -103,6 +103,7 @@ interface UnitSkillRow {
 
 type FullDayData =
   | { kind: 'move'; targetLocationId: string; targetLocCode: string }
+  | { kind: 'study'; targetLevel: number }
   | { kind: 'none' }
 
 interface ActiveFullDayOrder {
@@ -155,6 +156,16 @@ export async function processPendingRegistrations(gameId: string): Promise<{ cre
   if (error) throw new Error(`Failed to load pending players: ${error.message}`)
   if (!pendingPlayers || pendingPlayers.length === 0) return { created: 0, skipped: [] }
 
+  // Real starting-leader stats from race_defs (2010 engine source), replacing
+  // the earlier hardcoded guesses. Only covers what the 'hero' race actually
+  // defines (upkeep/initiative/observation/life/control) -- combat stats
+  // (melee/defense/damage/etc.) aren't part of a race's base stats in the
+  // source; those come from learned skills and equipped items instead, which
+  // this registration step doesn't grant yet. Left as their prior placeholder
+  // values below, flagged accordingly, rather than guessing further.
+  const { data: heroRace } = await supabase.from('race_defs').select('base_stats').eq('tag', 'hero').maybeSingle()
+  const heroStats = heroRace?.base_stats as Record<string, number> | undefined
+
   for (const player of pendingPlayers) {
     const startingLocationId = player.attributes?.starting_location
     if (!startingLocationId) {
@@ -205,17 +216,17 @@ export async function processPendingRegistrations(gameId: string): Promise<{ cre
       is_hero: true,
       is_leader: true,
       figure_count: 1,
-      upkeep_per_figure: 5, // TODO confirm with Andy
-      initiative: 2,
-      melee: 1,
-      defense: 1,
+      upkeep_per_figure: heroStats?.upkeep ?? 20, // real value from race_defs (was hardcoded 5 -- confirmed wrong against an actual live report)
+      initiative: heroStats?.initiative ?? 2,
+      melee: 1, // TODO: not part of race_defs -- comes from learned skills/equipped items in the real design, not granted here yet
+      defense: 1, // TODO: same as above
       missile: 0,
-      life: 4,
+      life: heroStats?.life ?? 4,
       hits: 4,
       damage: 1,
       ranged_damage: 0,
       stealth: 1,
-      observation: 4,
+      observation: heroStats?.observation ?? 4,
       mana_current: 0,
       mana_max: 0,
       attributes: {},
@@ -282,18 +293,10 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
   if (unitsError) throw new Error(`Failed to load units: ${unitsError.message}`)
 
   const unitIds = (units || []).map(u => u.id)
+  const safeUnitIds = unitIds.length > 0 ? unitIds : ['00000000-0000-0000-0000-000000000000']
 
-  // Chunked to avoid Supabase's URL length limit on large .in() lists —
-  // with NPC units across a 50x50 world, unitIds can run into the hundreds.
-  const unitSkillRows: any[] = []
-  const CHUNK_SIZE = 150
-  for (let i = 0; i < unitIds.length; i += CHUNK_SIZE) {
-    const chunk = unitIds.slice(i, i + CHUNK_SIZE)
-    const { data, error } = await supabase.from('unit_skills').select('*').in('unit_id', chunk)
-    if (error) throw new Error(`Failed to load unit_skills (rows ${i}-${i + chunk.length}): ${error.message}`)
-    if (data) unitSkillRows.push(...data)
-  }
-
+  const { data: unitSkillRows, error: unitSkillsError } = await supabase.from('unit_skills').select('*').in('unit_id', safeUnitIds)
+  if (unitSkillsError) throw new Error(`Failed to load unit_skills: ${unitSkillsError.message}`)
   const unitSkills = new Map<string, Map<string, UnitSkillRow>>()
   for (const row of unitSkillRows || []) {
     if (!unitSkills.has(row.unit_id)) unitSkills.set(row.unit_id, new Map())
@@ -492,7 +495,6 @@ function beginFullDayOrder(
 
     case 'STUDY': {
       const skillTag = (order.args[0] || '').toLowerCase()
-      const stopLevel = order.args[1] ? parseInt(order.args[1]) : null
       const skillDef = ctx.skillDefsByTag.get(skillTag)
       if (!skillDef) return { status: 'INVALID' }
 
@@ -500,6 +502,15 @@ function beginFullDayOrder(
 
       const skillRow = ctx.unitSkills.get(state.unit.id)?.get(skillTag)
       const currentLevel = skillRow?.level ?? 0
+      const MAX_SKILL_LEVEL = skillDef.level_days?.length ?? 5 // real per-skill max level from skills.rules
+
+      // Per the original engine (StudyOrder::process): if no level is given,
+      // the implicit target is always current+1, capped at max — STUDY is
+      // never open-ended even without an explicit level argument.
+      let targetLevel = order.args[1] ? parseInt(order.args[1]) : currentLevel + 1
+      if (targetLevel > MAX_SKILL_LEVEL) targetLevel = MAX_SKILL_LEVEL
+
+      if (currentLevel >= targetLevel) return { status: 'INVALID' } // nothing left to study toward
 
       if (currentLevel >= SELF_STUDY_MAX_LEVEL) {
         logEvent(
@@ -510,9 +521,7 @@ function beginFullDayOrder(
         return { status: 'FAILURE' }
       }
 
-      if (stopLevel !== null && currentLevel >= stopLevel) return { status: 'INVALID' }
-
-      return { status: 'SUCCESS', daysRemaining: order.duration ?? 1, data: { kind: 'none' } }
+      return { status: 'SUCCESS', daysRemaining: order.duration ?? 1, data: { kind: 'study', targetLevel } }
     }
 
     case 'MOVE': {
@@ -570,11 +579,12 @@ function tickFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: number) 
 
     case 'STUDY': {
       const skillTag = (active.order.args[0] || '').toLowerCase()
-      const stopLevel = active.order.args[1] ? parseInt(active.order.args[1]) : null
+      const targetLevel = active.data.kind === 'study' ? active.data.targetLevel : null
       const skillDef = ctx.skillDefsByTag.get(skillTag)
       if (!skillDef) break
 
-      const costPerDay = skillDef.cost_per_day ?? 1
+      // Per the original engine: study cost is per-figure, not a flat daily fee.
+      const costPerDay = (skillDef.cost_per_day ?? 1) * state.unit.figure_count
       const faction = ctx.factionsById.get(state.unit.faction_id)
 
       if (faction && faction.funds >= costPerDay) {
@@ -591,7 +601,15 @@ function tickFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: number) 
         skillRow.experience_days += 1
         ctx.dirtyUnitSkills.add(state.unit.id)
 
-        const neededForNextLevel = SKILL_LEVEL_DAYS[skillRow.level]
+        // Real per-skill progression from skills.rules, not a shared global guess.
+        // NOTE: treated as incremental (days needed for *this* level-up), matching
+        // how experience_days already resets after each level per the line below --
+        // consistent with the app's existing data model, but the source's LEVEL
+        // field's cumulative-vs-incremental semantics weren't independently confirmed
+        // against the C++ comparison logic itself. Worth double-checking if leveling
+        // speed looks off in actual play.
+        const neededForNextLevel = skillDef.level_days?.[skillRow.level]
+
         if (neededForNextLevel !== undefined && skillRow.experience_days >= neededForNextLevel) {
           skillRow.level += 1
           skillRow.experience_days -= neededForNextLevel
@@ -600,7 +618,7 @@ function tickFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: number) 
             `${state.unit.name} [${state.unit.unit_code}] achieves ${skillRow.level}${ordinalSuffix(skillRow.level)} ${skillDef.name} [${skillTag}]`,
             state.unit.faction_id, state.unit.location_id
           )
-          if (stopLevel !== null && skillRow.level >= stopLevel) {
+          if (targetLevel !== null && skillRow.level >= targetLevel) {
             active.daysRemaining = 0
             return
           }
@@ -664,7 +682,6 @@ export async function processTurn(gameId: string): Promise<{
   reportsSent: string[]
   reportErrors: string[]
 }> {
-
   const { data: game, error: gameError } = await supabase.from('games').select('*').eq('id', gameId).single()
   if (gameError || !game) throw new Error(`Game not found: ${gameError?.message}`)
 
@@ -709,7 +726,7 @@ export async function processTurn(gameId: string): Promise<{
     }
   }
 
-if (ctx.eventLog.length > 0) {
+  if (ctx.eventLog.length > 0) {
     await supabase.from('turn_events').insert(ctx.eventLog)
   }
 
