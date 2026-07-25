@@ -9,12 +9,9 @@ async function createNewWorld() {
 
   const { data: existingGames } = await supabase.from('games').select('id, is_locked').limit(1)
   if (existingGames && existingGames.length > 0 && existingGames[0].is_locked) {
-    // Server-side guard -- the UI also hides/disables the button when locked,
-    // but this is the real enforcement point in case that's ever bypassed.
     throw new Error('World is locked. Unlock it first before regenerating.')
   }
 
-  // Delete in correct order to respect foreign keys.
   await supabase.from('unit_items').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('unit_skills').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('units').delete().neq('id', '00000000-0000-0000-0000-000000000000')
@@ -23,8 +20,6 @@ async function createNewWorld() {
   await supabase.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('turn_events').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('structures').delete().neq('id', '00000000-0000-0000-0000-000000000000')
-  // FIXED: players was never cleared before, which blocked re-registration
-  // of the same test emails after a reset ("Already Registered" error).
   await supabase.from('players').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('locations').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   await supabase.from('worlds').delete().neq('id', '00000000-0000-0000-0000-000000000000')
@@ -91,9 +86,7 @@ export default async function Home() {
             </form>
           )}
 
-          {isLocked ? (import WorldMap from './components/WorldMap'
-import RegenerateButton from './components/RegenerateButton'
-import { revalidatePath } from 'next/cache'
+          {isLocked ? (
             <button
               type="button"
               disabled
