@@ -186,10 +186,24 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
     const maxDist = Math.sqrt(cx * cx + cy * cy)
     const bordersColonialSplit = IMPERIAL_RADIUS + (maxDist - IMPERIAL_RADIUS) / 2
 
-    const { data: candidateLocations } = await supabase
-      .from('locations')
-      .select('id, resources, grid_x, grid_y')
-      .eq('world_id', worldRow.id)
+    // Paginated -- a 50x50 world has 2,500 locations, well past Supabase's
+    // default 1,000-row cap. Without this, rows past index 1000 (which,
+    // given row-major insertion order, includes the Imperial City cluster
+    // near the vertical center) silently never get fetched at all.
+    let candidateLocations: any[] = []
+    let fetchFrom = 0
+    const FETCH_BATCH = 1000
+    while (true) {
+      const { data: batch } = await supabase
+        .from('locations')
+        .select('id, resources, grid_x, grid_y')
+        .eq('world_id', worldRow.id)
+        .range(fetchFrom, fetchFrom + FETCH_BATCH - 1)
+      if (!batch || batch.length === 0) break
+      candidateLocations = candidateLocations.concat(batch)
+      if (batch.length < FETCH_BATCH) break
+      fetchFrom += FETCH_BATCH
+    }
 
     for (const l of candidateLocations || []) {
       if (!l.resources?.population_center) continue // must be an actual settlement, not open plains
