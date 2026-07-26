@@ -148,7 +148,7 @@ function logEvent(
 // Registration processing
 // ---------------------------------------------------------------------------
 
-export async function processPendingRegistrations(gameId: string): Promise<{ created: number; skipped: string[] }> {
+export async function processPendingRegistrations(gameId: string, turnNumber: number): Promise<{ created: number; skipped: string[] }> {
   const skipped: string[] = []
   let created = 0
 
@@ -240,7 +240,7 @@ export async function processPendingRegistrations(gameId: string): Promise<{ cre
         funds: 500, // TODO confirm starting funds with Andy
         control_points_max: 200,
         status: 'active',
-        joined_turn: null,
+        joined_turn: turnNumber,
         stances: {},
         attributes: {
           leader_type: player.attributes?.leader_type || 'general',
@@ -745,7 +745,7 @@ export async function processTurn(gameId: string): Promise<{
   const { data: game, error: gameError } = await supabase.from('games').select('*').eq('id', gameId).single()
   if (gameError || !game) throw new Error(`Game not found: ${gameError?.message}`)
 
-  const registrations = await processPendingRegistrations(gameId)
+  const registrations = await processPendingRegistrations(gameId, game.turn_number)
   const ctx = await buildTurnContext(gameId, game.turn_number)
 
   for (let day = 1; day <= DAYS_PER_TURN; day++) {
