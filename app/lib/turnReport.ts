@@ -88,11 +88,9 @@ function ordinalLevel(n: number): string {
 }
 
 function isVisible(observer: any, target: any): boolean {
-  // Observer's best observation stat from all their units
   const obs = observer
   const stealthDiff = target.stealth - obs
   if (stealthDiff <= 0) return true
-  // 10% chance per level of difference to avoid being seen
   const chanceHidden = stealthDiff * 0.10
   return Math.random() > chanceHidden
 }
@@ -183,7 +181,6 @@ function formatLocation(location: any, factionUnits: any[], otherUnits: any[], f
     }
   }
 
-  // Own units at this location
   const ownUnitsHere = factionUnits.filter((u: any) => u.location_id === location.id)
   if (ownUnitsHere.length > 0) {
     lines.push(`  Your units:`)
@@ -192,7 +189,6 @@ function formatLocation(location: any, factionUnits: any[], otherUnits: any[], f
     }
   }
 
-  // Other units visible at this location
   const othersHere = otherUnits.filter((u: any) => u.location_id === location.id)
   const visibleOthers = othersHere.filter((u: any) => isVisible(factionObservation, u))
 
@@ -216,7 +212,6 @@ export async function generateTurnReport(factionId: string): Promise<string> {
   const { faction, player, units, locations, game, otherUnits, skillDefs, itemDefs } = data
   const lines: string[] = []
 
-  // Best observation across all faction units
   const factionObservation = Math.max(...units.map(u => u.observation ?? 0), 0)
 
   lines.push(`---------------------------------------------------`)
@@ -271,13 +266,11 @@ export async function generateTurnReport(factionId: string): Promise<string> {
     lines.push(``)
   }
 
-  // Knowledge section
   lines.push(`---------------------------------------------------`)
   lines.push(`// Knowledge`)
   lines.push(`---------------------------------------------------`)
   lines.push(``)
 
-  // Collect all unique skill tags from this faction's units
   const knownSkillTags = [...new Set(units.flatMap((u: any) => u.skills.map((s: any) => s.skill_tag)))]
   const knownItemTags = [...new Set(units.flatMap((u: any) => u.items.map((i: any) => i.item_tag)))]
 
@@ -316,7 +309,6 @@ export async function generateTurnReport(factionId: string): Promise<string> {
     lines.push(``)
   }
 
-  // Order template
   lines.push(`---------------------------------------------------`)
   lines.push(`// Order Template - Turn ${game.turn_number + 1}`)
   lines.push(`---------------------------------------------------`)

@@ -11,8 +11,8 @@
 // — these log an `order_pending` event and stay queued, untouched, for a
 // later stage rather than being silently dropped.
 //
-// Still NOT done here: wages/upkeep/desertion at month-end, outlaw spawning,
-// report generation/emailing, turn_number increment. Stage 4.
+// Still NOT done here: wages/upkeep/desertion at month-end, outlaw spawning.
+// Report generation/emailing and turn_number increment ARE done (Stage 4a).
 
 import { supabase } from './supabase'
 import bcrypt from 'bcryptjs'
@@ -145,7 +145,7 @@ function logEvent(
 }
 
 // ---------------------------------------------------------------------------
-// Registration processing (unchanged from Stage 1)
+// Registration processing
 // ---------------------------------------------------------------------------
 
 export async function processPendingRegistrations(gameId: string): Promise<{ created: number; skipped: string[] }> {
@@ -166,11 +166,63 @@ export async function processPendingRegistrations(gameId: string): Promise<{ cre
   const { data: heroRace } = await supabase.from('race_defs').select('base_stats').eq('tag', 'hero').maybeSingle()
   const heroStats = heroRace?.base_stats as Record<string, number> | undefined
 
+  // Real settlement locations across all three starting zones, fetched once
+  // per batch rather than per-player. Each zone maps to a distance band from
+  // the Imperial City, matching the "ZONE imperial|borders|colonial" choice
+  // offered at registration (see handleRegistration in the inbound email
+  // route). worldGenerator.ts only tags is_imperial_land explicitly -- the
+  // borders/colonial split is derived here from grid distance, split evenly
+  // across the remaining map radius beyond the Imperial zone.
+  const IMPERIAL_RADIUS = 4 // must match worldGenerator.ts's imperialRadius
+  const { data: worldRow } = await supabase.from('worlds').select('id, width, height').eq('game_id', gameId).limit(1).maybeSingle()
+
+  const settlementsByZone: Record<'imperial' | 'borders' | 'colonial', string[]> = {
+    imperial: [], borders: [], colonial: [],
+  }
+
+  if (worldRow) {
+    const cx = Math.floor((worldRow.width ?? 50) / 2)
+    const cy = Math.floor((worldRow.height ?? 50) / 2)
+    const maxDist = Math.sqrt(cx * cx + cy * cy)
+    const bordersColonialSplit = IMPERIAL_RADIUS + (maxDist - IMPERIAL_RADIUS) / 2
+
+    const { data: candidateLocations } = await supabase
+      .from('locations')
+      .select('id, resources, grid_x, grid_y')
+      .eq('world_id', worldRow.id)
+
+    for (const l of candidateLocations || []) {
+      if (!l.resources?.population_center) continue // must be an actual settlement, not open plains
+      if (l.resources?.is_imperial_land === true) {
+        settlementsByZone.imperial.push(l.id)
+        continue
+      }
+      const dist = Math.sqrt((l.grid_x - cx) ** 2 + (l.grid_y - cy) ** 2)
+      if (dist <= bordersColonialSplit) settlementsByZone.borders.push(l.id)
+      else settlementsByZone.colonial.push(l.id)
+    }
+  }
+
   for (const player of pendingPlayers) {
-    const startingLocationId = player.attributes?.starting_location
+    let startingLocationId = player.attributes?.starting_location
+
     if (!startingLocationId) {
-      skipped.push(`${player.email}: no starting_location assigned yet — run GM admin assignment first`)
-      continue
+      const requestedZone = (player.attributes?.starting_zone || 'colonial') as 'imperial' | 'borders' | 'colonial'
+      let pool = settlementsByZone[requestedZone]
+
+      // Fall back through the other zones rather than fail outright if the
+      // requested zone happens to have no settlements (e.g. a small test world).
+      if (!pool || pool.length === 0) {
+        pool = settlementsByZone.imperial.length > 0 ? settlementsByZone.imperial
+             : settlementsByZone.borders.length > 0 ? settlementsByZone.borders
+             : settlementsByZone.colonial
+      }
+
+      if (!pool || pool.length === 0) {
+        skipped.push(`${player.email}: no settlement locations found anywhere to auto-assign -- has the world been generated?`)
+        continue
+      }
+      startingLocationId = pool[Math.floor(Math.random() * pool.length)]
     }
 
     const factionCode = await generateUniqueFactionCode()
@@ -293,10 +345,18 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
   if (unitsError) throw new Error(`Failed to load units: ${unitsError.message}`)
 
   const unitIds = (units || []).map(u => u.id)
-  const safeUnitIds = unitIds.length > 0 ? unitIds : ['00000000-0000-0000-0000-000000000000']
 
-  const { data: unitSkillRows, error: unitSkillsError } = await supabase.from('unit_skills').select('*').in('unit_id', safeUnitIds)
-  if (unitSkillsError) throw new Error(`Failed to load unit_skills: ${unitSkillsError.message}`)
+  // Chunked to avoid Supabase's URL length limit on large .in() lists --
+  // with NPC units across a 50x50 world, unitIds can run into the hundreds.
+  const unitSkillRows: any[] = []
+  const CHUNK_SIZE = 150
+  for (let i = 0; i < unitIds.length; i += CHUNK_SIZE) {
+    const chunk = unitIds.slice(i, i + CHUNK_SIZE)
+    const { data, error } = await supabase.from('unit_skills').select('*').in('unit_id', chunk)
+    if (error) throw new Error(`Failed to load unit_skills (rows ${i}-${i + chunk.length}): ${error.message}`)
+    if (data) unitSkillRows.push(...data)
+  }
+
   const unitSkills = new Map<string, Map<string, UnitSkillRow>>()
   for (const row of unitSkillRows || []) {
     if (!unitSkills.has(row.unit_id)) unitSkills.set(row.unit_id, new Map())
@@ -731,7 +791,6 @@ export async function processTurn(gameId: string): Promise<{
   }
 
   // NOTE: wages/upkeep/desertion and outlaw spawning are still stubbed — Stage 4b.
-  // Report generation/emailing and the turn_number increment below close the loop.
 
   const reportsSent: string[] = []
   const reportErrors: string[] = []
