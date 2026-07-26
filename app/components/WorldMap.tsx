@@ -172,10 +172,13 @@ function EconomicsPanel({ econ }: { econ: NonNullable<Location['economics']> }) 
 
 export default function WorldMap({ locations }: { locations: Location[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [selected, setSelected] = useState<Location | null>(null)
   const [mapData, setMapData] = useState<Location[]>(locations)
   const [hoveredCode, setHoveredCode] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'outer' | 'inner'>('outer')
+  const [searchInput, setSearchInput] = useState('')
+  const [searchError, setSearchError] = useState<string | null>(null)
 
   const w = HEX_SIZE * 2
   const h = Math.sqrt(3) * HEX_SIZE
@@ -247,19 +250,71 @@ export default function WorldMap({ locations }: { locations: Location[] }) {
     }
   }
 
+  function handleSearch() {
+    const code = searchInput.trim().toUpperCase()
+    if (!code) return
+
+    const loc = mapData.find(l => l.loc_code.toUpperCase() === code)
+    if (!loc) {
+      setSearchError(`No location found with code "${code}"`)
+      return
+    }
+
+    setSearchError(null)
+    setSelected(loc)
+    setViewMode('outer')
+
+    // Center the map view on the found hex.
+    const container = containerRef.current
+    if (container) {
+      const x = loc.grid_x ?? 0
+      const y = loc.grid_y ?? 0
+      const { px, py } = hexCenter(x, y)
+      container.scrollTo({
+        left: px - container.clientWidth / 2,
+        top: py - container.clientHeight / 2,
+        behavior: 'smooth',
+      })
+    }
+  }
+
+  function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') handleSearch()
+  }
+
   const inner = selected?.resources?.population_center
 
   return (
     <div className="flex gap-4">
-      <div className="overflow-auto border rounded bg-gray-900" style={{ maxHeight: '85vh', maxWidth: '75vw' }}>
-        <canvas
-          ref={canvasRef}
-          width={canvasWidth}
-          height={canvasHeight}
-          onMouseMove={handleMouseMove}
-          onClick={handleClick}
-          style={{ cursor: 'crosshair', display: 'block' }}
-        />
+      <div className="flex flex-col gap-2" style={{ maxWidth: '75vw' }}>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => { setSearchInput(e.target.value); setSearchError(null) }}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="Jump to loc code (e.g. L0001)"
+            className="border rounded px-3 py-1.5 text-sm flex-1 max-w-xs"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-semibold hover:bg-blue-700"
+          >
+            Go
+          </button>
+          {searchError && <span className="text-red-600 text-xs">{searchError}</span>}
+        </div>
+
+        <div ref={containerRef} className="overflow-auto border rounded bg-gray-900" style={{ maxHeight: '85vh', maxWidth: '75vw' }}>
+          <canvas
+            ref={canvasRef}
+            width={canvasWidth}
+            height={canvasHeight}
+            onMouseMove={handleMouseMove}
+            onClick={handleClick}
+            style={{ cursor: 'crosshair', display: 'block' }}
+          />
+        </div>
       </div>
 
       <div className="w-72 shrink-0 overflow-y-auto" style={{ maxHeight: '85vh' }}>
