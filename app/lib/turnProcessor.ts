@@ -420,11 +420,42 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
   }
 
   for (const unit of units || []) {
-    const orders = ordersByUnitId.get(unit.id) || []
+    const hasFreshSubmission = ordersByUnitId.has(unit.id)
+    const carriedActiveOrder = (unit as any).active_full_day_order as ActiveFullDayOrder | null
+    const carriedPending: ParsedOrder[] = (unit as any).pending_orders || []
+
+    let orders: ParsedOrder[]
+    let fullDayOrder: ActiveFullDayOrder | null
+
+    if (carriedActiveOrder && carriedActiveOrder.data?.kind === 'move') {
+      // Movement is protected per RulesNew.txt: "the stack will not proceed
+      // any other orders... until the movement completes" -- a fresh
+      // submission cannot redirect it. Only RETREAT can (not yet built).
+      if (hasFreshSubmission) {
+        const freshOrders = ordersByUnitId.get(unit.id)!
+        if (freshOrders[0]?.command === 'RETREAT') {
+          logEvent(ctx, 'order_pending', `${unit.name} [${unit.unit_code}]: RETREAT not yet implemented -- movement continues`, unit.faction_id, unit.location_id)
+        } else if (freshOrders.length > 0) {
+          logEvent(ctx, 'orders_ignored', `${unit.name} [${unit.unit_code}]: new orders ignored -- unit is mid-movement and cannot be redirected except by RETREAT`, unit.faction_id, unit.location_id)
+        }
+      }
+      orders = carriedPending.map(o => ({ ...o }))
+      fullDayOrder = carriedActiveOrder
+    } else if (hasFreshSubmission) {
+      // Fresh submission replaces the old stack entirely, abandoning any
+      // non-move order that was mid-progress (e.g. a partial STUDY/WORK).
+      orders = ordersByUnitId.get(unit.id)!.map(o => ({ ...o }))
+      fullDayOrder = null
+    } else {
+      // Nothing submitted this turn -- carry forward exactly as-is.
+      orders = carriedPending.map(o => ({ ...o }))
+      fullDayOrder = carriedActiveOrder
+    }
+
     ctx.unitStates.set(unit.id, {
       unit,
-      orders: orders.map(o => ({ ...o })),
-      fullDayOrder: null,
+      orders,
+      fullDayOrder,
       dirty: false,
     })
   }
@@ -791,12 +822,17 @@ export async function processTurn(gameId: string): Promise<{
     await supabase.from('factions').update({ funds: faction.funds }).eq('id', faction.id)
   }
 
-  for (const state of ctx.unitStates.values()) {
+  ffor (const state of ctx.unitStates.values()) {
     const attrs = { ...(state.unit.attributes || {}) }
     delete attrs.guarding
     await supabase
       .from('units')
-      .update({ location_id: state.unit.location_id, attributes: attrs })
+      .update({
+        location_id: state.unit.location_id,
+        attributes: attrs,
+        pending_orders: state.orders,
+        active_full_day_order: state.fullDayOrder,
+      })
       .eq('id', state.unit.id)
   }
 
