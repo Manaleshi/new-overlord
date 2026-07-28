@@ -338,8 +338,26 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
   const factionsById = new Map<string, FactionRow>()
   for (const f of factions || []) factionsById.set(f.id, f)
 
-  const { data: locations, error: locationsError } = await supabase.from('locations').select('*')
-  if (locationsError) throw new Error(`Failed to load locations: ${locationsError.message}`)
+  // Paginated -- same fix as the registration zone query. A 50x50 world has
+  // 2,500 locations, past Supabase's default 1,000-row cap. Without this,
+  // any location past row 1000 (in whatever order Supabase returns) is
+  // silently missing from locationsById, causing MOVE (and anything else
+  // that looks up a unit's current location) to fail as INVALID with no
+  // logged event at all -- exactly the "MOVE silently did nothing" bug.
+  let locations: any[] = []
+  let locFetchFrom = 0
+  const LOC_FETCH_BATCH = 1000
+  while (true) {
+    const { data: locBatch, error: locationsError } = await supabase
+      .from('locations')
+      .select('*')
+      .range(locFetchFrom, locFetchFrom + LOC_FETCH_BATCH - 1)
+    if (locationsError) throw new Error(`Failed to load locations: ${locationsError.message}`)
+    if (!locBatch || locBatch.length === 0) break
+    locations = locations.concat(locBatch)
+    if (locBatch.length < LOC_FETCH_BATCH) break
+    locFetchFrom += LOC_FETCH_BATCH
+  }
   const locationsById = new Map<string, LocationRow>()
   const locCodeToId = new Map<string, string>()
   for (const l of locations || []) {
