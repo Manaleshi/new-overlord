@@ -822,7 +822,7 @@ export async function processTurn(gameId: string): Promise<{
     await supabase.from('factions').update({ funds: faction.funds }).eq('id', faction.id)
   }
 
-  ffor (const state of ctx.unitStates.values()) {
+  for (const state of ctx.unitStates.values()) {
     const attrs = { ...(state.unit.attributes || {}) }
     delete attrs.guarding
     await supabase
