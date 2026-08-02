@@ -5,7 +5,195 @@ without losing context. Read this before touching any code.
 
 ---
 
-## -1. UPDATE — Phase 2 data layer complete + world reset/lock (second session)
+## -3. UPDATE — Order persistence, a second pagination bug, and a schema mismatch that hid for the whole project (fourth session)
+
+### Real bug found and fixed: second unpaginated locations query
+`buildTurnContext()` had its own separate, completely unpaginated
+`locations` fetch (`select('*')`, no `.range()`) used to build
+`locationsById`/`locCodeToId` for the actual day loop — same 1,000-row
+Supabase cap, same 2,500-location world. This one was worse than the
+registration-time version fixed last session: if a unit's *current*
+location happened to land past row 1,000, `ctx.locationsById.get(...)`
+silently returned `undefined`, `exits` fell back to `[]`, MOVE returned
+`INVALID`, and **INVALID full-day orders are spliced out with zero logged
+event** — so a submitted, correctly-parsed MOVE order could silently do
+nothing, with no error anywhere. This is exactly what happened on the
+first live MOVE test. Fixed with the same batched `.range()` pagination
+pattern. **Any future query against `locations` needs this same check —
+there is no single fetch-everything call site left as of this fix, but
+watch for new ones.**
+
+### Real feature built: order persistence across turn boundaries
+Confirmed directly from `RulesNew.txt`, not assumed: *"If a unit cannot
+execute all orders within the turn, those orders will be kept and
+executed for the next turn, even if you do not submit a new set of
+orders."* A fresh `UNIT` submission replaces the old stack; omitting a
+unit's `UNIT` block leaves its carried-forward stack untouched. This was
+**not implemented at all before this session** — every turn discarded all
+in-memory unit-order state, meaning nothing ever actually carried forward
+despite the rules requiring it.
+
+Implemented:
+- Two new `units` columns: `pending_orders` (jsonb array) and
+  `active_full_day_order` (jsonb, nullable) — see
+  `17_add_order_persistence.sql`
+- `buildTurnContext()` now loads carried-forward state when no fresh
+  submission exists for a unit, instead of defaulting to empty
+- `processTurn()` persists the remaining order queue + any in-progress
+  full-day order back to the unit row at the end of every turn
+- **Movement is specially protected**, per an explicit rule found in the
+  same doc: *"the stack will not proceed any other orders... until the
+  movement completes."* A fresh submission cannot redirect a unit that's
+  mid-move — only `RETREAT` can, per the rules. `RETREAT` itself is **not
+  built yet** — the protection is real and enforced now, but attempting
+  RETREAT currently just logs `order_pending` and the move continues
+  uninterrupted. Building real `RETREAT` is a clear, scoped follow-up.
+- **Verified working end-to-end**: a MOVE order was submitted, ran
+  correctly, completed, cleared its persisted state correctly
+  (`pending_orders: []`, `active_full_day_order: NULL`), and a second
+  independent MOVE order the following turn behaved identically.
+
+### Real bug found and fixed: `turn_events` schema never matched the code, at all, ever
+This one is significant: **`processTurn()`'s final `turn_events` insert
+had never once had its error checked**, since the file was first written.
+The real schema (confirmed via `information_schema.columns`, not
+assumed) is completely different from what `logEvent()` always produced:
+
+| Code assumed | Real column |
+|---|---|
+| `description` (text) | `data` (jsonb, NOT NULL) |
+| `faction_id` | `unit_id` |
+| (never provided) | `day_number` (int, NOT NULL) |
+| (never provided) | `is_public` (boolean, NOT NULL) |
+
+Since `day_number` and `is_public` are NOT NULL and were never supplied,
+**every single `turn_events` insert for the whole project almost
+certainly failed silently, every time** — `eventCount` in every API
+response to date was only ever an in-memory array length, never proof
+anything reached the database. Fixed by rewriting `logEvent()`'s
+signature (adds `day`, swaps `faction_id` for `unit_id`, wraps the
+description in `data: {description}`, adds `is_public` defaulting to
+`false`) and updating all 12 call sites accordingly, plus **adding actual
+error-checking to the insert itself** so this class of bug can never hide
+silently again. Faction-level events (rename, password change — which
+have no single associated unit) log with `day: 0` and null `unit_id`/
+`location_id`.
+
+**Verified working**: a real `turn_events` row now exists in the
+database — `turn_number: 2, day_number: 7, event_type: 'unit_arrived',
+data: {"description": "..."}`, correct `unit_id`/`location_id` — the
+first time this table has ever received a row successfully.
+
+### Known, now-unblocked next task: the report generator's placeholder text
+`turnReport.ts`'s "Units" section still hardcodes `Day 1 - Unit awaiting
+orders` for every unit, every turn, regardless of what actually happened
+— it's never queried `turn_events` at all. This was harmless-looking
+before because `turn_events` never had real data anyway; now that it
+does, this is a real, well-scoped, ready-to-build task: query
+`turn_events` by `unit_id`/`turn_number`, render the real `data.description`
+lines per day instead of the static placeholder. Same likely applies to
+the "Global Events" section (`"Nothing to report this turn."`, always).
+
+### Standing lesson, reinforced hard again this session
+**Every Supabase insert/query needs its error checked, always, without
+exception.** Three separate silent-failure bugs this project (`orders`
+missing columns, two separate unpaginated `locations` fetches, and now
+`turn_events`'s complete schema mismatch) all shared the same root
+enabling factor: an unchecked `{ error }` that would have surfaced the
+real problem immediately if checked. This is worth treating as a
+non-negotiable code review checklist item for any future Supabase call
+written by a future session or Claude Code.
+
+
+
+### Zone-based auto-assignment for new registrations (DONE, verified working)
+Replaced manual GM location assignment with automatic placement. New
+players get randomly assigned to a settlement matching their registration's
+`ZONE imperial|borders|colonial` choice (default `colonial`), based on
+distance from map center:
+- **imperial**: `resources.is_imperial_land === true` (world gen's own flag)
+- **borders/colonial**: split evenly across the remaining map radius beyond
+  the Imperial zone (no explicit tag exists for these in world gen, so it's
+  derived from `grid_x`/`grid_y` distance)
+- Manual GM assignment (`player.attributes.starting_location` set directly)
+  still takes priority if present — this is additive, not a replacement
+- Falls back through zones if the requested one has no settlements, rather
+  than failing the registration
+- **Verified working end-to-end** with 6 seeded test players (2 per zone) —
+  see `07_verify_zone_assignment.sql` in the reference bundle for the
+  verification query pattern (join players → factions → locations, compute
+  actual distance, compare against requested zone)
+
+### Real bug found and fixed: `joined_turn` NOT NULL constraint
+`factions.joined_turn` is NOT NULL; original code explicitly inserted
+`null`. Fixed by threading the current `turn_number` through from
+`processTurn()` into `processPendingRegistrations(gameId, turnNumber)`.
+Same category of bug as the earlier `orders` table issue — an unverified
+assumption about a nullable column, caught the same way (real error text
+from a real test run, not guessed).
+
+### Real bug found and fixed: silent 1,000-row query cap excluding the Imperial cluster
+**This one caused real, confusing test failures** — both imperial-zone test
+registrations landed in `borders` instead, with no error. Root cause:
+Supabase caps query results at 1,000 rows by default; the registration
+code's location fetch had no pagination. A 50x50 world has 2,500 locations,
+inserted in row-major order (`for y: for x`), so the Imperial City's row
+(`y=25`, dead center) lands around index 1,250 in insertion order --
+**past the 1,000-row cutoff**. The Imperial pool was silently empty every
+time, while borders/colonial (covering earlier rows) worked fine, which
+is exactly the confusing partial-failure pattern that showed up.
+Fixed by paginating the fetch in 1,000-row batches, matching the pattern
+`fetchAllLocations()` in `page.tsx` already used correctly. **Lesson for
+any future query against `locations` (2,500 rows) or `units`/similar large
+tables: always check whether Supabase's default row cap could silently
+truncate results, especially when the query has no explicit `.range()`.**
+
+### A real incident: hours lost chasing the wrong file
+A separate session produced a `Module not found: Can't resolve './turnReport'`
+build error that persisted across many attempted fixes to `turnProcessor.ts`
+and `turnReport.ts` -- both files were actually fine the whole time.
+**The real cause: `app/page.tsx` had been accidentally overwritten with
+`turnProcessor.ts`'s content** (a copy-paste mixup), so Turbopack was
+compiling `page.tsx`'s (wrong) imports (`./supabase`, `./turnReport`,
+`./email` -- valid relative to `app/lib/`, invalid relative to `app/`).
+Every "fix" to the other two files was irrelevant; the actual broken file
+was never being looked at because git checks were only ever run against
+`turnProcessor.ts`/`turnReport.ts` specifically.
+
+**Lesson, stated plainly for next time this kind of error occurs:** when a
+`Module not found` error references a specific file path (e.g.
+`./app/page.tsx:20:1`), *that file* — not the imported module, and not the
+file whose content looks like it should be there — is where the actual
+problem lives. Check what that file *actually contains* before touching
+anything else, especially after a full-file paste operation. Also worth
+standing practice going forward: **always run `git status`/`git diff`
+after any file edit, before committing**, to confirm the change genuinely
+landed — this would have caught the situation much faster.
+
+`page.tsx` restored to its correct content (world regenerate + lock toggle
++ `RegenerateButton` loading state, all from earlier work) and confirmed
+working.
+
+### New tool: search-by-loc-code on the world map
+`app/components/WorldMap.tsx` now has a search box above the canvas --
+type a `loc_code` (e.g. `L0001`), press Enter or click Go, and it selects
+that hex (same detail panel as clicking) and smooth-scrolls the map to
+center on it. Useful for GM debugging (e.g. directly checking the Imperial
+City's real state) as well as general play.
+
+### New tool: comprehensive world-state verification query
+`11_verify_fresh_reset.sql` (reference bundle) checks every relevant table
+in one query after a world reset -- row counts plus OK/CHECK-THIS verdicts.
+**Important correction discovered while using it**: a fresh world is NOT
+expected to have zero units/factions -- `generateWorld()` always seeds 5
+NPC factions (Imperials, Citizens, Creatures, Merchants, Outlaws) and their
+units as a normal part of world creation. `factions: 5`, and nonzero
+`units`/`unit_skills`/`unit_items` counts matching NPC content, are the
+CORRECT expected state after a reset, not a sign of incomplete cleanup.
+Only `players`/`orders`/`structures`/`turn_events`/`faction_titles` should
+be genuinely zero.
+
+
 
 Everything below was written after Phase 1 closed. This session (following
 day) focused on Phase 2 (real data) and infrastructure hardening. Summary:
@@ -98,6 +286,51 @@ Contrary to an initial assumption of "seniority"/first-dibs:
   "in order of arrival." None of these require a cross-faction seniority
   system — day-ordering (already implemented) plus a location-grouped view
   (needed for combat anyway, Phase 4) covers all of them.
+
+### Resource contention: RESOLVED — proportional sharing, with a specific override condition
+`RulesNew.txt` states harvesting splits *proportionally by harvesting
+capability* when demand exceeds supply. This was checked exhaustively
+against real evidence before being accepted:
+
+- **Read the actual compiled resolution algorithm**: `EvenConflict::resolve()`
+  in the 2010 engine source (`engine\process\conflicts\EvenConflict.cpp`,
+  pulled and read in full). It does exactly the proportional-split math the
+  manual describes — sum all requests at a location, compute
+  `ratio = available / requested`, give each requester `theirRequest * ratio`.
+  No list-position/order factor anywhere in the function. (Getting there
+  required following a real call chain: `HarvestUsingStrategy` →
+  `ResourceCompetitiveRequest` → `BasicCompetitiveRequest` → `EvenConflict`
+  — the first three of those are thin/structural, `EvenConflict` is where
+  the actual math lives.)
+- **Searched real archived play exhaustively for a counter-example**: all
+  23 of Ewelin's turns, Jizlerk's turn 23, Weird Animals' turns 19 and 23 —
+  three different factions. Zero instances found of multiple units
+  competing for the same raw resource at the same location, so no direct
+  test case — but one strong indirect data point: report7 shows two
+  equal-capability units (Clowns, Jesters, both just reached the same
+  entertainment skill level) both drop from 19→18 coins/day on the exact
+  same day (day 27), a symmetric reduction consistent with proportional
+  splitting and inconsistent with list-order priority (which would produce
+  an asymmetric result — one unit steady, the other absorbing the full
+  shortfall).
+
+This contradicts what Andy and his brother (a former player) both
+independently recall as list-order priority (first unit in a location's
+list gets its full daily harvest before the next unit gets anything). Given
+the rules doc has 3 authors across 1993-2008+ (Vincent Archer's original,
+Alex Dribin's 2008 Alpha update, Chris Johnson's 2008 revisions) plus
+Alex's separate 2010 engine rewrite, a doc/engine divergence was a
+plausible explanation for the discrepancy — but nothing found supports it
+actually being what shipped in this version.
+
+**DECISION: implement proportional sharing (matching `EvenConflict.cpp`)
+when USE/harvesting is built (Phase 4).** This is the evidence-backed
+choice given everything checked. **Explicit override condition, set by
+Andy**: if the wider original team reunites (Jirka, Ferda, Chris, Sean,
+Andy) and independently recalls list-order priority the same way, that
+consensus overrides this decision — treat it as a deliberate design
+choice for this version at that point, not as "we got the source wrong."
+Until then, build to the evidence above.
 
 ### World reset + lock mechanism (infrastructure, not Phase 2, but done this session)
 Discovered `app/page.tsx` already had a working "Regenerate World" button
@@ -358,7 +591,7 @@ highest-value items for the next two phases:
 
 ---
 
-## 7. Suggested phase roadmap (updated after second session)
+## 7. Suggested phase roadmap (updated after fourth session)
 
 1. ~~Close the loop~~ — **DONE.**
 2. **Real data pass** — **DATA LAYER DONE** (item_defs/race_defs/skill_defs
@@ -366,27 +599,36 @@ highest-value items for the next two phases:
    wired to use it). Stage 2 (deeper per-level effects, combat actions,
    produce/consume/summon mechanics) still unparsed — separate future work,
    not blocking.
-3. **Two real gaps before "5 players register → GM assigns locations → run
-   turn 1" actually works, neither tested yet this session or prior:**
-   - GM admin location-assignment UI — described as built, never exercised
-   - Multi-faction simultaneous turn processing — the day loop is written
-     generally (not faction-specific), but has only ever run with one
-     faction (F8438) at a time. Should work, never proven.
-   Recommend: clear the world (now safe to do — reset mechanism fixed and
-   tested), create 2-3 fake pending registrations, walk through GM
-   assignment, run one turn, confirm each faction gets a correct
-   individual report. This is the natural next concrete milestone.
-4. **Minimum viable combat** — needs `engine/CombatDesign.txt` read first
+3. **Registration + zone auto-assignment + multi-faction turn processing —
+   DONE, verified.** Includes one genuine real `REGISTER` email test (not
+   just SQL-seeded) — the last real gap flagged in the previous version of
+   this roadmap is now closed.
+4. **MOVE + order persistence across turns — DONE, verified.** A real
+   submitted MOVE order completed correctly, cleared its persisted state,
+   and a second independent MOVE the following turn behaved identically.
+   `turn_events` now genuinely receives data for the first time in the
+   project (see section -3 above for the schema-mismatch bug that
+   previously hid this entirely).
+5. **New, well-scoped, ready-to-build task**: wire `turnReport.ts`'s
+   "Units" and "Global Events" sections to real `turn_events` data instead
+   of hardcoded placeholder text (`"Day 1 - Unit awaiting orders"`,
+   `"Nothing to report this turn."`). This was always going to be needed;
+   it's newly *possible* now that `turn_events` actually has real rows to
+   query.
+6. **RETREAT** — not built. Needed to complete the movement-protection
+   story (a unit mid-move currently can only be interrupted by RETREAT
+   per the rules, but RETREAT itself doesn't exist yet).
+7. **Minimum viable combat** — needs `engine/CombatDesign.txt` read first
    (design doc, not code), then real design decisions from Andy before
    implementation
-5. **Fill out order set** — RECRUIT, GIVE, USE now have real data + the
-   correct contention rules (see section -1) to build against correctly,
-   rather than guessing. TEACH unlocks 3rd+ skill levels.
-6. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
-   fixed via race_defs; starting funds still a placeholder), GM admin dry
-   run, then actually recruit 5 people
+8. **Fill out order set** — RECRUIT, GIVE, USE now have real data + the
+   correct contention rules (see section -1 further up) to build against
+   correctly, rather than guessing. TEACH unlocks 3rd+ skill levels.
+9. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
+   fixed via race_defs; starting funds still a placeholder `500`), then
+   actually recruit 5 people
 
-**Standing practice, reinforced this session**: verify things actually
+**Standing practice, reinforced hard this session**: verify things actually
 work via direct testing, not just "the code looks right" or "the build is
 green." Multiple real bugs this session were caught specifically by
 checking actual database state / actual UI behavior rather than trusting
