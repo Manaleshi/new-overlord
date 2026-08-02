@@ -5,6 +5,104 @@ without losing context. Read this before touching any code.
 
 ---
 
+## -4. UPDATE — Report generator wired to real turn_events, MOVE event wording matched to the real archive, and a dev-cache bug that produced a false "verified" claim (fifth session, Claude Code)
+
+### Real feature built: turnReport.ts's Units and Global Events sections now use real turn_events data
+Previously hardcoded regardless of what happened (`"Day 1 - Unit awaiting orders"`,
+`"Nothing to report this turn."`) — see `-3` below for why `turn_events` never
+had real data to query before this session. Now:
+- **Units section** queries `turn_events` by `unit_id` + `turn_number`, renders
+  `Day N - <data.description>` per event, sorted by `day_number`. Empty case
+  is a genuine `"No actions recorded this turn."`, not a placeholder.
+- **Global Events section** queries `turn_events` by `faction_id` +
+  `unit_id IS NULL` + `turn_number` (faction-level events: rename, password
+  change, unrecognized faction orders). Empty case keeps
+  `"Nothing to report this turn."`, now a real empty state instead of an
+  unconditional string.
+
+### Real schema change: turn_events.faction_id added
+`unit_id IS NULL` (faction-level) events had no way to be scoped back to a
+faction except parsing the description text — not reliable. Added
+`faction_id uuid` (nullable, no backfill — rows before this migration
+legitimately have it null) via `18_add_turn_events_faction_id.sql`
+(reference bundle). Threaded through `logEvent()`'s signature (now a
+required, no-default parameter — forces every call site to supply it
+explicitly, TypeScript-checked) and all 12 call sites in
+`turnProcessor.ts`: 9 unit-scoped (`state.unit.faction_id`), 3
+faction-order-scoped (`faction.id` directly, in `applyFactionOrder`).
+**No DDL execution path exists from the app's Supabase client** (REST-only,
+no `DATABASE_URL`/CLI link) — this migration had to be run manually via the
+Supabase SQL Editor.
+
+### Real bug found and fixed: MOVE only ever logged one event, worded backwards from the real engine
+`completeFullDayOrder()`'s MOVE case said `"<unit> arrives at <destination>"`
+— and nothing was logged when a move began at all. Checked against a real
+archived report (`reference/game-archive/report18.txt`, ground truth per
+section 6) and the actual format is different in both respects:
+```
+2 - Miras Gate ambasador [57940] departs to Helicona [L5]
+2 - Movement will take 9 days
+10 - Miras Gate ambasador [57940] arrived from Datmus valley [L2]
+```
+Fixed to match exactly: `beginFullDayOrder()`'s MOVE case now logs
+`"<unit> departs to <dest> [<code>]"` the day the move starts, plus a
+separate `"Movement will take N days"` line — **only when N > 1**; every
+1-day-move example in the archive completes same-day with no such line.
+The origin location (name + loc_code) is captured in `FullDayData`'s
+`move` variant at departure time and read back at completion, so the
+arrival line correctly says **`"arrived from <origin>"`** (not the
+destination — the real engine names where the unit came from, not where
+it now is). **Verified against a real delivered email** (Resend API,
+`last_event: "delivered"`, not just a local route check — see the dev-cache
+lesson below for why that distinction matters):
+```
+Day 1 - MoveTester [U3483] departs to Valyn Wood [L1206]
+Day 1 - Movement will take 9 days
+Day 9 - MoveTester [U3483] arrived from Imperial Heartlands [L3487]
+```
+
+### Known gap, deliberately not built: "unstacks to move"
+The same archived report shows a real event with no equivalent in our code:
+`"Miras Gate ambasador [57940] unstacks to move"`, logged the day a MOVE
+order begins if other orders are still queued behind it in the same
+submission — a notification that the stack got split by movement priority.
+**Not implemented** — formal unit stacking (multiple units combining into
+one stack) doesn't exist in this app yet, so an "unstacks" notification
+would be describing a mechanic that isn't built. Revisit once stacking
+itself is designed/built; don't bolt this on before then.
+
+### Standing lesson: a dev server hot-reload can lie about what the real send path is running
+This session's first attempt at verifying the report-generator fix produced
+a **false positive** — worth understanding exactly how, since it could
+recur. Sequence: edited `turnReport.ts`, started `next dev` (Turbopack)
+fresh, hit `/api/process-turn` (which internally calls `generateTurnReport`
+and emails the result) — the **actual delivered email**, checked directly
+via Resend's API, still had the old hardcoded placeholder text. But a
+follow-up call to `/api/turn-report` (a separate, read-only route that
+calls the exact same `generateTurnReport` function) — hit for the first
+time ever in that dev session, immediately after — showed the fix working
+correctly. Same running server process, same source file, same function,
+different real output. Root cause: Turbopack's dev-mode module cache served
+a stale pre-edit compiled bundle to the route that had been exercised in a
+*previous* dev session (`process-turn`, hit repeatedly across this
+project's history), while the never-before-hit route (`turn-report`)
+compiled fresh. **A full `rm -rf .next` before restarting `next dev`
+resolved it, confirmed by re-checking the actual Resend-delivered email
+content again, not just the local route.**
+
+**The actual lesson, stated generally**: when verifying a fix against a
+long-running local dev server, checking a *different* route that happens to
+call the same function is not equivalent to checking the actual path that
+matters, even though it looks like a valid proxy. If a route has been hit
+across multiple dev-server restarts in a project's history, clear `.next`
+before trusting any verification against it. This is the same category as
+the project's other "looks right vs. actually verified" bugs (see the
+Vercel-deployment-status lesson further below), just one layer deeper —
+verify against the *specific* path being changed, not an equivalent-looking
+one.
+
+---
+
 ## -3. UPDATE — Order persistence, a second pagination bug, and a schema mismatch that hid for the whole project (fourth session)
 
 ### Real bug found and fixed: second unpaginated locations query
@@ -609,22 +707,26 @@ highest-value items for the next two phases:
    `turn_events` now genuinely receives data for the first time in the
    project (see section -3 above for the schema-mismatch bug that
    previously hid this entirely).
-5. **New, well-scoped, ready-to-build task**: wire `turnReport.ts`'s
-   "Units" and "Global Events" sections to real `turn_events` data instead
-   of hardcoded placeholder text (`"Day 1 - Unit awaiting orders"`,
-   `"Nothing to report this turn."`). This was always going to be needed;
-   it's newly *possible* now that `turn_events` actually has real rows to
-   query.
+5. **Report generator wired to real turn_events — DONE, verified.**
+   `turnReport.ts`'s Units and Global Events sections now query real data
+   instead of hardcoded placeholder text; MOVE's departure/arrival wording
+   matched exactly to the real archived report format. See section -4
+   above, including the dev-cache lesson from how the first verification
+   attempt gave a false positive.
 6. **RETREAT** — not built. Needed to complete the movement-protection
    story (a unit mid-move currently can only be interrupted by RETREAT
    per the rules, but RETREAT itself doesn't exist yet).
-7. **Minimum viable combat** — needs `engine/CombatDesign.txt` read first
+7. **"unstacks to move" notification** — not built, deliberately deferred.
+   Real event in the archive (see section -4), but formal unit stacking
+   doesn't exist yet, so there's nothing for it to describe. Revisit once
+   stacking is designed/built.
+8. **Minimum viable combat** — needs `engine/CombatDesign.txt` read first
    (design doc, not code), then real design decisions from Andy before
    implementation
-8. **Fill out order set** — RECRUIT, GIVE, USE now have real data + the
+9. **Fill out order set** — RECRUIT, GIVE, USE now have real data + the
    correct contention rules (see section -1 further up) to build against
    correctly, rather than guessing. TEACH unlocks 3rd+ skill levels.
-9. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
+10. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
    fixed via race_defs; starting funds still a placeholder `500`), then
    actually recruit 5 people
 

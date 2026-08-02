@@ -9,6 +9,8 @@ interface TurnReportData {
   otherUnits: any[]
   skillDefs: any[]
   itemDefs: any[]
+  unitEventsByUnitId: Map<string, any[]>
+  globalEvents: any[]
 }
 
 async function getFactionData(factionId: string): Promise<TurnReportData | null> {
@@ -69,6 +71,36 @@ async function getFactionData(factionId: string): Promise<TurnReportData | null>
   const { data: skillDefs } = await supabase.from('skill_defs').select('*')
   const { data: itemDefs } = await supabase.from('item_defs').select('*')
 
+  // Real turn_events for this turn: per-unit events for the Units section,
+  // and faction-level (unit_id IS NULL) events for Global Events. Scoped by
+  // faction_id rather than derived from unit_id, since faction-level events
+  // (rename, password change) have no unit to key off of.
+  const unitIds = (units ?? []).map(u => u.id)
+  const safeUnitIds = unitIds.length > 0 ? unitIds : ['00000000-0000-0000-0000-000000000000']
+
+  const { data: unitEvents, error: unitEventsError } = await supabase
+    .from('turn_events')
+    .select('*')
+    .eq('turn_number', game.turn_number)
+    .in('unit_id', safeUnitIds)
+    .order('day_number', { ascending: true })
+  if (unitEventsError) console.error('turn_events (unit) fetch failed:', unitEventsError)
+
+  const { data: globalEvents, error: globalEventsError } = await supabase
+    .from('turn_events')
+    .select('*')
+    .eq('turn_number', game.turn_number)
+    .eq('faction_id', factionId)
+    .is('unit_id', null)
+    .order('day_number', { ascending: true })
+  if (globalEventsError) console.error('turn_events (global) fetch failed:', globalEventsError)
+
+  const unitEventsByUnitId = new Map<string, any[]>()
+  for (const e of unitEvents ?? []) {
+    if (!unitEventsByUnitId.has(e.unit_id)) unitEventsByUnitId.set(e.unit_id, [])
+    unitEventsByUnitId.get(e.unit_id)!.push(e)
+  }
+
   return {
     faction,
     player,
@@ -78,6 +110,8 @@ async function getFactionData(factionId: string): Promise<TurnReportData | null>
     otherUnits: otherUnits ?? [],
     skillDefs: skillDefs ?? [],
     itemDefs: itemDefs ?? [],
+    unitEventsByUnitId,
+    globalEvents: globalEvents ?? [],
   }
 }
 
@@ -209,7 +243,7 @@ export async function generateTurnReport(factionId: string): Promise<string> {
   const data = await getFactionData(factionId)
   if (!data) return 'Error: faction not found'
 
-  const { faction, player, units, locations, game, otherUnits, skillDefs, itemDefs } = data
+  const { faction, player, units, locations, game, otherUnits, skillDefs, itemDefs, unitEventsByUnitId, globalEvents } = data
   const lines: string[] = []
 
   const factionObservation = Math.max(...units.map(u => u.observation ?? 0), 0)
@@ -240,7 +274,14 @@ export async function generateTurnReport(factionId: string): Promise<string> {
   lines.push(`// Global Events`)
   lines.push(`---------------------------------------------------`)
   lines.push(``)
-  lines.push(`  Nothing to report this turn.`)
+  if (globalEvents.length > 0) {
+    for (const e of globalEvents) {
+      const dayPrefix = e.day_number > 0 ? `Day ${e.day_number} - ` : ''
+      lines.push(`  ${dayPrefix}${e.data?.description ?? e.event_type}`)
+    }
+  } else {
+    lines.push(`  Nothing to report this turn.`)
+  }
   lines.push(``)
 
   lines.push(`---------------------------------------------------`)
@@ -252,7 +293,14 @@ export async function generateTurnReport(factionId: string): Promise<string> {
     lines.push(formatUnit(unit))
     lines.push(``)
     lines.push(`  ${unit.name} [${unit.unit_code}]'s actions this turn:`)
-    lines.push(`  Day 1 - Unit awaiting orders`)
+    const events = unitEventsByUnitId.get(unit.id) ?? []
+    if (events.length > 0) {
+      for (const e of events) {
+        lines.push(`  Day ${e.day_number} - ${e.data?.description ?? e.event_type}`)
+      }
+    } else {
+      lines.push(`  No actions recorded this turn.`)
+    }
     lines.push(``)
   }
 

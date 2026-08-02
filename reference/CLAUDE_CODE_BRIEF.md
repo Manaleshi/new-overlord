@@ -58,7 +58,9 @@ Two kinds of things come up:
 - Order persistence across turn boundaries (a unit's remaining stack
   carries forward if not resubmitted; movement is protected from being
   overridden except by RETREAT, which isn't built)
-- Report generation + email delivery
+- Report generation + email delivery, wired to real `turn_events` data
+  (Units and Global Events sections; MOVE departure/arrival wording matched
+  exactly to the real archived report format — see HANDOVER.md section -4)
 - World reset/regenerate + lock toggle
 - Real item/race/skill data (122/59/299 rows) migrated from the 2010
   source, replacing earlier placeholder guesses
@@ -70,12 +72,11 @@ Two kinds of things come up:
 - **RECRUIT, GIVE, USE** — recognized by the parser, not implemented.
   Real contention rules for these are already resolved (see below) — pull
   the real source before building, same as MOVE/STUDY/WORK.
-- **Report generator has placeholder text** — the "Units" section always
-  prints `"Day 1 - Unit awaiting orders"` regardless of what happened; the
-  "Global Events" section always prints `"Nothing to report this turn."`
-  This is now fixable — `turn_events` genuinely has real data as of this
-  session (it didn't before — see the schema-mismatch bug in HANDOVER.md,
-  section -3). This is a good, well-scoped first task.
+- **"unstacks to move" notification** — a real event in the archive
+  (logged when a MOVE begins with other orders still queued behind it),
+  deliberately not built yet — formal unit stacking doesn't exist, so
+  there's nothing for the notification to describe. Revisit once stacking
+  itself is designed/built. See HANDOVER.md section -4.
 - **Combat** — not designed or built. Read `engine/CombatDesign.txt` (not
   yet pulled into the bundle — find it in the inventory) before writing
   any code. This will need real design input from Andy, not just

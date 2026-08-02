@@ -102,7 +102,7 @@ interface UnitSkillRow {
 }
 
 type FullDayData =
-  | { kind: 'move'; targetLocationId: string; targetLocCode: string }
+  | { kind: 'move'; targetLocationId: string; targetLocCode: string; originLocationId: string; originLocCode: string; originName: string }
   | { kind: 'study'; targetLevel: number }
   | { kind: 'none' }
 
@@ -129,7 +129,7 @@ interface TurnContext {
   unitSkills: Map<string, Map<string, UnitSkillRow>> // unitId -> tag -> row
   dirtyUnitSkills: Set<string>
   unitStates: Map<string, UnitOrderState>
-  eventLog: { game_id: string; turn_number: number; day_number: number; location_id: string | null; unit_id: string | null; event_type: string; data: any; is_public: boolean }[]
+  eventLog: { game_id: string; turn_number: number; day_number: number; location_id: string | null; unit_id: string | null; faction_id: string | null; event_type: string; data: any; is_public: boolean }[]
 }
 
 type OrderStatus = 'SUCCESS' | 'FAILURE' | 'INVALID' | 'IN_PROGRESS'
@@ -139,6 +139,7 @@ function logEvent(
   day: number,
   event_type: string,
   description: string,
+  faction_id: string | null,
   unit_id: string | null = null,
   location_id: string | null = null,
   is_public: boolean = false
@@ -149,6 +150,7 @@ function logEvent(
     day_number: day,
     location_id,
     unit_id,
+    faction_id,
     event_type,
     data: { description },
     is_public,
@@ -445,9 +447,9 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
       if (hasFreshSubmission) {
         const freshOrders = ordersByUnitId.get(unit.id)!
         if (freshOrders[0]?.command === 'RETREAT') {
-          logEvent(ctx, 0, 'order_pending', `${unit.name} [${unit.unit_code}]: RETREAT not yet implemented -- movement continues`, unit.id, unit.location_id)
+          logEvent(ctx, 0, 'order_pending', `${unit.name} [${unit.unit_code}]: RETREAT not yet implemented -- movement continues`, unit.faction_id, unit.id, unit.location_id)
         } else if (freshOrders.length > 0) {
-          logEvent(ctx, 0, 'orders_ignored', `${unit.name} [${unit.unit_code}]: new orders ignored -- unit is mid-movement and cannot be redirected except by RETREAT`, unit.id, unit.location_id)
+          logEvent(ctx, 0, 'orders_ignored', `${unit.name} [${unit.unit_code}]: new orders ignored -- unit is mid-movement and cannot be redirected except by RETREAT`, unit.faction_id, unit.id, unit.location_id)
         }
       }
       orders = carriedPending.map(o => ({ ...o }))
@@ -482,7 +484,7 @@ async function applyFactionOrder(ctx: TurnContext, faction: FactionRow, order: P
       if (!newName) break
       await supabase.from('factions').update({ name: newName }).eq('id', faction.id)
       faction.name = newName
-      logEvent(ctx, 0, 'faction_renamed', `Faction ${faction.faction_code} renamed to "${newName}"`, null, null)
+      logEvent(ctx, 0, 'faction_renamed', `Faction ${faction.faction_code} renamed to "${newName}"`, faction.id, null, null)
       break
     }
     case 'PASSWORD': {
@@ -490,11 +492,11 @@ async function applyFactionOrder(ctx: TurnContext, faction: FactionRow, order: P
       if (!newPassword) break
       const hash = await bcrypt.hash(newPassword, 10)
       await supabase.from('players').update({ password_hash: hash }).eq('id', faction.player_id)
-      logEvent(ctx, 0, 'password_changed', `Faction ${faction.faction_code} changed password`, null, null)
+      logEvent(ctx, 0, 'password_changed', `Faction ${faction.faction_code} changed password`, faction.id, null, null)
       break
     }
     default:
-      logEvent(ctx, 0, 'order_pending', `Faction order ${order.command} not yet implemented`, null, null)
+      logEvent(ctx, 0, 'order_pending', `Faction order ${order.command} not yet implemented`, faction.id, null, null)
   }
 }
 
@@ -601,7 +603,7 @@ function executeImmediateOrder(ctx: TurnContext, state: UnitOrderState, order: P
     case 'GUARD': {
       state.unit.attributes = { ...(state.unit.attributes || {}), guarding: true }
       state.dirty = true
-      logEvent(ctx, day, 'unit_guard', `${state.unit.name} [${state.unit.unit_code}] takes up guard duty`, state.unit.id, state.unit.location_id)
+      logEvent(ctx, day, 'unit_guard', `${state.unit.name} [${state.unit.unit_code}] takes up guard duty`, state.unit.faction_id, state.unit.id, state.unit.location_id)
       return { status: 'SUCCESS' }
     }
     default:
@@ -616,7 +618,7 @@ function beginFullDayOrder(
     logEvent(
       ctx, day, 'order_pending',
       `${state.unit.name} [${state.unit.unit_code}]: ${order.command} not yet implemented — order held for a later stage`,
-      state.unit.id, state.unit.location_id
+      state.unit.faction_id, state.unit.id, state.unit.location_id
     )
     return { status: 'FAILURE' }
   }
@@ -650,7 +652,7 @@ function beginFullDayOrder(
         logEvent(
           ctx, day, 'order_pending',
           `${state.unit.name} [${state.unit.unit_code}]: STUDY ${skillTag} beyond level ${SELF_STUDY_MAX_LEVEL} requires a teacher (not yet implemented)`,
-          state.unit.id, state.unit.location_id
+          state.unit.faction_id, state.unit.id, state.unit.location_id
         )
         return { status: 'FAILURE' }
       }
@@ -669,9 +671,28 @@ function beginFullDayOrder(
       )
 
       if (!exit || exit.impassable || exit.walk_days === null) return { status: 'INVALID' }
+      if (!location) return { status: 'INVALID' } // unreachable in practice -- exit only resolves via location.resources.exits
 
       const destLocationId = ctx.locCodeToId.get(exit.dest_loc_code)
       if (!destLocationId) return { status: 'INVALID' }
+
+      // Real report format (reference/game-archive/report18.txt): "departs to
+      // <dest> [<code>]" plus "Movement will take N days" as two separate
+      // lines, logged the day the move begins -- the latter only for moves
+      // longer than 1 day (every 1-day-move example in the archive completes
+      // same-day with no "Movement will take" line at all).
+      logEvent(
+        ctx, day, 'unit_departs',
+        `${state.unit.name} [${state.unit.unit_code}] departs to ${exit.dest_name} [${exit.dest_loc_code}]`,
+        state.unit.faction_id, state.unit.id, state.unit.location_id
+      )
+      if (exit.walk_days > 1) {
+        logEvent(
+          ctx, day, 'movement_duration',
+          `Movement will take ${exit.walk_days} days`,
+          state.unit.faction_id, state.unit.id, state.unit.location_id
+        )
+      }
 
       // TODO Stage 2c: check unit's carry weight vs riding/flying capacity
       // (unit_items + item_defs.capacity_ride/capacity_fly) to use exit.ride_days
@@ -679,7 +700,14 @@ function beginFullDayOrder(
       return {
         status: 'SUCCESS',
         daysRemaining: exit.walk_days,
-        data: { kind: 'move', targetLocationId: destLocationId, targetLocCode: exit.dest_loc_code },
+        data: {
+          kind: 'move',
+          targetLocationId: destLocationId,
+          targetLocCode: exit.dest_loc_code,
+          originLocationId: state.unit.location_id,
+          originLocCode: location.loc_code,
+          originName: location.geographic_name ?? location.loc_code,
+        },
       }
     }
 
@@ -706,7 +734,7 @@ function tickFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: number) 
       logEvent(
         ctx, day, 'unit_work',
         `${state.unit.name} [${state.unit.unit_code}] works, earning ${earnings} coins${guarding ? ' (half efficiency — guarding)' : ''}`,
-        state.unit.id, state.unit.location_id
+        state.unit.faction_id, state.unit.id, state.unit.location_id
       )
       break
     }
@@ -750,7 +778,7 @@ function tickFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: number) 
           logEvent(
             ctx, day, 'skill_achieved',
             `${state.unit.name} [${state.unit.unit_code}] achieves ${skillRow.level}${ordinalSuffix(skillRow.level)} ${skillDef.name} [${skillTag}]`,
-            state.unit.id, state.unit.location_id
+            state.unit.faction_id, state.unit.id, state.unit.location_id
           )
           if (targetLevel !== null && skillRow.level >= targetLevel) {
             active.daysRemaining = 0
@@ -761,7 +789,7 @@ function tickFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: number) 
         logEvent(
           ctx, day, 'insufficient_funds',
           `${state.unit.name} [${state.unit.unit_code}] cannot afford to study ${skillTag} today (need ${costPerDay})`,
-          state.unit.id, state.unit.location_id
+          state.unit.faction_id, state.unit.id, state.unit.location_id
         )
       }
       break
@@ -784,10 +812,12 @@ function completeFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: numb
   if (active.data.kind === 'move') {
     state.unit.location_id = active.data.targetLocationId
     state.dirty = true
+    // Real report format: "arrived from <origin>" -- names where the unit
+    // came from, not the destination it's now at (report18.txt).
     logEvent(
       ctx, day, 'unit_arrived',
-      `${state.unit.name} [${state.unit.unit_code}] arrives at ${active.data.targetLocCode}`,
-      state.unit.id, active.data.targetLocationId
+      `${state.unit.name} [${state.unit.unit_code}] arrived from ${active.data.originName} [${active.data.originLocCode}]`,
+      state.unit.faction_id, state.unit.id, active.data.targetLocationId
     )
   }
 
