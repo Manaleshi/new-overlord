@@ -7,6 +7,21 @@ without losing context. Read this before touching any code.
 
 ## -4. UPDATE — Report generator wired to real turn_events, MOVE event wording matched to the real archive, and a dev-cache bug that produced a false "verified" claim (fifth session, Claude Code)
 
+### Follow-up (sixth session): faction-level Global Events path now verified for real
+The `unit_id IS NULL` / `faction_id`-scoped Global Events query below had the
+right shape and correct `applyFactionOrder()` call sites, but no live data
+had ever exercised it — the MOVE tests only covered the unit-scoped path.
+Closed the gap: injected a real `NAME "Test Faction Renamed"` order directly
+into `orders` (faction-level shape: `unit_id: null`, `order_type: 'faction'`
+— confirmed against the real email-submission code path in
+`app/api/email/inbound/route.ts` before using it), ran a real `process-turn`
+against production (`new-overlord.vercel.app`, not localhost), and confirmed
+via Resend's API on the actual delivered email: faction genuinely renamed
+in the DB, and Global Events showed
+`Faction F2028 renamed to "Test Faction Renamed"` in place of the empty-state
+text. Clean pass, no bug found — both the unit-scoped and faction-scoped
+`turn_events` query paths in `turnReport.ts` are now real-data-verified.
+
 ### Real feature built: turnReport.ts's Units and Global Events sections now use real turn_events data
 Previously hardcoded regardless of what happened (`"Day 1 - Unit awaiting orders"`,
 `"Nothing to report this turn."`) — see `-3` below for why `turn_events` never
