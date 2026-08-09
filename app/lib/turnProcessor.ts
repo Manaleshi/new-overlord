@@ -5,8 +5,13 @@
 // OrderLine.cpp). Adds STUDY and MOVE (walking only — riding/flying
 // capacity deferred to Stage 2c pending unit_items/item_defs wiring).
 //
-// Orders implemented: NAME, PASSWORD (faction), GUARD, WORK, STUDY, MOVE (unit)
-// Orders recognized but NOT yet implemented: RECRUIT, GIVE, USE, MARCH,
+// Orders implemented: NAME, PASSWORD (faction), GUARD, WORK, STUDY, MOVE,
+// WITHDRAW, RECRUIT (unit) -- RECRUIT/WITHDRAW confirmed against real source
+// (RecruitOrder.cpp, RecruitRequest.cpp, NewRecruitRequest.cpp, MarketRequest.cpp,
+// LocalMarketRequest.cpp, WithdrawOrder.cpp) and RulesNew.txt, not guessed --
+// see reference/HANDOVER.md for the money-model findings (unit money vs.
+// faction funds, WITHDRAW as the only sanctioned transfer path for RECRUIT).
+// Orders recognized but NOT yet implemented: GIVE, USE, MARCH,
 // and everything else in RulesNew.txt (TEACH, EQUIP, SPLIT, ENTER/LEAVE, etc.)
 // — these log an `order_pending` event and stay queued, untouched, for a
 // later stage rather than being silently dropped.
@@ -39,10 +44,24 @@ interface UnitRow {
   unit_code: string
   name: string
   unit_type: string
+  unit_race: string
   is_leader: boolean
+  is_hero: boolean
+  is_stacked: boolean
+  stack_leader_id: string | null
   figure_count: number
   upkeep_per_figure: number
+  money: number
   attributes: Record<string, any> | null
+  [key: string]: any
+}
+
+interface RaceDefRow {
+  tag: string
+  category: 'LEADER' | 'FOLLOWER' | 'CREATURE'
+  name: string
+  plural: string
+  base_stats: Record<string, number> | null
   [key: string]: any
 }
 
@@ -117,6 +136,7 @@ interface UnitOrderState {
   orders: ParsedOrder[]
   fullDayOrder: ActiveFullDayOrder | null
   dirty: boolean
+  recruitedToday: boolean // blocks a same-day MOVE from beginning -- "the leader will not be able to move during the day he recruits" (RulesNew.txt)
 }
 
 interface TurnContext {
@@ -125,9 +145,12 @@ interface TurnContext {
   factionsById: Map<string, FactionRow>
   locationsById: Map<string, LocationRow>
   locCodeToId: Map<string, string>
+  unitCodeToId: Map<string, string>
   skillDefsByTag: Map<string, SkillDefRow>
+  raceDefsByTag: Map<string, RaceDefRow>
   unitSkills: Map<string, Map<string, UnitSkillRow>> // unitId -> tag -> row
   dirtyUnitSkills: Set<string>
+  dirtyLocationIds: Set<string> // locations whose economics.recruits pool was depleted this turn
   unitStates: Map<string, UnitOrderState>
   eventLog: { game_id: string; turn_number: number; day_number: number; location_id: string | null; unit_id: string | null; faction_id: string | null; event_type: string; data: any; is_public: boolean }[]
 }
@@ -383,11 +406,19 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
   const skillDefsByTag = new Map<string, SkillDefRow>()
   for (const s of skillDefs || []) skillDefsByTag.set(s.tag, s)
 
+  const { data: raceDefs, error: raceDefsError } = await supabase.from('race_defs').select('*')
+  if (raceDefsError) throw new Error(`Failed to load race_defs: ${raceDefsError.message}`)
+  const raceDefsByTag = new Map<string, RaceDefRow>()
+  for (const r of raceDefs || []) raceDefsByTag.set(r.tag, r)
+
   const factionIds = Array.from(factionsById.keys())
   const safeFactionIds = factionIds.length > 0 ? factionIds : ['00000000-0000-0000-0000-000000000000']
 
   const { data: units, error: unitsError } = await supabase.from('units').select('*').in('faction_id', safeFactionIds)
   if (unitsError) throw new Error(`Failed to load units: ${unitsError.message}`)
+
+  const unitCodeToId = new Map<string, string>()
+  for (const u of units || []) unitCodeToId.set(u.unit_code, u.id)
 
   const unitIds = (units || []).map(u => u.id)
 
@@ -413,8 +444,9 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
 
   const eventLog: TurnContext['eventLog'] = []
   const ctx: TurnContext = {
-    gameId, turnNumber, factionsById, locationsById, locCodeToId,
-    skillDefsByTag, unitSkills, dirtyUnitSkills: new Set(),
+    gameId, turnNumber, factionsById, locationsById, locCodeToId, unitCodeToId,
+    skillDefsByTag, raceDefsByTag, unitSkills, dirtyUnitSkills: new Set(),
+    dirtyLocationIds: new Set(),
     unitStates: new Map(), eventLog,
   }
 
@@ -470,6 +502,7 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
       orders,
       fullDayOrder,
       dirty: false,
+      recruitedToday: false,
     })
   }
 
@@ -541,10 +574,12 @@ function postProcessCascade(state: UnitOrderState, fromIndex: number, result: 'S
 // Day loop
 // ---------------------------------------------------------------------------
 
-const FULL_DAY_COMMANDS = new Set(['WORK', 'STUDY', 'MOVE', 'MARCH', 'RECRUIT', 'GIVE', 'USE'])
-const NOT_YET_IMPLEMENTED_FULL_DAY = new Set(['MARCH', 'RECRUIT', 'GIVE', 'USE'])
+const FULL_DAY_COMMANDS = new Set(['WORK', 'STUDY', 'MOVE', 'MARCH', 'GIVE', 'USE'])
+const NOT_YET_IMPLEMENTED_FULL_DAY = new Set(['MARCH', 'GIVE', 'USE'])
 
-function processUnitDay(ctx: TurnContext, state: UnitOrderState, day: number) {
+async function processUnitDay(ctx: TurnContext, state: UnitOrderState, day: number) {
+  state.recruitedToday = false
+
   if (state.fullDayOrder) {
     tickFullDayOrder(ctx, state, day)
     if (!state.fullDayOrder || state.fullDayOrder.daysRemaining <= 0) {
@@ -579,7 +614,7 @@ function processUnitDay(ctx: TurnContext, state: UnitOrderState, day: number) {
       return
     }
 
-    const outcome = executeImmediateOrder(ctx, state, order, day)
+    const outcome = await executeImmediateOrder(ctx, state, order, day)
 
     if (outcome.status === 'FAILURE') continue
 
@@ -598,7 +633,7 @@ function processUnitDay(ctx: TurnContext, state: UnitOrderState, day: number) {
   }
 }
 
-function executeImmediateOrder(ctx: TurnContext, state: UnitOrderState, order: ParsedOrder, day: number): { status: OrderStatus } {
+async function executeImmediateOrder(ctx: TurnContext, state: UnitOrderState, order: ParsedOrder, day: number): Promise<{ status: OrderStatus }> {
   switch (order.command) {
     case 'GUARD': {
       state.unit.attributes = { ...(state.unit.attributes || {}), guarding: true }
@@ -606,9 +641,228 @@ function executeImmediateOrder(ctx: TurnContext, state: UnitOrderState, order: P
       logEvent(ctx, day, 'unit_guard', `${state.unit.name} [${state.unit.unit_code}] takes up guard duty`, state.unit.faction_id, state.unit.id, state.unit.location_id)
       return { status: 'SUCCESS' }
     }
+
+    case 'WITHDRAW':
+      return withdrawOrder(ctx, state, order, day)
+
+    case 'RECRUIT':
+      return recruitOrder(ctx, state, order, day)
+
     default:
       return { status: 'FAILURE' }
   }
+}
+
+// ---------------------------------------------------------------------------
+// WITHDRAW — WithdrawOrder.cpp: immediate, city-only, capped transfer from
+// faction funds into the issuing unit's own money. Coin only for now (the
+// real order also supports arbitrary items via WithdrawOrder's optional
+// second parameter; deferred -- would need item_defs/unit_items wiring on
+// top of everything here, matching the same "don't build on nothing"
+// discipline as deferring the unstacks-to-move notification).
+// ---------------------------------------------------------------------------
+
+function withdrawOrder(ctx: TurnContext, state: UnitOrderState, order: ParsedOrder, day: number): { status: OrderStatus } {
+  const requested = parseInt(order.args[0] || '0')
+  if (isNaN(requested) || requested < 0) return { status: 'INVALID' } // negative = deposit, "not supported yet" per the real source too
+
+  const location = ctx.locationsById.get(state.unit.location_id)
+  const settlementType = location?.resources?.population_center?.type
+  // Real engine gates on terrain === "city" -- our schema has no such terrain_type
+  // (only natural terrain: plains/forest/hills/...). "city" only exists as
+  // resources.population_center.type, alongside village/town/imperial. Andy's
+  // call: city AND imperial both qualify (imperial is the capital, should always
+  // count as bank-capable).
+  if (settlementType !== 'city' && settlementType !== 'imperial') {
+    return { status: 'FAILURE' } // retry next day, e.g. if the unit later moves into a city
+  }
+
+  const faction = ctx.factionsById.get(state.unit.faction_id)
+  const available = faction?.funds ?? 0
+  const realAmount = Math.max(0, Math.min(requested, available))
+
+  if (realAmount === 0) return { status: 'INVALID' } // matches source: realAmount==0 -> INVALID
+
+  if (faction) faction.funds -= realAmount
+  state.unit.money = (state.unit.money ?? 0) + realAmount
+  state.dirty = true
+
+  logEvent(
+    ctx, day, 'unit_withdraws',
+    `${state.unit.name} [${state.unit.unit_code}] withdraws ${realAmount} coins from faction funds`,
+    state.unit.faction_id, state.unit.id, state.unit.location_id
+  )
+
+  if (realAmount < requested) {
+    logEvent(
+      ctx, day, 'withdraw_fund_empty',
+      `Faction funds exhausted -- ${state.unit.name} [${state.unit.unit_code}] could only withdraw ${realAmount} of ${requested} requested`,
+      state.unit.faction_id, null, null
+    )
+  }
+
+  return { status: 'SUCCESS' }
+}
+
+// ---------------------------------------------------------------------------
+// RECRUIT — RecruitOrder.cpp / RecruitRequest.cpp / NewRecruitRequest.cpp /
+// LocalMarketRequest.cpp. Immediate, leader only. Funded strictly from the
+// issuing unit's own money (unit.money) -- never faction funds automatically,
+// confirmed against RulesNew.txt's WITHDRAW section and the request source
+// (Andy's call: no faction-fund fallback, matching the source exactly).
+//
+// "number=0" -> as much as affordable, resolved once and done (matches the
+// real completeOrderProcessing control flow: the 0-shortcut never writes
+// back to the order's stored amount, so completeOrderProcessing's
+// `amount(0) > result` check is always false -> always SUCCESS after one
+// attempt, never retried). An explicit non-zero number that can't be fully
+// filled decrements in place and retries next day.
+//
+// Simplifications, flagged rather than silently cut:
+// - Same-day multi-unit oversubscription auction/price-rise (LocalMarketRequest's
+//   real contention math) isn't implemented -- pool is a simple first-come cap.
+//   Not verifiable against real data with the current single-player test setup
+//   anyway.
+// - A new unit created via RECRUIT can't yet be given follow-up orders in the
+//   same submission (the real engine's "UNIT f06nU01" placeholder-addressing
+//   convention) -- needs email-inbound changes to route orders to a
+//   not-yet-existing unit_id, out of scope for this pass.
+// - New units get an auto-generated name; unit-level NAME (vs. today's
+//   faction-level-only NAME) isn't built.
+// ---------------------------------------------------------------------------
+
+async function recruitOrder(ctx: TurnContext, state: UnitOrderState, order: ParsedOrder, day: number): Promise<{ status: OrderStatus }> {
+  if (!state.unit.is_leader) return { status: 'INVALID' }
+
+  const [targetCode, numberStr, raceTagRaw, priceStr] = order.args
+  const raceTag = (raceTagRaw || '').toLowerCase()
+  const raceDef = ctx.raceDefsByTag.get(raceTag)
+  if (!raceDef) return { status: 'INVALID' }
+
+  const category = raceDef.tag === 'man' ? 'followers' : raceDef.tag === 'ldr' ? 'leaders' : raceDef.tag === 'hero' ? 'heroes' : null
+  if (!category) return { status: 'INVALID' } // not one of the standard local-recruit-market races
+
+  const location = ctx.locationsById.get(state.unit.location_id)
+  const recruitInfo = location?.economics?.recruits?.[category] as { price: number; amount: number } | undefined
+  if (!recruitInfo) return { status: 'INVALID' }
+
+  let price = parseInt(priceStr || '0')
+  if (price === 0) price = recruitInfo.price ?? 0
+  if (!price || price <= 0) return { status: 'INVALID' }
+
+  const unitMoney = state.unit.money ?? 0
+  const requestedNumber = parseInt(numberStr || '0')
+  const isAutoAmount = requestedNumber === 0
+
+  if (!isAutoAmount && unitMoney < price * requestedNumber) {
+    // Explicit non-zero request the unit can't fully afford -- real engine
+    // rejects the whole request outright (isValid() on the full amount),
+    // not a partial reduction. Retry next day in case money improves (e.g.
+    // a WITHDRAW later in the stack, or on a later day).
+    logEvent(
+      ctx, day, 'insufficient_funds',
+      `${state.unit.name} [${state.unit.unit_code}] cannot afford to recruit ${requestedNumber} ${raceDef.plural} at ${price}/figure (has ${unitMoney})`,
+      state.unit.faction_id, state.unit.id, state.unit.location_id
+    )
+    return { status: 'FAILURE' }
+  }
+
+  const affordable = Math.floor(unitMoney / price)
+  const wanted = isAutoAmount ? affordable : requestedNumber
+  const poolRemaining = recruitInfo.amount ?? 0
+  const actualAmount = Math.max(0, Math.min(wanted, poolRemaining, affordable))
+
+  if (actualAmount <= 0) {
+    // Nothing recruited today (pool exhausted or nothing affordable). The
+    // auto-amount variant always completes after one attempt regardless
+    // (see completeOrderProcessing note above); an explicit request retries.
+    return { status: isAutoAmount ? 'SUCCESS' : 'FAILURE' }
+  }
+
+  // Resolve target: existing unit (same faction/race, not already leader-led)
+  // or a brand-new unit stacked beneath the recruiting leader.
+  const targetId = ctx.unitCodeToId.get((targetCode || '').toUpperCase())
+  let targetState = targetId ? ctx.unitStates.get(targetId) : undefined
+
+  if (targetState) {
+    if (targetState.unit.faction_id !== state.unit.faction_id) return { status: 'INVALID' }
+    if (targetState.unit.unit_race !== raceDef.tag) return { status: 'INVALID' }
+    if (raceDef.category === 'LEADER' && targetState.unit.figure_count >= 1) return { status: 'INVALID' } // one leader per unit
+  } else if (targetCode) {
+    // New-unit placeholder: any code that doesn't resolve to a real existing
+    // unit is treated as "create new" -- simpler than enforcing the real
+    // engine's "<faction_code>n<label>" placeholder syntax, and that syntax
+    // only mattered for same-submission follow-up addressing, which isn't
+    // supported yet anyway (see file header note).
+    const newCode = await generateUniqueUnitCode()
+    const baseStats = raceDef.base_stats || {}
+    const { data: newUnitRow, error: insertError } = await supabase
+      .from('units')
+      .insert({
+        faction_id: state.unit.faction_id,
+        location_id: state.unit.location_id,
+        unit_code: newCode,
+        name: `New ${raceDef.plural ?? raceDef.name}`,
+        unit_type: raceDef.category.toLowerCase(),
+        unit_race: raceDef.tag,
+        is_hero: raceDef.tag === 'hero',
+        is_leader: raceDef.category === 'LEADER',
+        is_stacked: true,
+        stack_leader_id: state.unit.id,
+        figure_count: 0,
+        upkeep_per_figure: baseStats.upkeep ?? 10,
+        money: 0,
+        initiative: 1, // TODO: not part of race_defs base_stats -- same placeholder gap as hero registration
+        melee: 1,
+        defense: 1,
+        missile: 0,
+        life: baseStats.life ?? 1,
+        hits: 1,
+        damage: 1,
+        ranged_damage: 0,
+        stealth: 1,
+        observation: 1,
+        mana_current: 0,
+        mana_max: 0,
+        attributes: {},
+      })
+      .select()
+      .single()
+
+    if (insertError || !newUnitRow) {
+      console.error('RECRUIT: failed to create new unit:', insertError)
+      return { status: 'FAILURE' }
+    }
+
+    ctx.unitCodeToId.set(newCode, newUnitRow.id)
+    targetState = { unit: newUnitRow as UnitRow, orders: [], fullDayOrder: null, dirty: false, recruitedToday: false }
+    ctx.unitStates.set(newUnitRow.id, targetState)
+  } else {
+    return { status: 'INVALID' }
+  }
+
+  targetState.unit.figure_count = (targetState.unit.figure_count ?? 0) + actualAmount
+  targetState.dirty = true
+  state.unit.money = unitMoney - price * actualAmount
+  state.dirty = true
+  state.recruitedToday = true
+
+  recruitInfo.amount = poolRemaining - actualAmount
+  if (location) ctx.dirtyLocationIds.add(location.id)
+
+  logEvent(
+    ctx, day, 'unit_recruits',
+    `${state.unit.name} [${state.unit.unit_code}] recruits ${actualAmount} ${raceDef.plural} into ${targetState.unit.name} [${targetState.unit.unit_code}] for ${price * actualAmount} coins`,
+    state.unit.faction_id, state.unit.id, state.unit.location_id
+  )
+
+  if (isAutoAmount) return { status: 'SUCCESS' }
+
+  const remaining = requestedNumber - actualAmount
+  if (remaining <= 0) return { status: 'SUCCESS' }
+
+  order.args[1] = String(remaining) // mutated in place -- same object persists in state.orders across days
+  return { status: 'FAILURE' }
 }
 
 function beginFullDayOrder(
@@ -661,6 +915,9 @@ function beginFullDayOrder(
     }
 
     case 'MOVE': {
+      // "The leader will not be able to move during the day he recruits" (RulesNew.txt)
+      if (state.recruitedToday) return { status: 'FAILURE' }
+
       const target = (order.args[0] || '').toUpperCase()
       const location = ctx.locationsById.get(state.unit.location_id)
       const exits = location?.resources?.exits || []
@@ -853,10 +1110,15 @@ export async function processTurn(gameId: string): Promise<{
   const ctx = await buildTurnContext(gameId, game.turn_number)
 
   for (let day = 1; day <= DAYS_PER_TURN; day++) {
+    // NOTE: ctx.unitStates can gain new entries mid-iteration (RECRUIT
+    // creating a new unit) -- Map iteration reflects those insertions, which
+    // just means a brand-new unit gets a harmless no-op processUnitDay call
+    // the same day it's created (empty orders array), then processes
+    // normally from the next day on.
     for (const state of ctx.unitStates.values()) {
-      processUnitDay(ctx, state, day)
+      await processUnitDay(ctx, state, day)
     }
-    // Battles, markets, recruits, mana, effects — Stage 3/4.
+    // Battles, markets, mana, effects — Stage 3/4.
   }
 
   for (const faction of ctx.factionsById.values()) {
@@ -873,8 +1135,21 @@ export async function processTurn(gameId: string): Promise<{
         attributes: attrs,
         pending_orders: state.orders,
         active_full_day_order: state.fullDayOrder,
+        figure_count: state.unit.figure_count,
+        money: state.unit.money,
       })
       .eq('id', state.unit.id)
+  }
+
+  // Persist depleted recruit pools -- RECRUIT mutates location.economics.recruits
+  // in memory (ctx.locationsById is shared across the whole turn's processing,
+  // so depletion correctly carries across days/units within the turn); without
+  // this it would never actually save, and the pool would silently "refill"
+  // every new turn.
+  for (const locationId of ctx.dirtyLocationIds) {
+    const location = ctx.locationsById.get(locationId)
+    if (!location) continue
+    await supabase.from('locations').update({ economics: location.economics }).eq('id', locationId)
   }
 
   for (const unitId of ctx.dirtyUnitSkills) {
