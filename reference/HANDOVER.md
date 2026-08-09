@@ -5,6 +5,81 @@ without losing context. Read this before touching any code.
 
 ---
 
+## -6. UPDATE — Default WORK, stacked-unit report grouping, arrival-order tracking (eighth session, Claude Code)
+
+### Real feature built: default WORK for units with no orders
+Confirmed in `RulesNew.txt` in two places before implementing anything:
+the Money/Earning section ("the WORK order, which is also the default,
+i.e. all your orders lists end up with an invisible WORK") and WORK's own
+order entry ("This is the default order"). Applied in `turnProcessor.ts`
+whenever a unit's real order queue is exhausted — from the start of the
+turn, or after other real orders complete partway through it, not just
+brand-new units — gated to `leader`/`follower` unit types only (WORK is
+explicitly "Leader/follower only" in the rules; creature-type units don't
+get this default). **Verified**: a unit with an empty queue from turn
+start showed `Day 1 - works, earning N coins`; a unit whose real orders
+(`WITHDRAW` + two `RECRUIT`) completed on day 1 correctly showed WORK
+picking up from `Day 2` onward.
+
+**Real, significant consequence, discussed and deliberately kept as-is**:
+this applies to every leader/follower unit in the game, which includes
+NPC factions — confirmed live: 689 of 692 `turn_events` in the verification
+turn were NPC/player `unit_work`, across 3 factions. **NPC factions will
+now accumulate wage income every turn with no offsetting upkeep cost**,
+since wages/upkeep/desertion are still stubbed. Andy's call: leave it
+universal (correct per the rules; scoping it to player factions only would
+be a deviation to undo later) — this is a known consequence of upkeep
+being unbuilt, same category as every other missing bookkeeping mechanic
+(see "What's real and open" below). The fix for the funds-accumulation
+concern is building upkeep, not restricting WORK's default.
+
+### Real feature built: stacked-unit report grouping
+Format confirmed directly against `report18.txt` before implementing:
+a stack leader's line ends with `" Leading:"`, followed by its stacked
+follower(s) as indented lines beneath (e.g. `"The Emperor [1], ... Leading:
+- Imperial Archers [203], ..."`). `turnReport.ts` now groups both "Your
+units" and "Also present" by `stack_leader_id`, falling back to standalone
+display if a follower's leader isn't present/visible in the same list
+(defensive — a genuinely-stacked unit shouldn't silently vanish just
+because its leader is hidden or elsewhere). **Verified**: `MoveTester
+[U3483] - 1 leader Leading:` followed by its three stacked followers,
+indented, in the actual delivered email.
+
+**Real finding, flagged before it caused confusion**: the NPC pairs that
+motivated this task (Guard Captain/Imperial Guard, Merchant/Caravan
+Guards) are **not** actually linked via `stack_leader_id` in the data —
+both show `is_stacked: false` on direct query. They're independent units
+that happen to share a faction and location, not a real stack. This is a
+gap in NPC seeding (`seedNPCFactions.ts`/`seedNPCUnits.ts` never assign
+stacking relationships), not a report-rendering bug — the grouping logic
+is correct and works for any unit that's genuinely stacked (confirmed on
+`U5328`), it just can't group data that was never linked. **Still open**:
+NPC seeding needs real stack relationships assigned before "Also present"
+will ever show those specific examples grouped.
+
+### Real feature built: arrival-order tracking
+New `units.stack_position` column (migration `20_add_units_stack_position.sql`
+— note: this column did **not** actually exist despite being described as
+if it did; confirmed by querying before writing any code against it, not
+assumed). Set to `1` on registration, appended (running max + 1 at that
+location) on MOVE arrival, and the same for RECRUIT-created new units — the
+last one is an extension beyond the two originally-specified cases (only
+registration and MOVE were asked for), added because a unit "arriving" via
+recruitment is the same conceptual event; flagged explicitly rather than
+silently scope-creeping. Existing (pre-feature) units have `stack_position:
+null`, treated as "arrived earliest" (sorts first) in the report query,
+since there's no way to know their real historical arrival order
+retroactively. **Verified**: two units recruited in the same turn showed
+`stack_position: 1` and `2` respectively, in creation order, and rendered
+in that order in the actual delivered email, with the legacy null-position
+unit sorting first as designed.
+
+### Standing lesson, applied correctly this time
+Committed and pushed **before** testing against production this session
+(the previous session's mistake — testing against undeployed code — was
+fresh enough to actively avoid). Confirmed Vercel green before each
+production trigger.
+
 ## -5. UPDATE — RECRUIT and WITHDRAW implemented, confirmed against real source (sixth/seventh session, Claude Code)
 
 ### Real feature built: RECRUIT and WITHDRAW, both confirmed against real 2010 engine source before writing any code
@@ -684,7 +759,11 @@ draft; don't re-simplify it without re-reading `OrderProcessor.cpp`.
 
 **Explicitly stubbed, not implemented:**
 - Wages/upkeep/desertion at month-end (units don't lose figures for unpaid
-  upkeep yet)
+  upkeep yet). Consequence sharpened in section -6: since every idle
+  leader/follower unit now correctly defaults to WORK (including NPCs),
+  faction funds — NPC and player alike — grow every turn with nothing
+  deducting from them. Known and accepted, not a bug; the fix is building
+  upkeep, not scoping back WORK's default.
 - Outlaw spawning
 - Combat (units sharing a hex with hostiles currently do nothing)
 - Riding/flying movement
@@ -832,9 +911,12 @@ highest-value items for the next two phases:
    story (a unit mid-move currently can only be interrupted by RETREAT
    per the rules, but RETREAT itself doesn't exist yet).
 7. **"unstacks to move" notification** — not built, deliberately deferred.
-   Real event in the archive (see section -4), but formal unit stacking
-   doesn't exist yet, so there's nothing for it to describe. Revisit once
-   stacking is designed/built.
+   Real event in the archive (see section -4). Partially superseded by
+   section -6: `is_stacked`/`stack_leader_id` are now real and populated for
+   player units (RECRUIT), and reports display stacks correctly — but full
+   stacking *behavior* (move-together, weight/capacity pooling) still isn't
+   built, so there's still nothing for an "unstacks to move" notification to
+   describe. Revisit once move-together is built.
 8. **Minimum viable combat** — needs `engine/CombatDesign.txt` read first
    (design doc, not code), then real design decisions from Andy before
    implementation
@@ -844,7 +926,17 @@ highest-value items for the next two phases:
    follow-ups from RECRUIT/WITHDRAW, not yet built: new-unit same-submission
    order addressing, multi-unit oversubscription price-rise auction,
    item withdrawal, unit-level NAME. TEACH unlocks 3rd+ skill levels.
-10. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
+10. **Default WORK + stacked-unit report display + arrival-order tracking —
+    DONE, verified against real production.** See section -6 above. Real
+    open item from this work: NPC-seeded units have no real stack
+    relationships (`is_stacked`/`stack_leader_id` never assigned by
+    `seedNPCFactions.ts`/`seedNPCUnits.ts`), so "Also present" won't show
+    NPC pairs grouped even though the grouping logic itself is correct —
+    needs NPC seeding changes, not a report fix. Also surfaces (doesn't
+    solve) that upkeep being stubbed means NPC (and player) faction funds
+    now grow unboundedly from default WORK with no offsetting cost —
+    expected until upkeep is built, not a bug to work around.
+11. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
    fixed via race_defs; starting funds still a placeholder `500`), then
    actually recruit 5 people
 
