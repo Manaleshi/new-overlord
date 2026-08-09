@@ -5,6 +5,106 @@ without losing context. Read this before touching any code.
 
 ---
 
+## -5. UPDATE — RECRUIT and WITHDRAW implemented, confirmed against real source (sixth/seventh session, Claude Code)
+
+### Real feature built: RECRUIT and WITHDRAW, both confirmed against real 2010 engine source before writing any code
+Pulled and read in full (saved to `reference/engine-source/`): `RecruitOrder.cpp/.h`,
+`RecruitRequest.cpp/.h`, `NewRecruitRequest.cpp/.h`, `MarketRequest.cpp/.h`,
+`LocalMarketRequest.cpp/.h`, `WithdrawOrder.cpp/.h` — plus the relevant
+`RulesNew.txt` sections (Money/Upkeep, Recruiting, Market, WITHDRAW order).
+
+**Real finding, corrects an earlier placeholder decision**: `RECRUIT` was
+sitting in `turnProcessor.ts`'s `FULL_DAY_COMMANDS` set from before real
+source existed for it. The real engine's `RecruitOrder` is `IMMEDIATE_ORDER`,
+not full-day — it just has one narrow side effect, "the leader will not be
+able to move during the day he recruits" (`RulesNew.txt`), which is now
+enforced directly (a `state.recruitedToday` flag blocks that day's `MOVE`
+from beginning) rather than by treating the whole order as full-day.
+Reclassifying it this way also meant our *existing* immediate-order retry
+mechanism (a `FAILURE` result just leaves the order queued for next day,
+unmodified) already gave correct day-by-day partial-fulfillment retry for
+free — confirmed against `completeOrderProcessing`'s actual control flow:
+the `0 = "as much as possible"` shortcut never writes back to the order's
+stored amount, so its completion check is always `0 > result` (never true)
+→ always resolves once and completes; only an explicit non-zero amount
+retries for the remainder.
+
+**Real finding, resolves a money-model question directly**: units now have
+their own money (`units.money`, migration `19_add_units_money.sql`),
+distinct from faction funds — confirmed necessary because `RecruitRequest`/
+`NewRecruitRequest`/`MarketRequest` all check only `unit_->hasMoney()`,
+never faction funds. Checked `RulesNew.txt`'s `WITHDRAW` section directly to
+resolve *how* faction funds ever reach a unit: **automatic fallback applies
+to STUDY and UPKEEP only** ("the unit must use the WITHDRAW order to first
+obtain the coin" for recruiting/market purchases — not automatic like
+upkeep's peer-lending chain). `WORK`/`STUDY` deliberately left paying into
+`faction.funds` directly, unchanged — Andy's call, not a wider WORK-funding
+overhaul to route wages into unit money like the real engine ultimately
+does.
+
+**WITHDRAW**: immediate, capped transfer from `faction.funds` to
+`units.money`. Real engine gates on `terrain == "city"`; our schema has no
+such terrain (`terrain_type` is natural terrain only — plains/forest/hills/
+etc.). The real signal is `resources.population_center.type`. Andy's call:
+both `'city'` and `'imperial'` qualify.
+
+**RECRUIT can create a brand-new unit**, stacked beneath the recruiting
+leader — this is the first code to actually *use* the `units.is_stacked`/
+`stack_leader_id` columns, which existed in the schema already but nothing
+had ever read or written them before now (corrects an overstatement in
+section -4's "unstacks to move" note, which implied stacking was entirely
+unbuilt — the columns are now real and populated, just not the full stacking
+*behavior*: move-together, weight/capacity pooling, "unstacks to move"
+notification, etc. are all still unbuilt).
+
+### Real bug caught immediately: tested against production without deploying first
+First verification attempt showed `eventCount: 30`, all reading `"RECRUIT
+not yet implemented"` — the code had never been committed/pushed, so
+production was still running pre-session code (same *symptom* as the
+Turbopack dev-cache incident in section -4, different *cause* this time —
+plain forgot to deploy, not a caching bug). Caught immediately by reading
+the actual event content instead of trusting the response shape (`ok: true`
+looked fine). Fixed by committing (`28e18ba`), pushing, confirming Vercel
+green, then re-running — the two stale orders had never been consumed
+(matching the `FAILURE`-retries-forever-until-fixed design), so they carried
+forward automatically and processed correctly once the real code was live.
+**Standing lesson, same family as "check Vercel is green after every push"**:
+commit and push *before* testing against production, not after — testing
+against production is only meaningful against what's actually deployed.
+
+### Verified, real production, real delivered email (Resend API, `last_event: "delivered"`)
+`WITHDRAW 100` → faction funds `500→400`, unit money `0→100`. `RECRUIT U0000
+5 man 0` → local price resolved (`$13`), unit money `100→35`, new unit
+`U5328` created with 5 followers (real race-derived stats from `race_defs`:
+`life: 3`, `upkeep_per_figure: 10`), recruit pool depleted `1676→1671` and
+persisted (doesn't silently refill next turn). Email correctly showed both
+action lines, the new unit as its own full report section, and its own
+order template for the next turn. **The test world (`Alpha`) now has a real
+second unit (`U5328`) as a lasting side effect of this verification** — fine,
+it's the test world, not a real game.
+
+### Known simplifications, deliberately scoped rather than silently cut — real open follow-ups
+- **A new unit created via RECRUIT can't receive orders in the same
+  submission yet.** The real engine addresses it via a placeholder ID within
+  that submission (e.g. `f06nU01`); our engine just creates it with an
+  auto-generated code, and it becomes orderable from the *next* turn's report
+  onward. Needs `app/api/email/inbound/route.ts` changes to route orders to
+  a not-yet-existing `unit_id` within one submission.
+- **Same-day multi-unit oversubscription price-rise auction isn't
+  implemented.** The real mechanism (`LocalMarketRequest` as a depleting
+  counter-party, matched via `BasicCompetitiveRequest`'s resolution logic)
+  is understood in shape from `RulesNew.txt`'s Market section and
+  `LocalMarketRequest.cpp`, but the actual N-way matching algorithm lives in
+  `BasicCompetitiveRequest.cpp`, which wasn't pulled — and isn't verifiable
+  against real data with the current single-player test setup anyway. RECRUIT
+  currently just caps against the pool as a simple first-come request.
+- **WITHDRAW is coin-only.** The real order also supports arbitrary items
+  (`WITHDRAW amount item`); not built.
+- **Unit-level NAME isn't built.** Only faction-level `NAME` exists. New
+  units get an auto-generated name (`"New <race plural>"`) instead of being
+  nameable via a follow-up order, per the real engine's
+  `UNIT f06nU01 / NAME "New Jims"` pattern.
+
 ## -4. UPDATE — Report generator wired to real turn_events, MOVE event wording matched to the real archive, and a dev-cache bug that produced a false "verified" claim (fifth session, Claude Code)
 
 ### Follow-up (sixth session): faction-level Global Events path now verified for real
@@ -738,9 +838,12 @@ highest-value items for the next two phases:
 8. **Minimum viable combat** — needs `engine/CombatDesign.txt` read first
    (design doc, not code), then real design decisions from Andy before
    implementation
-9. **Fill out order set** — RECRUIT, GIVE, USE now have real data + the
-   correct contention rules (see section -1 further up) to build against
-   correctly, rather than guessing. TEACH unlocks 3rd+ skill levels.
+9. **RECRUIT + WITHDRAW — DONE, verified against real production.** See
+   section -5 above. `GIVE`, `USE` still need real source pulled before
+   building (same discipline as RECRUIT — don't guess). Real, scoped
+   follow-ups from RECRUIT/WITHDRAW, not yet built: new-unit same-submission
+   order addressing, multi-unit oversubscription price-rise auction,
+   item withdrawal, unit-level NAME. TEACH unlocks 3rd+ skill levels.
 10. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
    fixed via race_defs; starting funds still a placeholder `500`), then
    actually recruit 5 people
