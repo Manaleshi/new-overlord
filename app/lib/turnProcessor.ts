@@ -52,6 +52,7 @@ interface UnitRow {
   figure_count: number
   upkeep_per_figure: number
   money: number
+  stack_position: number | null
   attributes: Record<string, any> | null
   [key: string]: any
 }
@@ -151,6 +152,7 @@ interface TurnContext {
   unitSkills: Map<string, Map<string, UnitSkillRow>> // unitId -> tag -> row
   dirtyUnitSkills: Set<string>
   dirtyLocationIds: Set<string> // locations whose economics.recruits pool was depleted this turn
+  locationMaxStackPosition: Map<string, number> // lazily-computed running max stack_position per location, for arrival ordering
   unitStates: Map<string, UnitOrderState>
   eventLog: { game_id: string; turn_number: number; day_number: number; location_id: string | null; unit_id: string | null; faction_id: string | null; event_type: string; data: any; is_public: boolean }[]
 }
@@ -178,6 +180,29 @@ function logEvent(
     data: { description },
     is_public,
   })
+}
+
+// Real archived reports (report18.txt) list units at a location in arrival
+// order, earliest first -- this assigns the next position for a unit newly
+// present at a location (MOVE arrival, RECRUIT's new unit). Lazily seeded
+// from the real current max among units already at that location (scanning
+// ctx.unitStates, which covers every unit in the game, not just this
+// faction's), then incremented in memory for the rest of the turn so
+// multiple arrivals at the same location on the same turn stay correctly
+// ordered relative to each other.
+function nextStackPosition(ctx: TurnContext, locationId: string): number {
+  if (!ctx.locationMaxStackPosition.has(locationId)) {
+    let max = 0
+    for (const state of ctx.unitStates.values()) {
+      if (state.unit.location_id === locationId && typeof state.unit.stack_position === 'number' && state.unit.stack_position > max) {
+        max = state.unit.stack_position
+      }
+    }
+    ctx.locationMaxStackPosition.set(locationId, max)
+  }
+  const next = ctx.locationMaxStackPosition.get(locationId)! + 1
+  ctx.locationMaxStackPosition.set(locationId, next)
+  return next
 }
 
 // ---------------------------------------------------------------------------
@@ -331,6 +356,7 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
       observation: heroStats?.observation ?? 4,
       mana_current: 0,
       mana_max: 0,
+      stack_position: 1, // registration always creates at position 1 (Andy's spec)
       attributes: {},
     })
 
@@ -447,6 +473,7 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
     gameId, turnNumber, factionsById, locationsById, locCodeToId, unitCodeToId,
     skillDefsByTag, raceDefsByTag, unitSkills, dirtyUnitSkills: new Set(),
     dirtyLocationIds: new Set(),
+    locationMaxStackPosition: new Map(),
     unitStates: new Map(), eventLog,
   }
 
@@ -586,6 +613,16 @@ async function processUnitDay(ctx: TurnContext, state: UnitOrderState, day: numb
       completeFullDayOrder(ctx, state, day)
     }
     return
+  }
+
+  // "the WORK order, which is also the default (i.e., all your orders lists
+  // end up with an invisible WORK)" -- RulesNew.txt. Applies whenever the
+  // real order queue is exhausted (from the start of the turn, or after
+  // other orders complete partway through it), not just brand-new units.
+  // WORK itself is "Leader/follower only" per the rules -- creature-type
+  // units don't get this default.
+  if (state.orders.length === 0 && (state.unit.unit_type === 'leader' || state.unit.unit_type === 'follower')) {
+    state.orders.push({ raw: 'WORK', repeat: true, conditional: 0, alternative: false, command: 'WORK', args: [] })
   }
 
   for (let i = 0; i < state.orders.length; i++) {
@@ -809,6 +846,7 @@ async function recruitOrder(ctx: TurnContext, state: UnitOrderState, order: Pars
         is_leader: raceDef.category === 'LEADER',
         is_stacked: true,
         stack_leader_id: state.unit.id,
+        stack_position: nextStackPosition(ctx, state.unit.location_id), // not explicitly specified, but a recruited unit "arriving" at the location is the same conceptual event as MOVE arrival
         figure_count: 0,
         upkeep_per_figure: baseStats.upkeep ?? 10,
         money: 0,
@@ -1068,6 +1106,7 @@ function completeFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: numb
 
   if (active.data.kind === 'move') {
     state.unit.location_id = active.data.targetLocationId
+    state.unit.stack_position = nextStackPosition(ctx, active.data.targetLocationId)
     state.dirty = true
     // Real report format: "arrived from <origin>" -- names where the unit
     // came from, not the destination it's now at (report18.txt).
@@ -1137,6 +1176,7 @@ export async function processTurn(gameId: string): Promise<{
         active_full_day_order: state.fullDayOrder,
         figure_count: state.unit.figure_count,
         money: state.unit.money,
+        stack_position: state.unit.stack_position,
       })
       .eq('id', state.unit.id)
   }

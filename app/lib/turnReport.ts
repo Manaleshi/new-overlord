@@ -63,7 +63,7 @@ async function getFactionData(factionId: string): Promise<TurnReportData | null>
   // Get other units at same locations
   const { data: otherUnits } = await supabase
     .from('units')
-    .select('unit_code, name, unit_type, figure_count, faction_id, location_id, stealth, observation, factions(faction_code, name, faction_type)')
+    .select('id, unit_code, name, unit_type, figure_count, faction_id, location_id, stealth, observation, is_stacked, stack_leader_id, stack_position, factions(faction_code, name, faction_type)')
     .in('location_id', locationIds)
     .neq('faction_id', factionId)
 
@@ -159,6 +159,47 @@ function formatUnit(unit: any): string {
   return lines.join('\n')
 }
 
+// Real archived reports (report18.txt) group stacked units together: the
+// leader's line ends with "Leading:", followed by its stacked follower(s)
+// as indented lines beneath, in arrival order. Units aren't stacked at all
+// unless stack_leader_id actually points to another unit present in the
+// same list -- if the leader isn't visible/present here, its follower (if
+// visible) falls back to displaying standalone rather than vanishing.
+function groupByStack<T extends { id: string; stack_leader_id: string | null; stack_position: number | null }>(units: T[]): { top: T; followers: T[] }[] {
+  const byId = new Map(units.map(u => [u.id, u]))
+  const followersByLeader = new Map<string, T[]>()
+  const topLevel: T[] = []
+
+  for (const u of units) {
+    if (u.stack_leader_id && byId.has(u.stack_leader_id)) {
+      if (!followersByLeader.has(u.stack_leader_id)) followersByLeader.set(u.stack_leader_id, [])
+      followersByLeader.get(u.stack_leader_id)!.push(u)
+    } else {
+      topLevel.push(u)
+    }
+  }
+
+  // Arrival order -- report18.txt lists units earliest-arrival-first.
+  // Unpositioned (null) units predate this feature; treated as earliest.
+  const pos = (u: T) => u.stack_position ?? -Infinity
+  topLevel.sort((a, b) => pos(a) - pos(b))
+  for (const followers of followersByLeader.values()) {
+    followers.sort((a, b) => pos(a) - pos(b))
+  }
+
+  return topLevel.map(top => ({ top, followers: followersByLeader.get(top.id) ?? [] }))
+}
+
+function formatUnitStack(top: any, followers: any[], describeUnit: (u: any) => string): string[] {
+  const lines: string[] = []
+  const suffix = followers.length > 0 ? ' Leading:' : ''
+  lines.push(`    ${describeUnit(top)}${suffix}`)
+  for (const f of followers) {
+    lines.push(`      ${describeUnit(f)}`)
+  }
+  return lines
+}
+
 function formatLocation(location: any, factionUnits: any[], otherUnits: any[], factionObservation: number): string {
   const lines: string[] = []
   const r = location.resources ?? {}
@@ -218,8 +259,8 @@ function formatLocation(location: any, factionUnits: any[], otherUnits: any[], f
   const ownUnitsHere = factionUnits.filter((u: any) => u.location_id === location.id)
   if (ownUnitsHere.length > 0) {
     lines.push(`  Your units:`)
-    for (const u of ownUnitsHere) {
-      lines.push(`    ${u.name} [${u.unit_code}] - ${u.figure_count} ${u.unit_type}`)
+    for (const { top, followers } of groupByStack(ownUnitsHere)) {
+      lines.push(...formatUnitStack(top, followers, (u: any) => `${u.name} [${u.unit_code}] - ${u.figure_count} ${u.unit_type}`))
     }
   }
 
@@ -228,11 +269,14 @@ function formatLocation(location: any, factionUnits: any[], otherUnits: any[], f
 
   if (visibleOthers.length > 0) {
     lines.push(`  Also present:`)
-    for (const u of visibleOthers) {
+    const describeOther = (u: any) => {
       const factionName = u.factions?.name ?? 'Unknown'
       const factionCode = u.factions?.faction_code ?? '?'
       const advertised = u.factions?.faction_type !== 'player'
-      lines.push(`    ${u.name} [${u.unit_code}] - ${u.figure_count} ${u.unit_type}${advertised ? ` (${factionName} [${factionCode}])` : ''}`)
+      return `${u.name} [${u.unit_code}] - ${u.figure_count} ${u.unit_type}${advertised ? ` (${factionName} [${factionCode}])` : ''}`
+    }
+    for (const { top, followers } of groupByStack(visibleOthers)) {
+      lines.push(...formatUnitStack(top, followers, describeOther))
     }
   }
 
