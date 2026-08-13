@@ -99,7 +99,7 @@ Your first turn report will be sent when the game begins.
 }
 
 async function handleOrders(from: string, body: string) {
-  const { parseOrderFile, formatSyntaxCheck } = await import('../../../lib/orderParser')
+  const { parseOrderFile, formatSyntaxCheck, isNewUnitPlaceholder } = await import('../../../lib/orderParser')
 
   const parsed = parseOrderFile(body)
 
@@ -181,6 +181,8 @@ async function handleOrders(from: string, body: string) {
     if (factionOrderError) console.error('Faction order insert failed:', factionOrderError)
   }
 
+  const notices: string[] = []
+
   for (const unitOrder of parsed.unitOrders) {
     const { data: unit } = await supabase
       .from('units')
@@ -190,7 +192,29 @@ async function handleOrders(from: string, body: string) {
       .single()
 
     if (!unit) {
-      parsed.errors.push(`Unit ${unitOrder.unitCode} not found or not yours`)
+      // Real format confirmed against actual player submissions:
+      // <faction_code> + capital "N" + two digits (e.g. "F2028N01") --
+      // addresses a unit that doesn't exist yet, to be created by a RECRUIT
+      // elsewhere in this same submission. Queued as a placeholder rather
+      // than dropped; anything else unmatched is a genuine error.
+      if (isNewUnitPlaceholder(unitOrder.unitCode, parsed.factionCode)) {
+        const { error: placeholderOrderError } = await supabase.from('orders').insert({
+          game_id: game.id,
+          faction_id: faction.id,
+          unit_id: null,
+          placeholder_code: unitOrder.unitCode.toUpperCase(),
+          turn_number: game.turn_number,
+          order_type: 'unit',
+          status: 'pending',
+          orders_raw: unitOrder.orders.map((o: any) => o.raw).join('\n'),
+          orders_parsed: unitOrder.orders,
+          submitted_at: new Date().toISOString(),
+        })
+        if (placeholderOrderError) console.error(`Placeholder order insert failed for ${unitOrder.unitCode}:`, placeholderOrderError)
+        notices.push(`Unit ${unitOrder.unitCode} doesn't exist yet -- orders queued as a placeholder, will apply only if a RECRUIT order creates this unit this turn.`)
+      } else {
+        parsed.errors.push(`Unit ${unitOrder.unitCode} not found or not yours`)
+      }
       continue
     }
 
@@ -209,10 +233,11 @@ async function handleOrders(from: string, body: string) {
   }
 
   const syntaxReport = formatSyntaxCheck(parsed)
+  const noticesBlock = notices.length > 0 ? `\n\nNotices:\n\n${notices.join('\n')}` : ''
   await sendEmail({
     to: from,
     subject: `New Overlord — Orders Received [${parsed.factionCode}] Turn ${game.turn_number}`,
-    text: `Your orders for ${faction.name} [${parsed.factionCode}] have been received for Turn ${game.turn_number}.\n\nSyntax Check:\n\n${syntaxReport}\n\n${parsed.errors.length > 0 ? 'Please fix errors and resubmit.' : 'Orders look good!'}\n\n— The Game Master`
+    text: `Your orders for ${faction.name} [${parsed.factionCode}] have been received for Turn ${game.turn_number}.\n\nSyntax Check:\n\n${syntaxReport}${noticesBlock}\n\n${parsed.errors.length > 0 ? 'Please fix errors and resubmit.' : 'Orders look good!'}\n\n— The Game Master`
   })
 }
 

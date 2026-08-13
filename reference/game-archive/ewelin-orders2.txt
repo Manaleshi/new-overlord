@@ -1,0 +1,158 @@
+#GAME wb9g misutka
+
+UNIT 29748
+;     Ewelin's scout [29748], in Helicona [L5]
+; Ewelin's scout [29748], 1 follower, moving out to Bone pass [L295] (4
+; days/12), has: 45 coins [coin]. Skills: 1st scouting [scou] (15). May
+; learn: stealth [stea], ambush [ambu], swampwalk [swwk], desertwalk [dewk],
+; forestwalk [fowk], hillswalk [hiwk], plainswalk [plwk]. Carry: 70/90.
+; Combat: avoid, rear, left, flee.
+; order stack:
+;   @study cmbt 1
+CLEAR
+@STUDY HIWK 1
+10 USE HIWK
+MOVE NorthEast
+
+UNIT 14034
+;     Ewelin's scout [14034], in Norman road [L3]
+; Ewelin's scout [14034], 1 follower, has: 39 coins [coin]. Skills: 1st
+; scouting [scou] (15), novice combat [cmbt] (6). May learn: stealth [stea],
+; ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk [fowk],
+; hillswalk [hiwk], plainswalk [plwk]. Carry: 70/90. Combat: avoid, rear,
+; left, flee.
+; order stack:
+;   @study cmbt 1
+CLEAR
+@STUDY PLWK 1
+MOVE NorthWest
+10 USE PLWK
+
+UNIT 37727
+;     Ewelin's scout [37727], in Datmus valley [L2]
+; Ewelin's scout [37727], 1 follower, has: 32 coins [coin]. Skills: 1st
+; scouting [scou] (15), novice combat [cmbt] (13). May learn: stealth [stea],
+; ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk [fowk],
+; hillswalk [hiwk], plainswalk [plwk]. Carry: 70/90. Combat: avoid, rear,
+; left, flee.
+; order stack:
+;   @study cmbt 1
+@study plwk 1
+10 use plwk
+
+UNIT 62935
+;     Ewelin's salesman [62935], in Imperial City [L1]
+; Ewelin's salesman [62935], 1 leader. Skills: 1st relationships [rela] (16),
+; novice marketing [mktg] (14). May learn: observation [obse], entertainment
+; [ente]. Carry: 1470/1900. Combat: avoid, rear, left, flee.
+; order stack:
+;   @study mktg 1
+@study ente 1
+@study obse 1
+@GET 58997 coin 1
+GET 77507 coin 200
+GET 79997 coin 200
+RECRUIT wb9gN01 1 ldr
+
+UNIT wb9gN01
+NAME "Teacher"
+UNSTACK
+ENTER L171
+STACK 69015
+@GET 58997 coin 1
+@STUDY CMBT 1
+@STUDY TAXE 1
+-STACK 22820
+@STUDY SCOU 1
+@STUDY PLWK 1
+
+UNIT 69015
+;     Countess Andrea [69015], in Imperial Heraldry [L171]
+; Countess Andrea [69015], 1 leader. Skills: 1st combat [cmbt] (29). May
+; learn: taxing [taxe], tactics [tact], parry [parr], archery [arch], melee
+; [mele], blades [blde], maneuvers [mane]. Carry: 140/200. Combat: avoid,
+; rear, left, flee.
+; order stack:
+;   @study cmbt 3
+;   @study tact 3
+;   @study stra 1
+;   @study nobl 1
+@GET 58997 coin 1
+
+UNIT 22820
+;     Map Mistress [22820], in Imperial Heraldry [L171], stacked under
+;     Countess Andrea [69015]
+; Map Mistress [22820], 1 leader. Skills: 1st scouting [scou] (15), 1st
+; combat [cmbt] (15). May learn: taxing [taxe], tactics [tact], stealth
+; [stea], ambush [ambu], swampwalk [swwk], desertwalk [dewk], forestwalk
+; [fowk], hillswalk [hiwk], parry [parr], archery [arch], melee [mele],
+; blades [blde], maneuvers [mane]. Carry: 70/100. Combat: avoid, rear, left,
+; flee.
+@GET 58997 coin 1
+@STUDY SCOU 2
+
+UNIT 68528
+;     Exploring force [68528], in Imperial Heraldry [L171]
+; Exploring force [68528], 2 followers. Skills: 1st scouting [scou] (15),
+; novice combat [cmbt] (14). May learn: stealth [stea], ambush [ambu],
+; swampwalk [swwk], desertwalk [dewk], forestwalk [fowk], hillswalk [hiwk],
+; plainswalk [plwk]. Carry: 140/180. Combat: avoid, rear, left, flee.
+; order stack:
+;   @study cmbt 1
+STACK 22820
+@GET 58997 coin 2
+@study plwk 1
+@study taxe 1
+
+UNIT 58997
+;     Clowns [58997], in Imperial school of Higher Magics [L9], stacked under
+;     Lady Ewelin [9365]
+; Clowns [58997], 20 followers. Skills: 1st relationships [rela] (16), 1st
+; entertainment [ente] (15). May learn: observation [obse]. Carry: 1400/1800.
+; Combat: avoid, rear, left, flee.
+; order stack:
+;   @use ente
+UNSTACK
+LEAVE
+STACK 62935
+
+UNIT 79997
+;     Jesters [79997], in Imperial school of Higher Magics [L9], stacked
+;     under Lady Ewelin [9365]
+; Jesters [79997], 20 followers. Skills: 1st relationships [rela] (16), 1st
+; entertainment [ente] (15). May learn: observation [obse]. Carry: 1400/1800.
+; Combat: avoid, rear, left, flee.
+; order stack:
+;   @use ente
+UNSTACK
+LEAVE
+STACK 62935
+
+UNIT 77507
+;     Minstrels [77507], in Imperial City [L1], stacked under Ewelin's
+;     salesman [62935]
+; Minstrels [77507], 20 followers. Skills: 1st relationships [rela] (16), 1st
+; entertainment [ente] (15). May learn: observation [obse]. Carry: 1400/1800.
+; Combat: avoid, rear, left, flee.
+; order stack:
+;   @use ente
+
+UNIT 9365
+;     Lady Ewelin [9365], in Imperial school of Higher Magics [L9]
+; Lady Ewelin [9365], 1 hero, has: 1 horse [hrse] (equipped), 1 ring of true
+; sight [rtsi] (equipped), 1 magic compass [mcom], 3 mana [mana]. Skills: 2nd
+; magecraft [mage] (45), 1st void magics [void] (15), novice water magics
+; [wate] (7). May learn: summon lesser void elemental [slve], drain life
+; [drlf], inspire dread [idre], read auras [raur], far eye [feye], make mage
+; keys [mkky], meditation [medi]. Carry: 2971/3820, /220 riding. Combat:
+; avoid, rear, left, flee.
+; order stack:
+;   @study wate 1
+@GET 58997 coin 3
+STACK 12
+STANCE ALLY npc3
+@STUDY QUAG 1
+@STUDY RAUR 1
+@STUDY IDRE 1
+
+#END

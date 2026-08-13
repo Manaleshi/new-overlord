@@ -22,6 +22,7 @@
 import { supabase } from './supabase'
 import bcrypt from 'bcryptjs'
 import type { ParsedOrder } from './orderParser'
+import { isNewUnitPlaceholder } from './orderParser'
 import { generateTurnReport } from './turnReport'
 import { sendEmail } from './email'
 
@@ -153,6 +154,7 @@ interface TurnContext {
   dirtyUnitSkills: Set<string>
   dirtyLocationIds: Set<string> // locations whose economics.recruits pool was depleted this turn
   locationMaxStackPosition: Map<string, number> // lazily-computed running max stack_position per location, for arrival ordering
+  placeholderOrdersByCode: Map<string, ParsedOrder[]> // new-unit placeholder code (e.g. "F2028N01") -> queued orders, claimed by RECRUIT when it creates the matching unit
   unitStates: Map<string, UnitOrderState>
   eventLog: { game_id: string; turn_number: number; day_number: number; location_id: string | null; unit_id: string | null; faction_id: string | null; event_type: string; data: any; is_public: boolean }[]
 }
@@ -474,10 +476,14 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
     skillDefsByTag, raceDefsByTag, unitSkills, dirtyUnitSkills: new Set(),
     dirtyLocationIds: new Set(),
     locationMaxStackPosition: new Map(),
+    placeholderOrdersByCode: new Map(),
     unitStates: new Map(), eventLog,
   }
 
-  const factionOrderRows = (orderRows || []).filter(r => r.unit_id === null)
+  // Faction-level orders: unit_id IS NULL AND not a new-unit placeholder row
+  // (placeholder rows are also unit_id IS NULL until claimed -- excluded here
+  // so they don't get misrouted into applyFactionOrder).
+  const factionOrderRows = (orderRows || []).filter(r => r.unit_id === null && !r.placeholder_code)
   for (const row of factionOrderRows) {
     const faction = factionsById.get(row.faction_id)
     if (!faction) continue
@@ -489,6 +495,15 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
   for (const row of orderRows || []) {
     if (!row.unit_id) continue
     ordersByUnitId.set(row.unit_id, row.orders_parsed || [])
+  }
+
+  // New-unit placeholder orders: "UNIT <faction_code>N##" blocks whose code
+  // doesn't match a real existing unit yet. Confirmed real format from real
+  // player submissions (ewelin-orders2.txt/orders18.txt), not RulesNew.txt's
+  // "nU" prose. Claimed by RECRUIT when it creates the matching unit.
+  for (const row of orderRows || []) {
+    if (row.unit_id || !row.placeholder_code) continue
+    ctx.placeholderOrdersByCode.set(row.placeholder_code, row.orders_parsed || [])
   }
 
   for (const unit of units || []) {
@@ -825,12 +840,13 @@ async function recruitOrder(ctx: TurnContext, state: UnitOrderState, order: Pars
     if (targetState.unit.faction_id !== state.unit.faction_id) return { status: 'INVALID' }
     if (targetState.unit.unit_race !== raceDef.tag) return { status: 'INVALID' }
     if (raceDef.category === 'LEADER' && targetState.unit.figure_count >= 1) return { status: 'INVALID' } // one leader per unit
-  } else if (targetCode) {
-    // New-unit placeholder: any code that doesn't resolve to a real existing
-    // unit is treated as "create new" -- simpler than enforcing the real
-    // engine's "<faction_code>n<label>" placeholder syntax, and that syntax
-    // only mattered for same-submission follow-up addressing, which isn't
-    // supported yet anyway (see file header note).
+  } else if (targetCode && isNewUnitPlaceholder(targetCode, ctx.factionsById.get(state.unit.faction_id)?.faction_code)) {
+    // New-unit placeholder: confirmed real format "<faction_code>N##" from
+    // real player submissions (ewelin-orders2.txt/orders18.txt) -- not
+    // RulesNew.txt's "nU" prose. A code that doesn't match a real unit AND
+    // doesn't match this pattern is a genuine invalid target (typo), not a
+    // silent new-unit creation -- matches the real engine's
+    // isNewEntityName() gate in checkParameterTag (OrderPrototype.cpp).
     const newCode = await generateUniqueUnitCode()
     const baseStats = raceDef.base_stats || {}
     const { data: newUnitRow, error: insertError } = await supabase
@@ -873,7 +889,23 @@ async function recruitOrder(ctx: TurnContext, state: UnitOrderState, order: Pars
     }
 
     ctx.unitCodeToId.set(newCode, newUnitRow.id)
-    targetState = { unit: newUnitRow as UnitRow, orders: [], fullDayOrder: null, dirty: false, recruitedToday: false }
+    // Also register the placeholder string itself (e.g. "F2028N01") so a
+    // second reference to the same placeholder later in this same
+    // submission -- another RECRUIT merging into it, or a future GIVE --
+    // resolves to this same unit, matching the real engine's
+    // findOrAddPlaceholder reuse-by-exact-string behavior.
+    const placeholderCode = targetCode.toUpperCase()
+    ctx.unitCodeToId.set(placeholderCode, newUnitRow.id)
+
+    // Claim any orders queued under "UNIT <placeholder>" in this same
+    // submission (RulesNew.txt: "orders submitted by the UNIT new-unit-id
+    // command will remain pending until creation time... immediately refer
+    // to the unit by its normal id, including pending orders").
+    const claimedOrders = ctx.placeholderOrdersByCode.get(placeholderCode)
+    const initialOrders = claimedOrders ? claimedOrders.map(o => ({ ...o })) : []
+    ctx.placeholderOrdersByCode.delete(placeholderCode)
+
+    targetState = { unit: newUnitRow as UnitRow, orders: initialOrders, fullDayOrder: null, dirty: false, recruitedToday: false }
     ctx.unitStates.set(newUnitRow.id, targetState)
   } else {
     return { status: 'INVALID' }

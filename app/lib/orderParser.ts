@@ -160,6 +160,18 @@ function parseOrderLine(line: string): ParsedOrder | null {
   return order
 }
 
+// Real new-unit placeholder format, confirmed against real player
+// submissions (ewelin-orders2.txt: "wb9gN01", ewelin-orders18.txt: same
+// code reused fresh 16 turns later for a different new unit) -- NOT
+// RulesNew.txt's "nU" prose ("f06nU01"). <faction_code> + capital "N" +
+// exactly two digits. Case-sensitive per RulesNew.txt, matched here against
+// the already-uppercased form since this engine uppercases codes throughout.
+export function isNewUnitPlaceholder(code: string, factionCode: string | undefined): boolean {
+  if (!factionCode) return false
+  const pattern = new RegExp(`^${factionCode.toUpperCase()}N\\d{2}$`)
+  return pattern.test(code.toUpperCase())
+}
+
 export function formatSyntaxCheck(parsed: ParsedFactionOrders): string {
   const lines: string[] = []
 

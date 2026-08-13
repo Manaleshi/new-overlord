@@ -1,0 +1,23 @@
+-- Supports addressing a not-yet-created unit within the same order
+-- submission (e.g. "RECRUIT F2028N01 5 man 0" followed by
+-- "UNIT F2028N01 / MOVE N" in the same file) -- confirmed against real
+-- player submissions (ewelin-orders2.txt, ewelin-orders18.txt in the
+-- reference bundle): the real format is <faction_code> + capital N +
+-- exactly two digits (e.g. "wb9gN01"), NOT the "nU" format RulesNew.txt's
+-- prose describes -- real evidence wins over doc prose per this project's
+-- standing practice.
+--
+-- When a UNIT block's code doesn't match a real existing unit but matches
+-- this placeholder pattern, its order row is inserted with unit_id: null,
+-- placeholder_code: <code> instead of being dropped as an error. RECRUIT
+-- claims these queued orders when it creates a matching new unit. Rows
+-- left unclaimed at end of turn are simply never picked up again next
+-- turn (matches RulesNew.txt: "If the unit is not created during the
+-- turn, it is wiped out, and all orders referring to that unit will be
+-- removed from all pending lists") -- no cleanup needed, they're scoped
+-- to their own turn_number already.
+--
+-- Run manually via the Supabase SQL Editor (no DDL execution path available
+-- to the app's REST-only Supabase client / service key).
+
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS placeholder_code text;
