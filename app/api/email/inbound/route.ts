@@ -255,6 +255,19 @@ export async function POST(req: NextRequest) {
     const subject = (emailData.subject ?? '').toLowerCase()
     const emailId = emailData.email_id
 
+    // Loop guard: never auto-reply to the app's own sending address. Every
+    // reply this handler sends (order confirmations, "Unknown Command",
+    // registration errors) comes FROM orders@new-overlord.us -- if that
+    // reply is ever inbound-delivered back to the same address (e.g. a
+    // sender whose "from" is that address, misconfigured forwarding, or a
+    // self-addressed test), replying to it again creates an infinite loop.
+    // Real incident: a same-domain self-to-self test send looped 24+ times
+    // in ~70 seconds via the "Unknown Command" branch before this existed.
+    if (from && from.toLowerCase().includes('orders@new-overlord.us')) {
+      console.error('Inbound email loop guard triggered -- from matches the app\'s own sending address, not replying:', from)
+      return NextResponse.json({ ok: true })
+    }
+
     const { Resend } = await import('resend')
     const resendClient = new Resend(process.env.RESEND_API_KEY)
     const { data: fullEmail } = await resendClient.emails.receiving.get(emailId)
