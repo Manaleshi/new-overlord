@@ -252,6 +252,15 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
   const { data: heroRace } = await supabase.from('race_defs').select('base_stats').eq('tag', 'hero').maybeSingle()
   const heroStats = heroRace?.base_stats as Record<string, number> | undefined
 
+  // Real 'man' race stats (category FOLLOWER) for the starting follower unit
+  // every leader gets per RulesNew.txt ("a follower unit of 50 unskilled
+  // followers"). Only life/upkeep are defined in base_stats -- combat stats
+  // aren't part of a race's base stats in the source (same gap noted above
+  // for heroStats), so they default to the same unskilled baseline
+  // seedNPCUnits.ts uses for untrained followers.
+  const { data: manRace } = await supabase.from('race_defs').select('base_stats').eq('tag', 'man').maybeSingle()
+  const manStats = manRace?.base_stats as Record<string, number> | undefined
+
   // Real settlement locations across all three starting zones, fetched once
   // per batch rather than per-player. Each zone maps to a distance band from
   // the Imperial City, matching the "ZONE imperial|borders|colonial" choice
@@ -303,6 +312,15 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
     }
   }
 
+  // Reverse lookup so starting funds can be based on the zone a player's
+  // location actually landed in, not just the zone they requested -- the
+  // fallback below can silently switch zones if the requested one has no
+  // settlements (e.g. a small test world).
+  const zoneByLocationId = new Map<string, 'imperial' | 'borders' | 'colonial'>()
+  for (const zone of ['imperial', 'borders', 'colonial'] as const) {
+    for (const id of settlementsByZone[zone]) zoneByLocationId.set(id, zone)
+  }
+
   for (const player of pendingPlayers) {
     let startingLocationId = player.attributes?.starting_location
 
@@ -325,6 +343,13 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
       startingLocationId = pool[Math.floor(Math.random() * pool.length)]
     }
 
+    // Starting funds per RulesNew.txt ("Starting position"): $5000 base for
+    // everyone, plus a zone bonus added to unclaimed funds -- $500 for
+    // imperial borders, $1000 for the Imperial City. Colonial gets no bonus.
+    const actualZone = zoneByLocationId.get(startingLocationId)
+      ?? ((player.attributes?.starting_zone || 'colonial') as 'imperial' | 'borders' | 'colonial')
+    const startingFunds = actualZone === 'imperial' ? 6000 : actualZone === 'borders' ? 5500 : 5000
+
     const factionCode = await generateUniqueFactionCode()
     const displayName = player.display_name || player.email.split('@')[0]
 
@@ -337,7 +362,7 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
         name: `${displayName}'s Faction`,
         faction_type: 'player',
         is_npc: false,
-        funds: 500, // TODO confirm starting funds with Andy
+        funds: startingFunds, // real value from RulesNew.txt: $5000 base + zone bonus (was hardcoded 500)
         control_points_max: 200,
         status: 'active',
         joined_turn: turnNumber,
@@ -358,7 +383,7 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
 
     const unitCode = await generateUniqueUnitCode()
 
-    const { error: unitError } = await supabase.from('units').insert({
+    const { data: leaderUnit, error: unitError } = await supabase.from('units').insert({
       faction_id: faction.id,
       location_id: startingLocationId,
       unit_code: unitCode,
@@ -384,10 +409,46 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
       stack_position: 1, // registration always creates at position 1 (Andy's spec)
       attributes: {},
     })
+    .select()
+    .single()
 
-    if (unitError) {
-      skipped.push(`${player.email}: starting unit creation failed — ${unitError.message}`)
+    if (unitError || !leaderUnit) {
+      skipped.push(`${player.email}: starting unit creation failed — ${unitError?.message}`)
       continue
+    }
+
+    // Per RulesNew.txt ("Starting position"): "All leaders start with a
+    // horse, which is equipped, and a follower unit of 50 unskilled
+    // followers, stacked beneath them." The horse item isn't granted here
+    // yet (starting equipment isn't wired up at all -- general/mage/
+    // adventurer/craftsman all still get none, a pre-existing gap, not new).
+    // The follower unit is real-data-sourced the same way the leader is:
+    // 'man' race_defs base_stats for life/upkeep, unskilled baseline for
+    // combat stats (matches seedNPCUnits.ts's untrained-unit defaults).
+    const followerCode = await generateUniqueUnitCode()
+    const { error: followerError } = await supabase.from('units').insert({
+      faction_id: faction.id,
+      location_id: startingLocationId,
+      unit_code: followerCode,
+      name: 'Followers',
+      unit_type: 'followers',
+      unit_race: 'man',
+      is_hero: false,
+      is_leader: false,
+      figure_count: 50,
+      upkeep_per_figure: manStats?.upkeep ?? 10,
+      initiative: 1, melee: 1, defense: 1, missile: 0,
+      life: manStats?.life ?? 3, hits: 1, damage: 1, ranged_damage: 0,
+      stealth: 0, observation: 1,
+      mana_current: 0, mana_max: 0,
+      is_stacked: true,
+      stack_leader_id: leaderUnit.id,
+      stack_position: 2, // leader is 1; the follower arrives with them
+      attributes: {},
+    })
+
+    if (followerError) {
+      skipped.push(`${player.email}: starting leader created, but starting follower unit failed — ${followerError.message}`)
     }
 
     await supabase.from('players').update({ status: 'active' }).eq('id', player.id)
