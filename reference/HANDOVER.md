@@ -5,6 +5,60 @@ without losing context. Read this before touching any code.
 
 ---
 
+## -8. UPDATE — Real starting funds and starting follower unit; two playtest-blocking gaps flagged (tenth session, Claude Code)
+
+### Real feature built: real per-zone starting funds and the starting follower unit, confirmed against RulesNew.txt
+Two bugs found directly in `processPendingRegistrations()` while re-reading
+`RulesNew.txt`'s "Starting position" section, fixed before any further work:
+
+- **Starting funds were hardcoded at `500`** regardless of zone. Real values
+  (`RulesNew.txt`, "Starting position"): **$5000 base** for everyone, +$500
+  bonus for an imperial-borders start ($5500), +$1000 bonus for an Imperial
+  City start ($6000), all added to unclaimed faction funds. Fixed to key off
+  the zone the player's location *actually* resolved to (post-fallback), not
+  just the requested zone — the existing fallback logic can silently switch
+  zones if the requested one has no settlements (e.g. a small test world),
+  and funds needed to track the real outcome, not the request.
+- **Leaders never got their starting follower unit.** Real text: *"All
+  leaders start with a horse, which is equipped, and a follower unit of 50
+  unskilled followers, stacked beneath them."* Now creates a 50-figure `man`
+  unit (real `race_defs` base_stats: life 3, upkeep 10) stacked beneath the
+  leader via `is_stacked` / `stack_leader_id` / `stack_position`, matching
+  the exact same convention already established by `RECRUIT`
+  ([turnProcessor.ts:912-914](../app/lib/turnProcessor.ts)).
+
+**Verified**, real production Supabase, no real email: SQL-injected one
+pending test player per zone (fake `.invalid` addresses —
+`processPendingRegistrations()` doesn't send email at all, confirmed by
+reading it, so this was belt-and-suspenders), ran the real function directly
+via `tsx` (not a reimplementation), confirmed funds ($6000/$5500/$5000) and
+follower stacking correct for all three, then deleted the test rows.
+
+### Known gaps, not fixed this session, playtest-blocking
+- **Starting equipment is not granted at all.** `RulesNew.txt` is explicit
+  per leader type: general gets a sword + plate armor, mage gets two random
+  low-level magic items, adventurer gets 30 food rations, craftsman gets two
+  tools matching their starting skills — and *every* leader additionally
+  gets an equipped horse (see the follower-unit fix above; the horse itself
+  still isn't granted). None of this exists yet — `processPendingRegistrations()`
+  grants no `unit_items` rows to the starting leader regardless of type.
+- **Leader-type starting skills/equipment aren't differentiated at all.**
+  `leader_type` (general/mage/adventurer/craftsman) is collected at
+  registration and stored on the faction, but every leader currently gets
+  the identical generic start (same stats, same — currently zero — skills,
+  same — currently zero — equipment) regardless of which type was chosen.
+  Real per-type differences, also from "Starting position": general starts
+  at 1st level in combat + blades; mage starts at 1st level in magecraft +
+  a chosen elemental; adventurer starts at 1st level in scouting + the
+  local land-lore skill; craftsman starts at 1st level in two basic skills.
+  None of this is granted at registration today.
+
+Both above are real, `RulesNew.txt`-sourced gaps, not invented — flagged
+here rather than fixed silently or guessed at, since fixing them means
+deciding startup-equipment/skill specifics (e.g. which two basic skills a
+craftsman gets, since the rule doesn't say) that are worth a real proposal
+before implementing, the same as every other task in this project.
+
 ## -7. UPDATE — New-unit placeholder addressing, GIVE, and a real mail-loop incident (ninth session, Claude Code)
 
 ### Real feature built: new-unit order addressing within the same submission
@@ -890,9 +944,11 @@ draft; don't re-simplify it without re-reading `OrderProcessor.cpp`.
 
 ## 4. Decisions already made — do not re-litigate without asking Andy
 
-- Starting faction funds: **500** (placeholder, flagged `TODO` in code —
-  confirm before real playtest)
-- Starting leader upkeep: **5/figure** (same caveat)
+- ~~Starting faction funds: **500** (placeholder, flagged `TODO` in code —
+  confirm before real playtest)~~ **RESOLVED, section -8**: real values are
+  $5000/$5500/$6000 by zone, per `RulesNew.txt`.
+- ~~Starting leader upkeep: **5/figure** (same caveat)~~ **RESOLVED,
+  section -5**: real value from `race_defs` (currently 20/figure for `hero`).
 - Turn trigger: **manual GET endpoint**, not cron, for now
 - Skill level progression: **15/45/90/180/360 days**, assumed universal
   across all skills (not per-skill) — this is inferred from the project's
