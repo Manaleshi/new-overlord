@@ -6,12 +6,14 @@
 // capacity deferred to Stage 2c pending unit_items/item_defs wiring).
 //
 // Orders implemented: NAME, PASSWORD (faction), GUARD, WORK, STUDY, MOVE,
-// WITHDRAW, RECRUIT (unit) -- RECRUIT/WITHDRAW confirmed against real source
+// WITHDRAW, RECRUIT, GIVE (unit) -- all confirmed against real source
 // (RecruitOrder.cpp, RecruitRequest.cpp, NewRecruitRequest.cpp, MarketRequest.cpp,
-// LocalMarketRequest.cpp, WithdrawOrder.cpp) and RulesNew.txt, not guessed --
-// see reference/HANDOVER.md for the money-model findings (unit money vs.
-// faction funds, WITHDRAW as the only sanctioned transfer path for RECRUIT).
-// Orders recognized but NOT yet implemented: GIVE, USE, MARCH,
+// LocalMarketRequest.cpp, WithdrawOrder.cpp, GiveOrder.cpp) and RulesNew.txt,
+// not guessed -- see reference/HANDOVER.md for the money-model findings (unit
+// money vs. faction funds, WITHDRAW as the only sanctioned transfer path for
+// RECRUIT) and the new-unit placeholder addressing findings (real format
+// confirmed against actual player submissions, not RulesNew.txt's prose).
+// Orders recognized but NOT yet implemented: USE, MARCH,
 // and everything else in RulesNew.txt (TEACH, EQUIP, SPLIT, ENTER/LEAVE, etc.)
 // — these log an `order_pending` event and stay queued, untouched, for a
 // later stage rather than being silently dropped.
@@ -122,6 +124,24 @@ interface UnitSkillRow {
   [key: string]: any
 }
 
+interface ItemDefRow {
+  tag: string
+  name: string
+  category: string
+  [key: string]: any
+}
+
+interface UnitItemRow {
+  id?: string
+  unit_id: string
+  item_tag: string
+  quantity: number
+  equipped: boolean
+  equip_slot: string | null
+  token_progress: number
+  [key: string]: any
+}
+
 type FullDayData =
   | { kind: 'move'; targetLocationId: string; targetLocCode: string; originLocationId: string; originLocCode: string; originName: string }
   | { kind: 'study'; targetLevel: number }
@@ -150,8 +170,11 @@ interface TurnContext {
   unitCodeToId: Map<string, string>
   skillDefsByTag: Map<string, SkillDefRow>
   raceDefsByTag: Map<string, RaceDefRow>
+  itemDefsByTag: Map<string, ItemDefRow>
   unitSkills: Map<string, Map<string, UnitSkillRow>> // unitId -> tag -> row
   dirtyUnitSkills: Set<string>
+  unitItems: Map<string, Map<string, UnitItemRow>> // unitId -> item_tag -> row (GIVE's non-coin transfers)
+  dirtyUnitItems: Set<string>
   dirtyLocationIds: Set<string> // locations whose economics.recruits pool was depleted this turn
   locationMaxStackPosition: Map<string, number> // lazily-computed running max stack_position per location, for arrival ordering
   placeholderOrdersByCode: Map<string, ParsedOrder[]> // new-unit placeholder code (e.g. "F2028N01") -> queued orders, claimed by RECRUIT when it creates the matching unit
@@ -439,6 +462,11 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
   const raceDefsByTag = new Map<string, RaceDefRow>()
   for (const r of raceDefs || []) raceDefsByTag.set(r.tag, r)
 
+  const { data: itemDefs, error: itemDefsError } = await supabase.from('item_defs').select('*')
+  if (itemDefsError) throw new Error(`Failed to load item_defs: ${itemDefsError.message}`)
+  const itemDefsByTag = new Map<string, ItemDefRow>()
+  for (const i of itemDefs || []) itemDefsByTag.set(i.tag, i)
+
   const factionIds = Array.from(factionsById.keys())
   const safeFactionIds = factionIds.length > 0 ? factionIds : ['00000000-0000-0000-0000-000000000000']
 
@@ -467,13 +495,31 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
     unitSkills.get(row.unit_id)!.set(row.skill_tag, row)
   }
 
+  // Same chunking as unit_skills above -- GIVE is the first thing to
+  // actually manipulate unit_items from turnProcessor.ts (turnReport.ts
+  // only ever read it for display).
+  const unitItemRows: any[] = []
+  for (let i = 0; i < unitIds.length; i += CHUNK_SIZE) {
+    const chunk = unitIds.slice(i, i + CHUNK_SIZE)
+    const { data, error } = await supabase.from('unit_items').select('*').in('unit_id', chunk)
+    if (error) throw new Error(`Failed to load unit_items (rows ${i}-${i + chunk.length}): ${error.message}`)
+    if (data) unitItemRows.push(...data)
+  }
+
+  const unitItems = new Map<string, Map<string, UnitItemRow>>()
+  for (const row of unitItemRows || []) {
+    if (!unitItems.has(row.unit_id)) unitItems.set(row.unit_id, new Map())
+    unitItems.get(row.unit_id)!.set(row.item_tag, row)
+  }
+
   const { data: orderRows, error: ordersError } = await supabase.from('orders').select('*').eq('turn_number', turnNumber).in('faction_id', safeFactionIds)
   if (ordersError) throw new Error(`Failed to load orders: ${ordersError.message}`)
 
   const eventLog: TurnContext['eventLog'] = []
   const ctx: TurnContext = {
     gameId, turnNumber, factionsById, locationsById, locCodeToId, unitCodeToId,
-    skillDefsByTag, raceDefsByTag, unitSkills, dirtyUnitSkills: new Set(),
+    skillDefsByTag, raceDefsByTag, itemDefsByTag, unitSkills, dirtyUnitSkills: new Set(),
+    unitItems, dirtyUnitItems: new Set(),
     dirtyLocationIds: new Set(),
     locationMaxStackPosition: new Map(),
     placeholderOrdersByCode: new Map(),
@@ -616,8 +662,8 @@ function postProcessCascade(state: UnitOrderState, fromIndex: number, result: 'S
 // Day loop
 // ---------------------------------------------------------------------------
 
-const FULL_DAY_COMMANDS = new Set(['WORK', 'STUDY', 'MOVE', 'MARCH', 'GIVE', 'USE'])
-const NOT_YET_IMPLEMENTED_FULL_DAY = new Set(['MARCH', 'GIVE', 'USE'])
+const FULL_DAY_COMMANDS = new Set(['WORK', 'STUDY', 'MOVE', 'MARCH', 'USE'])
+const NOT_YET_IMPLEMENTED_FULL_DAY = new Set(['MARCH', 'USE'])
 
 async function processUnitDay(ctx: TurnContext, state: UnitOrderState, day: number) {
   state.recruitedToday = false
@@ -699,6 +745,9 @@ async function executeImmediateOrder(ctx: TurnContext, state: UnitOrderState, or
 
     case 'RECRUIT':
       return recruitOrder(ctx, state, order, day)
+
+    case 'GIVE':
+      return giveOrder(ctx, state, order, day)
 
     default:
       return { status: 'FAILURE' }
@@ -932,6 +981,148 @@ async function recruitOrder(ctx: TurnContext, state: UnitOrderState, order: Pars
   if (remaining <= 0) return { status: 'SUCCESS' }
 
   order.args[1] = String(remaining) // mutated in place -- same object persists in state.orders across days
+  return { status: 'FAILURE' }
+}
+
+// ---------------------------------------------------------------------------
+// GIVE — GiveOrder.cpp: immediate, transfers money and/or items between two
+// units at the same location. Confirmed NOT faction-restricted (unlike
+// RECRUIT) -- real archived play (ewelin-orders18.txt) and RulesNew.txt's
+// diplomacy table both show cross-faction gifting, gated on the recipient
+// faction's stance toward the giver being Friendly or better. Recipient
+// resolution reuses ctx.unitCodeToId, the same placeholder-aware lookup
+// RECRUIT populates -- confirmed necessary by real evidence
+// ("give wb9gN01 coin 150" in the same submission that recruits it).
+// ---------------------------------------------------------------------------
+
+const STANCE_RANK: Record<string, number> = { enemy: 0, hostile: 1, neutral: 2, friendly: 3, ally: 4 }
+
+function getStance(faction: FactionRow, towardFactionCode: string): string {
+  const specific = faction.stances?.specific?.[towardFactionCode]
+  return (specific ?? faction.stances?.default ?? 'neutral').toLowerCase()
+}
+
+function stanceAtLeast(faction: FactionRow, towardFactionCode: string, minStance: string): boolean {
+  const rank = STANCE_RANK[getStance(faction, towardFactionCode)] ?? STANCE_RANK.neutral
+  return rank >= (STANCE_RANK[minStance.toLowerCase()] ?? STANCE_RANK.neutral)
+}
+
+function getUnitItemQuantity(ctx: TurnContext, unitId: string, itemTag: string): number {
+  return ctx.unitItems.get(unitId)?.get(itemTag)?.quantity ?? 0
+}
+
+function setUnitItemQuantity(ctx: TurnContext, unitId: string, itemTag: string, quantity: number) {
+  if (!ctx.unitItems.has(unitId)) ctx.unitItems.set(unitId, new Map())
+  const itemMap = ctx.unitItems.get(unitId)!
+  const existing = itemMap.get(itemTag)
+  if (existing) {
+    existing.quantity = quantity
+  } else {
+    itemMap.set(itemTag, { unit_id: unitId, item_tag: itemTag, quantity, equipped: false, equip_slot: null, token_progress: 0 })
+  }
+  ctx.dirtyUnitItems.add(unitId)
+}
+
+function giveOrder(ctx: TurnContext, state: UnitOrderState, order: ParsedOrder, day: number): { status: OrderStatus } {
+  const [recipientCodeRaw, arg1, arg2, arg3] = order.args
+  if (!recipientCodeRaw) return { status: 'INVALID' }
+
+  // Real syntax is flexible: "unit-id item-tag [number [kept]]" or
+  // "unit-id number item-tag [kept]" -- disambiguate by checking whether
+  // arg1 resolves to a real item tag.
+  let itemTag: string
+  let requestedRaw: string | undefined
+  let keptRaw: string | undefined
+  if (arg1 && ctx.itemDefsByTag.has(arg1.toLowerCase())) {
+    itemTag = arg1.toLowerCase()
+    requestedRaw = arg2
+    keptRaw = arg3
+  } else {
+    requestedRaw = arg1
+    itemTag = (arg2 || '').toLowerCase()
+    keptRaw = arg3
+  }
+
+  const itemDef = ctx.itemDefsByTag.get(itemTag)
+  if (!itemDef) return { status: 'INVALID' }
+
+  const requested = parseInt(requestedRaw || '0')
+  const kept = parseInt(keptRaw || '0')
+
+  // Recipient: existing unit only -- GIVE never creates a new unit itself,
+  // but a placeholder already resolved earlier this turn (by RECRUIT) is a
+  // real unit by the time GIVE runs, via the same ctx.unitCodeToId lookup.
+  const recipientId = ctx.unitCodeToId.get(recipientCodeRaw.toUpperCase())
+  const recipientState = recipientId ? ctx.unitStates.get(recipientId) : undefined
+  if (!recipientState) return { status: 'INVALID' }
+
+  if (recipientState.unit.location_id !== state.unit.location_id) return { status: 'FAILURE' } // not at the same location -- retry, in case either moves later
+
+  // Stance gate: skipped within the same faction (a faction is always
+  // "friendly" to its own units -- not a meaningful stance in the data).
+  if (recipientState.unit.faction_id !== state.unit.faction_id) {
+    const recipientFaction = ctx.factionsById.get(recipientState.unit.faction_id)
+    const giverFaction = ctx.factionsById.get(state.unit.faction_id)
+    if (!recipientFaction || !giverFaction || !stanceAtLeast(recipientFaction, giverFaction.faction_code, 'friendly')) {
+      // Real source reports the rejection to BOTH units, not just the giver.
+      logEvent(
+        ctx, day, 'give_rejected',
+        `${state.unit.name} [${state.unit.unit_code}]'s gift to ${recipientState.unit.name} [${recipientState.unit.unit_code}] was rejected -- not on friendly terms`,
+        state.unit.faction_id, state.unit.id, state.unit.location_id
+      )
+      logEvent(
+        ctx, day, 'give_rejected',
+        `${recipientState.unit.name} [${recipientState.unit.unit_code}] rejected a gift from ${state.unit.name} [${state.unit.unit_code}] -- not on friendly terms`,
+        recipientState.unit.faction_id, recipientState.unit.id, recipientState.unit.location_id
+      )
+      return { status: 'INVALID' }
+    }
+  }
+
+  const isCoin = itemTag === 'coin'
+  const possessed = isCoin ? (state.unit.money ?? 0) : getUnitItemQuantity(ctx, state.unit.id, itemTag)
+  if (possessed <= 0) return { status: 'FAILURE' }
+
+  let reallyGiven = requested
+  if (reallyGiven === 0) reallyGiven = possessed - kept
+  if (reallyGiven + kept > possessed) reallyGiven = possessed - kept
+  if (reallyGiven <= 0) return { status: 'FAILURE' }
+
+  if (isCoin) {
+    state.unit.money = possessed - reallyGiven
+    recipientState.unit.money = (recipientState.unit.money ?? 0) + reallyGiven
+  } else {
+    setUnitItemQuantity(ctx, state.unit.id, itemTag, possessed - reallyGiven)
+    setUnitItemQuantity(ctx, recipientState.unit.id, itemTag, getUnitItemQuantity(ctx, recipientState.unit.id, itemTag) + reallyGiven)
+  }
+  state.dirty = true
+  recipientState.dirty = true
+
+  const itemLabel = isCoin ? 'coins' : (itemDef.name ?? itemTag)
+
+  // Real source logs to BOTH units separately (different from RECRUIT's
+  // single-event pattern) -- the giver's report and the recipient's report.
+  logEvent(
+    ctx, day, 'unit_gives',
+    `${state.unit.name} [${state.unit.unit_code}] gives ${reallyGiven} ${itemLabel} to ${recipientState.unit.name} [${recipientState.unit.unit_code}]`,
+    state.unit.faction_id, state.unit.id, state.unit.location_id
+  )
+  logEvent(
+    ctx, day, 'unit_receives',
+    `${recipientState.unit.name} [${recipientState.unit.unit_code}] receives ${reallyGiven} ${itemLabel} from ${state.unit.name} [${state.unit.unit_code}]`,
+    recipientState.unit.faction_id, recipientState.unit.id, recipientState.unit.location_id
+  )
+
+  if (requested === 0) return { status: 'SUCCESS' } // "as much as possible" resolves once, same shape as RECRUIT's 0-shortcut
+
+  const remaining = requested - reallyGiven
+  if (remaining <= 0) return { status: 'SUCCESS' }
+
+  // Which args index held the requested amount depends on which syntax
+  // form was used (item-tag-first vs number-first) -- recompute the same
+  // disambiguation done at the top of this function.
+  const requestedArgIndex = (arg1 && ctx.itemDefsByTag.has(arg1.toLowerCase())) ? 2 : 1
+  order.args[requestedArgIndex] = String(remaining) // mutated in place, retries next day
   return { status: 'FAILURE' }
 }
 
@@ -1236,6 +1427,33 @@ export async function processTurn(gameId: string): Promise<{
           skill_tag: skillRow.skill_tag,
           level: skillRow.level,
           experience_days: skillRow.experience_days,
+          token_progress: 0,
+        })
+      }
+    }
+  }
+
+  // GIVE's non-coin item transfers -- same update-existing/insert-new
+  // pattern as unit_skills above. A row given down to 0 is deleted rather
+  // than left as a zero-quantity row (turnReport.ts doesn't filter by
+  // quantity when listing a unit's items).
+  for (const unitId of ctx.dirtyUnitItems) {
+    const itemMap = ctx.unitItems.get(unitId)
+    if (!itemMap) continue
+    for (const itemRow of itemMap.values()) {
+      if (itemRow.quantity <= 0) {
+        if (itemRow.id) await supabase.from('unit_items').delete().eq('id', itemRow.id)
+        continue
+      }
+      if (itemRow.id) {
+        await supabase.from('unit_items').update({ quantity: itemRow.quantity }).eq('id', itemRow.id)
+      } else {
+        await supabase.from('unit_items').insert({
+          unit_id: itemRow.unit_id,
+          item_tag: itemRow.item_tag,
+          quantity: itemRow.quantity,
+          equipped: false,
+          equip_slot: null,
           token_progress: 0,
         })
       }
