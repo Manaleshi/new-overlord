@@ -5,6 +5,126 @@ without losing context. Read this before touching any code.
 
 ---
 
+## -7. UPDATE — New-unit placeholder addressing, GIVE, and a real mail-loop incident (ninth session, Claude Code)
+
+### Real feature built: new-unit order addressing within the same submission
+Real placeholder syntax confirmed against **actual player order archives**
+before writing any code, not `RulesNew.txt`'s prose: `reference/game-archive/
+ewelin-orders2.txt` and `ewelin-orders18.txt` (both saved to the bundle)
+show the real format is `<faction_code>` + capital `N` + exactly two digits
+(`wb9gN01`), not the `"nU"` format the rules text describes (`f06nU01`).
+`orders18.txt` also shows the same code reused fresh 16 turns later for a
+*different* new unit — confirming the placeholder namespace is scoped per
+turn, not globally unique — and, critically, a real `GIVE` targeting the
+same not-yet-created unit in the same submission (`give wb9gN01 coin 150`),
+which is what proved this needed to be a generic mechanism, not something
+built RECRUIT-specific.
+
+Mechanism, confirmed against real engine source (`OrderPrototype.cpp`'s
+`checkParameterTag`, `BasicEntitiesCollection.cpp`'s `findOrAddPlaceholder`,
+both saved to `reference/engine-source/`): a tag that doesn't match a real
+entity gets resolved to a placeholder object keyed by the *exact string*,
+reused for any later reference to that same string within the submission.
+Our adaptation: new `orders.placeholder_code` column (migration `21_add_
+orders_placeholder_code.sql`) — a `UNIT` block whose code matches the real
+pattern but no existing unit gets queued with `unit_id: null,
+placeholder_code: <code>` instead of dropped as an error (informational
+notice in the confirmation email instead). `RECRUIT` claims these queued
+orders when it creates the matching unit, and registers the placeholder
+string itself in `ctx.unitCodeToId` (not just the generated real code) so a
+second same-turn reference — another `RECRUIT` merging into it, or `GIVE`
+— resolves to the same unit. Recognition tightened to the exact confirmed
+pattern rather than "any unmatched code" (an earlier, looser draft of this
+plan) — a genuine typo now correctly stays a real error instead of silently
+spawning a phantom unit.
+
+**Verified end-to-end**, real production, real delivered email: `RECRUIT
+F2028N01 5 man 0` created a new unit that received and executed its queued
+`MOVE N` order the same turn (`Day 1 - departs...`, `Day 7 - arrived...`,
+correctly shown at its new location in the report).
+
+### Real feature built: GIVE, confirmed against real GiveOrder.cpp
+Pulled and read in full before implementing (`reference/engine-source/
+orders/GiveOrder.cpp/.h`). Real behaviors that wouldn't have been guessable
+from the task description alone:
+- **Flexible argument order** — real syntax accepts both `unit-id item-tag
+  amount` and `unit-id amount item-tag`; disambiguated by checking whether
+  the first arg resolves to a real item tag.
+- **Not faction-restricted**, unlike `RECRUIT`. Gated on the *recipient*
+  faction's stance toward the giver being Friendly or better — confirmed
+  by both the source (`stanceAtLeast`) and `RulesNew.txt`'s diplomacy table
+  ("You will also accept any material gift from a faction declared
+  Friendly"). New `stanceAtLeast()` ranking added (`factions.stances` was
+  display-only before this session); skipped entirely within the same
+  faction. A rejected gift reports to **both** units, not just the giver.
+- **Two events logged per transfer** (giver + recipient) — different from
+  `RECRUIT`'s single-event pattern, confirmed real source behavior.
+- **Coin vs. item handling**: `coin` is special-cased to `units.money`
+  (matching the established `RECRUIT`/`WITHDRAW` convention, even though
+  the real engine's `item_defs` genuinely has a `coin` row and treats money
+  as just another item); everything else is the first real use of
+  `unit_items` from `turnProcessor.ts` — new `unitItems`/`dirtyUnitItems`
+  tracking on `TurnContext`, loaded/persisted with the same chunked pattern
+  already used for `unit_skills`. A row given down to 0 is deleted rather
+  than left as a zero-quantity artifact.
+- Reclassified from full-day to immediate (real source is
+  `IMMEDIATE_ORDER`) — same correction already made for `RECRUIT`/
+  `WITHDRAW` earlier.
+
+**Verified end-to-end**, real production, real delivered email: gave both
+coin (`81→56`, `0→25`) and a real item (`iron`, `10→6`, `0→4`, new
+`unit_items` row correctly created for the recipient) in one submission —
+both transfers, both directions, all four events, confirmed in the actual
+delivered report, including `iron` correctly flowing through into the
+report's Knowledge section unprompted.
+
+### Real incident: a mail loop, caused by deviating from the established test pattern
+While verifying new-unit addressing against the *real* inbound email
+pipeline (not a SQL-injected order row, deliberately, to exercise
+`email/inbound/route.ts` itself), the test player's registered email was
+temporarily changed to `orders@new-overlord.us` so a self-to-self email
+could be sent and legitimately pass the `from === player.email`
+authorization check. That email was correctly parsed and queued (confirmed
+in the DB) — but the automated "Orders Received" confirmation reply,
+addressed back to `orders@new-overlord.us` (since that's what `player.email`
+was set to), was itself inbound-delivered, re-triggered the webhook,
+didn't start with `#GAME`/`REGISTER`, fell into the generic "Unknown
+Command" branch, and got auto-replied to — which repeated the exact same
+cycle. **98 emails sent in the ~66 seconds** before this was caught, all
+self-to-self between the app's own address and itself — no real player or
+third party was ever a recipient. Restoring `player.email` did **not**
+stop it, since the "Unknown Command" branch replies to whatever `from` the
+inbound payload carries, independent of any player record.
+
+**Fixed**: a loop guard at the top of the inbound webhook handler — if
+`from` matches the app's own sending address (`orders@new-overlord.us`,
+used for every reply this handler sends), skip entirely without replying.
+Deployed and confirmed the loop stopped immediately (no new emails after
+the deploy took effect).
+
+**The standing lesson, stated plainly so it isn't repeated**: this
+project has two distinct, deliberately separate testing patterns, and this
+incident happened specifically because they got conflated. **SQL-injected
+order rows** (direct inserts into `orders`, the pattern used for every
+other order-mechanics verification in this project) test *game logic* —
+fast, isolated, no email side effects. **A real submitted email** tests
+*the email pipeline itself* (parsing, `email/inbound/route.ts`, the
+confirmation-reply path) — and email is real infrastructure with real
+side effects (delivery, further automated replies, rate limits) that SQL
+injection deliberately avoids touching. Reach for SQL injection for
+anything about order mechanics; reach for a real email only when the thing
+under test is the email pipeline specifically — and even then, the
+self-to-self address trick used here is exactly what created the loop
+exposure. Do not conflate the two again.
+
+### Known consequence, not fixed, not urgent
+The incident consumed the day's Resend sending quota (confirmed: the
+Turn 12 report failed to send with `"You have reached your daily email
+sending quota"` immediately after). **Not upgraded** — that's a billing/
+plan decision, explicitly not made mid-session. Quota resets naturally
+(confirmed: Turn 13's report sent successfully the next day with no
+intervention needed).
+
 ## -6. UPDATE — Default WORK, stacked-unit report grouping, arrival-order tracking (eighth session, Claude Code)
 
 ### Real feature built: default WORK for units with no orders
@@ -921,11 +1041,9 @@ highest-value items for the next two phases:
    (design doc, not code), then real design decisions from Andy before
    implementation
 9. **RECRUIT + WITHDRAW — DONE, verified against real production.** See
-   section -5 above. `GIVE`, `USE` still need real source pulled before
-   building (same discipline as RECRUIT — don't guess). Real, scoped
-   follow-ups from RECRUIT/WITHDRAW, not yet built: new-unit same-submission
-   order addressing, multi-unit oversubscription price-rise auction,
-   item withdrawal, unit-level NAME. TEACH unlocks 3rd+ skill levels.
+   section -5 above. Real, scoped follow-ups from RECRUIT/WITHDRAW, not yet
+   built: multi-unit oversubscription price-rise auction, item withdrawal,
+   unit-level NAME. TEACH unlocks 3rd+ skill levels.
 10. **Default WORK + stacked-unit report display + arrival-order tracking —
     DONE, verified against real production.** See section -6 above. Real
     open item from this work: NPC-seeded units have no real stack
@@ -936,7 +1054,12 @@ highest-value items for the next two phases:
     solve) that upkeep being stubbed means NPC (and player) faction funds
     now grow unboundedly from default WORK with no offsetting cost —
     expected until upkeep is built, not a bug to work around.
-11. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
+11. **New-unit placeholder addressing + GIVE — DONE, verified against real
+    production.** See section -7 above, including a real mail-loop incident
+    (found, fixed, documented) and the standing lesson on when to use real
+    email vs. SQL-injected orders for testing. `USE` still needs real source
+    pulled before building (same discipline — don't guess).
+12. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
    fixed via race_defs; starting funds still a placeholder `500`), then
    actually recruit 5 people
 
