@@ -154,7 +154,8 @@ function formatUnit(unit: any): string {
   }
 
   lines.push(`  Stats: init: ${unit.initiative}, att: ${unit.melee}, def: ${unit.defense}, dmg: ${unit.damage}, life: ${unit.life}`)
-  lines.push(`  Upkeep: ${unit.upkeep_per_figure * unit.figure_count} coins`)
+  const dissentNote = unit.dissent ? ' (DISSENTING -- unpaid last month; one more missed payment and this unit deserts)' : ''
+  lines.push(`  Upkeep: ${unit.upkeep_per_figure * unit.figure_count} coins${dissentNote}`)
 
   return lines.join('\n')
 }

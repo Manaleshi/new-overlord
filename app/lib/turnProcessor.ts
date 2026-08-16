@@ -56,6 +56,7 @@ interface UnitRow {
   upkeep_per_figure: number
   money: number
   stack_position: number | null
+  dissent: boolean
   attributes: Record<string, any> | null
   [key: string]: any
 }
@@ -1419,6 +1420,145 @@ function ordinalSuffix(n: number): string {
 // Main entry point
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Upkeep and desertion (RulesNew.txt, "Upkeep")
+// ---------------------------------------------------------------------------
+//
+// "All figures in a unit require a monthly upkeep under the form of wages.
+// Upkeep occurs at the end of the month. If the wages are not paid, the
+// unit will acquire a dissent effect... If the wages are not paid for a
+// second time, the unit will desert, mingling back into the local
+// population." Cascade, in order: the unit's own cash: other units of the
+// same faction at the same location that still have cash after paying
+// their own upkeep, in arrival order; then the faction's unclaimed funds.
+// Applies to every faction, not just NPCs -- the missing mechanic (not the
+// symptom that surfaced it) was universal. Cash-only for v1: the
+// food-ration alternative and dissent's propagation onto units that
+// receive a figure are both real RulesNew.txt mechanics, explicitly
+// deferred (confirmed with Andy) -- rations add real equip-time
+// consumption bookkeeping, and no order that transfers figures between
+// units exists yet in this codebase to attach propagation to.
+export async function applyUpkeepAndDesertion(ctx: TurnContext): Promise<void> {
+  // Grouped by faction+location, since the peer-cash tier is scoped to
+  // "any unit in your faction present in the same location."
+  const groups = new Map<string, UnitOrderState[]>()
+  for (const state of ctx.unitStates.values()) {
+    const key = `${state.unit.faction_id}|${state.unit.location_id}`
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key)!.push(state)
+  }
+
+  // Real arrival-order field (report18.txt lists units earliest-arrival-
+  // first; same convention groupByStack() in turnReport.ts already uses).
+  // Not fully specified by RulesNew.txt: when several units at once need to
+  // borrow from the same shared peer pool, or when faction funds get drawn
+  // across multiple locations in the same pass, this project's filled gap
+  // is to process both in the same deterministic arrival order rather than
+  // leave it unordered.
+  const arrivalSort = (a: UnitOrderState, b: UnitOrderState) =>
+    (a.unit.stack_position ?? -Infinity) - (b.unit.stack_position ?? -Infinity)
+
+  const deserted: UnitOrderState[] = []
+
+  for (const group of groups.values()) {
+    group.sort(arrivalSort)
+
+    const owedAfterSelf = new Map<string, number>()
+    for (const state of group) {
+      const due = state.unit.upkeep_per_figure * state.unit.figure_count
+      if (due <= 0) { owedAfterSelf.set(state.unit.id, 0); continue } // e.g. creatures/outlaws with upkeep_per_figure 0
+      const selfPaid = Math.min(state.unit.money, due)
+      state.unit.money -= selfPaid
+      owedAfterSelf.set(state.unit.id, due - selfPaid)
+    }
+
+    // Tier 2: peers' cash left over after paying themselves, in arrival order.
+    for (const state of group) {
+      let owed = owedAfterSelf.get(state.unit.id) ?? 0
+      if (owed <= 0) continue
+      for (const peer of group) {
+        if (owed <= 0) break
+        if (peer === state || peer.unit.money <= 0) continue
+        const draw = Math.min(peer.unit.money, owed)
+        peer.unit.money -= draw
+        owed -= draw
+      }
+      owedAfterSelf.set(state.unit.id, owed)
+    }
+
+    // Tier 3: the faction's unclaimed funds.
+    for (const state of group) {
+      let owed = owedAfterSelf.get(state.unit.id) ?? 0
+      if (owed <= 0) continue
+      const faction = ctx.factionsById.get(state.unit.faction_id)
+      if (faction && faction.funds > 0) {
+        const draw = Math.min(faction.funds, owed)
+        faction.funds -= draw
+        owed -= draw
+      }
+      owedAfterSelf.set(state.unit.id, owed)
+    }
+
+    for (const state of group) {
+      const due = state.unit.upkeep_per_figure * state.unit.figure_count
+      if (due <= 0) continue // nothing owed, no consequence
+      const owed = owedAfterSelf.get(state.unit.id) ?? 0
+
+      if (owed <= 0) {
+        if (state.unit.dissent) {
+          state.unit.dissent = false
+          logEvent(ctx, DAYS_PER_TURN, 'upkeep_recovered',
+            `${state.unit.name} [${state.unit.unit_code}] pays its overdue upkeep and is no longer dissenting`,
+            state.unit.faction_id, state.unit.id, state.unit.location_id)
+        }
+        continue
+      }
+
+      if (!state.unit.dissent) {
+        state.unit.dissent = true
+        logEvent(ctx, DAYS_PER_TURN, 'upkeep_unpaid',
+          `${state.unit.name} [${state.unit.unit_code}] cannot pay its upkeep (short ${owed} coins) and grows dissenting`,
+          state.unit.faction_id, state.unit.id, state.unit.location_id)
+      } else {
+        // Second consecutive missed payment -- desert. No exception for
+        // leaders/heroes (confirmed: stay faithful to the rule as written).
+        logEvent(ctx, DAYS_PER_TURN, 'unit_deserted',
+          `${state.unit.name} [${state.unit.unit_code}] deserts, unable to pay upkeep a second time, and mingles back into the local population`,
+          state.unit.faction_id, state.unit.id, state.unit.location_id)
+        deserted.push(state)
+      }
+    }
+  }
+
+  for (const state of deserted) {
+    const unitId = state.unit.id
+
+    // Confirmed: a deserting leader's stacked followers become independent
+    // units rather than cascading desertion onto them -- not covered by
+    // RulesNew.txt, which only describes the deserting unit itself.
+    const followers = Array.from(ctx.unitStates.values()).filter(s => s.unit.stack_leader_id === unitId)
+    for (const follower of followers) {
+      follower.unit.is_stacked = false
+      follower.unit.stack_leader_id = null
+      await supabase.from('units').update({ is_stacked: false, stack_leader_id: null }).eq('id', follower.unit.id)
+    }
+
+    // FK-safe delete order -- confirmed empirically before writing this that
+    // unit_skills/unit_items/orders have no ON DELETE CASCADE from units,
+    // so deleting the units row first throws a foreign key violation.
+    await supabase.from('unit_skills').delete().eq('unit_id', unitId)
+    await supabase.from('unit_items').delete().eq('unit_id', unitId)
+    await supabase.from('orders').delete().eq('unit_id', unitId)
+    const { error } = await supabase.from('units').delete().eq('id', unitId)
+    if (error) {
+      console.error(`Desertion delete failed for ${state.unit.unit_code} [${state.unit.id}]:`, error.message)
+      continue
+    }
+
+    ctx.unitStates.delete(unitId)
+  }
+}
+
 export async function processTurn(gameId: string): Promise<{
   turnNumber: number
   registrations: { created: number; skipped: string[] }
@@ -1444,6 +1584,14 @@ export async function processTurn(gameId: string): Promise<{
     // Battles, markets, mana, effects — Stage 3/4.
   }
 
+  // Upkeep/desertion -- end of month, after work wages are collected, before
+  // allegiance changes/location evolution/reports (RulesNew.txt's turn-
+  // processing order). Mutates unit.money/dissent and faction.funds in
+  // memory; both persist through the loops immediately below. Desertions
+  // delete their own rows immediately (FK-safe order) and remove themselves
+  // from ctx.unitStates, so the per-unit loop below never sees them.
+  await applyUpkeepAndDesertion(ctx)
+
   for (const faction of ctx.factionsById.values()) {
     await supabase.from('factions').update({ funds: faction.funds }).eq('id', faction.id)
   }
@@ -1461,6 +1609,7 @@ export async function processTurn(gameId: string): Promise<{
         figure_count: state.unit.figure_count,
         money: state.unit.money,
         stack_position: state.unit.stack_position,
+        dissent: state.unit.dissent,
       })
       .eq('id', state.unit.id)
   }
@@ -1531,7 +1680,8 @@ export async function processTurn(gameId: string): Promise<{
     }
   }
 
-  // NOTE: wages/upkeep/desertion and outlaw spawning are still stubbed — Stage 4b.
+  // NOTE: outlaw spawning is still stubbed — Stage 4b. Upkeep/desertion is
+  // implemented above (applyUpkeepAndDesertion).
 
   const reportsSent: string[] = []
   const reportErrors: string[] = []
