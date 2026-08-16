@@ -84,21 +84,33 @@ export async function seedNPCUnits() {
   const unitRows: any[] = []
   const pendingSkills: { unitIndex: number; tag: string; level: number; experience_days: number }[] = []
   const pendingItems: { unitIndex: number; tag: string; quantity: number; equipped: boolean; equip_slot?: string }[] = []
+  // NPC seeding never set stacking data, so leader/follower pairs (e.g. Guard
+  // Captain/Imperial Guard) always rendered as flat siblings in "Also
+  // present" instead of the follower indenting under the leader with
+  // "Leading:" -- confirmed against a real delivered report. addUnit's
+  // returned index lets a follower call record which earlier addUnit() call
+  // is its leader; resolved into real is_stacked/stack_leader_id/
+  // stack_position rows after the batch insert assigns real unit ids, same
+  // pattern already used for pendingSkills/pendingItems below.
+  const pendingStacks: { followerIndex: number; leaderIndex: number }[] = []
 
   function addUnit(
     unit: any,
     skills: { tag: string; level: number; experience_days: number }[],
-    items: { tag: string; quantity: number; equipped: boolean; equip_slot?: string }[]
-  ) {
+    items: { tag: string; quantity: number; equipped: boolean; equip_slot?: string }[],
+    stackUnder?: number
+  ): number {
     const index = unitRows.length
     unitRows.push(unit)
     skills.forEach(s => pendingSkills.push({ unitIndex: index, ...s }))
     items.forEach(i => pendingItems.push({ unitIndex: index, ...i }))
+    if (stackUnder !== undefined) pendingStacks.push({ followerIndex: index, leaderIndex: stackUnder })
+    return index
   }
 
   // ── IMPERIALS ────────────────────────────────────────────
 
-  addUnit(makeUnit({
+  const guardCaptainIndex = addUnit(makeUnit({
     faction_id: factionMap['F001'],
     location_id: imperialCity.id,
     name: 'Guard Captain',
@@ -127,7 +139,8 @@ export async function seedNPCUnits() {
   [{ tag: 'cmbt', level: 1, experience_days: 15 }, { tag: 'blde', level: 1, experience_days: 15 }],
   [{ tag: 'swrd', quantity: 50, equipped: true, equip_slot: 'weapon' },
    { tag: 'leat', quantity: 50, equipped: true, equip_slot: 'armor' },
-   { tag: 'coif', quantity: 50, equipped: true, equip_slot: 'helmet' }])
+   { tag: 'coif', quantity: 50, equipped: true, equip_slot: 'helmet' }],
+  guardCaptainIndex)
 
   for (const loc of imperialPopCenters) {
     if (loc.loc_code === 'L0001') continue
@@ -246,7 +259,7 @@ export async function seedNPCUnits() {
   // ── MERCHANTS ────────────────────────────────────────────
 
   for (const loc of [...cities, imperialCity]) {
-    addUnit(makeUnit({
+    const merchantIndex = addUnit(makeUnit({
       faction_id: factionMap['F005'],
       location_id: loc.id,
       name: 'Merchant',
@@ -269,7 +282,8 @@ export async function seedNPCUnits() {
       attributes: { role: 'caravan_guard' }
     }),
     [{ tag: 'cmbt', level: 1, experience_days: 15 }],
-    [{ tag: 'swrd', quantity: 10, equipped: true, equip_slot: 'weapon' }])
+    [{ tag: 'swrd', quantity: 10, equipped: true, equip_slot: 'weapon' }],
+    merchantIndex)
   }
 
   // ── BATCH INSERT ─────────────────────────────────────────
@@ -280,6 +294,27 @@ export async function seedNPCUnits() {
     const { data, error } = await supabase.from('units').insert(batch).select('id')
     if (error) throw error
     data.forEach((u: any) => insertedIds.push(u.id))
+  }
+
+  // Resolve pendingStacks into real stack_leader_id references now that
+  // insertedIds has real ids. Only the follower gets is_stacked/
+  // stack_leader_id/stack_position set -- matches the convention already
+  // established by RECRUIT (turnProcessor.ts), which groupByStack() in
+  // turnReport.ts relies on: it keys off the follower's stack_leader_id,
+  // the leader itself needs nothing set.
+  const stackUpdates = pendingStacks
+    .map(ps => ({
+      id: insertedIds[ps.followerIndex],
+      leaderId: insertedIds[ps.leaderIndex],
+    }))
+    .filter(s => s.id && s.leaderId)
+
+  for (const s of stackUpdates) {
+    const { error } = await supabase
+      .from('units')
+      .update({ is_stacked: true, stack_leader_id: s.leaderId, stack_position: 2 })
+      .eq('id', s.id)
+    if (error) console.error('Stack update error:', error.message)
   }
 
   const skillRows: any[] = []
