@@ -5,7 +5,7 @@ without losing context. Read this before touching any code.
 
 ---
 
-## -8. UPDATE — Real starting funds and starting follower unit; two playtest-blocking gaps flagged (tenth session, Claude Code)
+## -8. UPDATE — Real starting funds/follower unit, NPC stack grouping fixed, two playtest-blocking gaps flagged (tenth session, Claude Code)
 
 ### Real feature built: real per-zone starting funds and the starting follower unit, confirmed against RulesNew.txt
 Two bugs found directly in `processPendingRegistrations()` while re-reading
@@ -58,6 +58,42 @@ here rather than fixed silently or guessed at, since fixing them means
 deciding startup-equipment/skill specifics (e.g. which two basic skills a
 craftsman gets, since the rule doesn't say) that are worth a real proposal
 before implementing, the same as every other task in this project.
+
+### Real feature built: NPC leader/follower units now stack in "Also present"
+Checked how NPC units are seeded (`seedNPCUnits.ts`) before touching
+anything, per standing practice. Confirmed via a real delivered report
+(Turn 13, `[F2028]`) that the renderer itself
+(`groupByStack`/`formatUnitStack` in `turnReport.ts`) was already correct —
+the same email's "Your units:" section already grouped a RECRUIT-created
+stack correctly, indented, with "Leading:". The only real defect: NPC
+seeding never set `is_stacked`/`stack_leader_id`/`stack_position` on any
+unit, so every NPC always rendered as a flat top-level entry. **No
+`turnReport.ts` changes were needed or made** — this was purely a
+seeding-data gap.
+
+Two real leader/follower pairs exist in NPC seeding: Guard Captain →
+Imperial Guard (Imperial City only), and Merchant → Caravan Guards (one
+pair per merchant location). `addUnit()` now returns its index; a new
+optional `stackUnder` param lets a follower call record which earlier
+`addUnit()` call is its leader, resolved into real `is_stacked`/
+`stack_leader_id`/`stack_position` updates after the batch insert assigns
+real ids — same follower-only convention already established by `RECRUIT`.
+
+**Also backfilled the live game.** `seedNPCUnits()` only ever runs once, at
+world creation — the code fix alone doesn't touch the ~53 NPC units already
+seeded in the current game. Ran a one-time direct-Supabase backfill (same
+pairing logic: same `faction_id` + same `location_id`), updating 19
+existing follower units (1 Guard Captain/Imperial Guard pair, 18
+Merchant/Caravan Guards pairs) to match what the fixed seeding code would
+now produce.
+
+**Verified**, real production Supabase, via `generateTurnReport()` called
+directly (read-only, no email side effect, confirmed by reading it) for the
+live test faction: "Also present" at the Imperial City now reads `Guard
+Captain [U5767] - 1 leader (The Imperials [F001]) Leading:` with `Imperial
+Guard [U8904] - 50 followers ...` indented beneath, and the same for
+`Merchant`/`Caravan Guards` — matching the working "Your units:" format
+exactly.
 
 ## -7. UPDATE — New-unit placeholder addressing, GIVE, and a real mail-loop incident (ninth session, Claude Code)
 
@@ -227,9 +263,10 @@ that happen to share a faction and location, not a real stack. This is a
 gap in NPC seeding (`seedNPCFactions.ts`/`seedNPCUnits.ts` never assign
 stacking relationships), not a report-rendering bug — the grouping logic
 is correct and works for any unit that's genuinely stacked (confirmed on
-`U5328`), it just can't group data that was never linked. **Still open**:
-NPC seeding needs real stack relationships assigned before "Also present"
-will ever show those specific examples grouped.
+`U5328`), it just can't group data that was never linked. **RESOLVED,
+section -8**: `seedNPCUnits.ts` now assigns real stacking relationships for
+both pairs, and the live game's already-seeded NPCs were backfilled to
+match.
 
 ### Real feature built: arrival-order tracking
 New `units.stack_position` column (migration `20_add_units_stack_position.sql`
