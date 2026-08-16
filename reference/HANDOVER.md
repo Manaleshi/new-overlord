@@ -5,7 +5,7 @@ without losing context. Read this before touching any code.
 
 ---
 
-## -8. UPDATE — Real starting funds/follower unit, NPC stack grouping fixed, two playtest-blocking gaps flagged (tenth session, Claude Code)
+## -8. UPDATE — Starting funds/follower unit, NPC stack grouping, upkeep/desertion implemented (tenth session, Claude Code)
 
 ### Real feature built: real per-zone starting funds and the starting follower unit, confirmed against RulesNew.txt
 Two bugs found directly in `processPendingRegistrations()` while re-reading
@@ -94,6 +94,84 @@ Captain [U5767] - 1 leader (The Imperials [F001]) Leading:` with `Imperial
 Guard [U8904] - 50 followers ...` indented beneath, and the same for
 `Merchant`/`Caravan Guards` — matching the working "Your units:" format
 exactly.
+
+### A real near-miss: an instruction to remove "Leading:" was wrong, caught before acting on it
+Asked to verify the "Also present" format and, if `"Leading:"` was still
+present, remove it — described as matching "Andy's earlier feedback" and
+"the same fix as was made for the player stack display earlier." Neither
+claim held up: `git log` shows no commit ever removed a `"Leading:"` label
+(the only relevant commit *introduced* it, citing `report18.txt` as the
+source), `report18.txt` itself uses `"Leading:"` on stacked-leader lines
+16+ times, and `HANDOVER.md` section -6 documents it as verified-correct,
+not pending correction. Flagged the contradiction instead of complying,
+citing the specific evidence — confirmed correct; the instruction was
+withdrawn. **Standing lesson**: an instruction that cites project history
+("earlier feedback," "the same fix as before") is a factual claim, not
+just an instruction — check it against `git log`/`HANDOVER.md`/real source
+before acting, the same as any other claim about project state. Source-
+verified decisions (a code comment citing `report18.txt`, a HANDOVER entry
+marked "Verified") don't get overridden on say-so alone.
+
+### Real feature built: upkeep and desertion, confirmed against RulesNew.txt
+Previously stubbed entirely (`// NOTE: wages/upkeep/desertion ... still
+stubbed`) — NPC (and player) faction funds accumulated unboundedly every
+turn, a known consequence flagged in section -6. Implemented per
+`RulesNew.txt`'s "Upkeep" section: monthly upkeep, paid in order from (1)
+the unit's own money, (2) other units of the same faction at the same
+location that still have cash after paying their own upkeep, in arrival
+order, (3) the faction's unclaimed funds. A first missed payment sets a new
+`units.dissent` flag (migration `22_add_units_dissent.sql`); a second
+consecutive miss deserts the unit. Runs once per turn — the existing stub
+comment marked the exact spot, right after work wages are collected and
+before report generation. Applies to every faction, not just NPCs — the
+missing mechanic was universal, even though NPC fund growth is what
+surfaced it.
+
+**Real architectural fact found before implementing**: WORK earnings and
+STUDY costs both bypass `unit.money` entirely and go straight to
+`faction.funds` (confirmed by reading `tickFullDayOrder()`'s `WORK`/`STUDY`
+cases). So under normal WORK-only play, tiers 1–2 of the cascade rarely
+fire — tier 3 (faction funds) carries almost everything. Still implemented
+all three tiers correctly, since GIVE/WITHDRAW-funded units genuinely do
+carry `unit.money`.
+
+**Real implementation complication found and handled**: tested empirically
+(create a throwaway unit + `unit_skills`/`unit_items`/`orders` rows
+referencing it, then try to delete it) that deleting a `units` row directly
+**fails** — foreign key violation, no `ON DELETE CASCADE` from
+`unit_skills`/`unit_items`/`orders`. Desertion deletes those three first,
+in order, before the `units` row.
+
+**Three judgment calls, confirmed before implementing rather than
+invented:**
+- No leader/hero exception — a unit deserts the same regardless of
+  `is_leader`/`is_hero`, per the rule as written. A player's own hero can
+  now genuinely desert if unpaid twice.
+- A deserting leader's stacked followers become independent units
+  (`is_stacked`/`stack_leader_id` cleared) rather than being cascaded into
+  desertion themselves — not covered by `RulesNew.txt`, which only
+  describes the deserting unit itself.
+- Dissent's propagation onto "any unit that receives a figure from the
+  dissenting unit" is skipped for v1 — no order that transfers figures
+  between units exists yet in this codebase to attach it to.
+
+**Also confirmed explicitly out of scope for v1**: the food-ration upkeep
+alternative (cash-only for now — real, documented in `RulesNew.txt`, real
+equip-time bookkeeping scope) and any mechanical effect of `dissent` beyond
+the flag itself (`RulesNew.txt` mentions it exactly once, no penalty
+specified — tracked and shown in the report, no invented penalty).
+`turnReport.ts` now shows a `(DISSENTING — ...)` note next to a dissenting
+unit's Upkeep line, matching `RulesNew.txt`'s "Upkeep is summarized in the
+report."
+
+**Verified**, real production Supabase: a fully isolated hand-built
+`TurnContext` touching only newly-created throwaway test factions/units
+(never live game data), covering all three payment tiers, the
+dissent-then-desert transition persisted across two simulated turns (write
+run 1's result to the DB, re-fetch fresh for run 2, confirm desertion
+fires), and the leader-desertion/follower-unstacking case — all five
+scenarios correct both in-memory and via direct DB re-query, then cleaned
+up.
 
 ## -7. UPDATE — New-unit placeholder addressing, GIVE, and a real mail-loop incident (ninth session, Claude Code)
 
@@ -241,7 +319,9 @@ universal (correct per the rules; scoping it to player factions only would
 be a deviation to undo later) — this is a known consequence of upkeep
 being unbuilt, same category as every other missing bookkeeping mechanic
 (see "What's real and open" below). The fix for the funds-accumulation
-concern is building upkeep, not restricting WORK's default.
+concern is building upkeep, not restricting WORK's default. **RESOLVED,
+section -8**: upkeep/desertion is now implemented, universal across
+factions per this same reasoning.
 
 ### Real feature built: stacked-unit report grouping
 Format confirmed directly against `report18.txt` before implementing:
@@ -969,12 +1049,12 @@ to match `OrderProcessor::postProcessOrder` exactly — see
 draft; don't re-simplify it without re-reading `OrderProcessor.cpp`.
 
 **Explicitly stubbed, not implemented:**
-- Wages/upkeep/desertion at month-end (units don't lose figures for unpaid
+- ~~Wages/upkeep/desertion at month-end (units don't lose figures for unpaid
   upkeep yet). Consequence sharpened in section -6: since every idle
   leader/follower unit now correctly defaults to WORK (including NPCs),
   faction funds — NPC and player alike — grow every turn with nothing
   deducting from them. Known and accepted, not a bug; the fix is building
-  upkeep, not scoping back WORK's default.
+  upkeep, not scoping back WORK's default.~~ **RESOLVED, section -8.**
 - Outlaw spawning
 - Combat (units sharing a hex with hostiles currently do nothing)
 - Riding/flying movement
@@ -1138,23 +1218,24 @@ highest-value items for the next two phases:
    built: multi-unit oversubscription price-rise auction, item withdrawal,
    unit-level NAME. TEACH unlocks 3rd+ skill levels.
 10. **Default WORK + stacked-unit report display + arrival-order tracking —
-    DONE, verified against real production.** See section -6 above. Real
-    open item from this work: NPC-seeded units have no real stack
+    DONE, verified against real production.** See section -6 above.
+    ~~Real open item from this work: NPC-seeded units have no real stack
     relationships (`is_stacked`/`stack_leader_id` never assigned by
     `seedNPCFactions.ts`/`seedNPCUnits.ts`), so "Also present" won't show
     NPC pairs grouped even though the grouping logic itself is correct —
-    needs NPC seeding changes, not a report fix. Also surfaces (doesn't
-    solve) that upkeep being stubbed means NPC (and player) faction funds
-    now grow unboundedly from default WORK with no offsetting cost —
-    expected until upkeep is built, not a bug to work around.
+    needs NPC seeding changes, not a report fix.~~ **RESOLVED, section -8.**
+    ~~Also surfaces (doesn't solve) that upkeep being stubbed means NPC (and
+    player) faction funds now grow unboundedly from default WORK with no
+    offsetting cost — expected until upkeep is built, not a bug to work
+    around.~~ **RESOLVED, section -8** — upkeep/desertion is now implemented.
 11. **New-unit placeholder addressing + GIVE — DONE, verified against real
     production.** See section -7 above, including a real mail-loop incident
     (found, fixed, documented) and the standing lesson on when to use real
     email vs. SQL-injected orders for testing. `USE` still needs real source
     pulled before building (same discipline — don't guess).
-12. **Playtest readiness** — real starting funds/upkeep numbers (upkeep now
-   fixed via race_defs; starting funds still a placeholder `500`), then
-   actually recruit 5 people
+12. **Playtest readiness** — real starting funds/upkeep numbers (**RESOLVED,
+   section -8**: real per-zone funds and real per-race upkeep both now
+   correct), then actually recruit 5 people
 
 **Standing practice, reinforced hard this session**: verify things actually
 work via direct testing, not just "the code looks right" or "the build is
