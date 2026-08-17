@@ -5,7 +5,7 @@ without losing context. Read this before touching any code.
 
 ---
 
-## -8. UPDATE — Starting funds/follower unit, NPC stack grouping, upkeep/desertion implemented (tenth session, Claude Code)
+## -8. UPDATE — Starting funds/follower unit, NPC stack grouping, upkeep/desertion, USE-harvest implemented (tenth session, Claude Code)
 
 ### Real feature built: real per-zone starting funds and the starting follower unit, confirmed against RulesNew.txt
 Two bugs found directly in `processPendingRegistrations()` while re-reading
@@ -172,6 +172,79 @@ run 1's result to the DB, re-fetch fresh for run 2, confirm desertion
 fires), and the leader-desertion/follower-unstacking case — all five
 scenarios correct both in-memory and via direct DB re-query, then cleaned
 up.
+
+### Real feature built: USE, scoped to harvesting, confirmed against real UseOrder.cpp/HarvestUsingStrategy.cpp
+Pulled and read `UseOrder.cpp`/`.h` and `HarvestUsingStrategy.cpp` in full
+before writing anything. Real finding that reshaped the task: **USE is a
+generic dispatcher, not one mechanic** — it resolves a `SkillRule*` and
+delegates to one of 8 `*UsingStrategy` classes (Harvest/Craft/Build/
+Construction/Enchant/Summon/Combat/Action). Building all of USE was out of
+scope for one task; scoped to `USING_HARVEST` only, since it's the paradigm
+the already-resolved contention decision (see section 0/below) applies to.
+Other paradigms fail gracefully — `order_pending`, "not yet supported" —
+rather than silently no-opping or crashing.
+
+**Real migration required and done**: `skill_defs` had zero harvest-yield
+data (the original migration only captured combat/stat effects). Parsed
+the full `skills.rules` 2010 source (7,923-line RCS file; head revision is
+`state dead` since the file lives in `Attic/` — CVS's marker for "removed
+from the live tree," not "empty," confirmed by the substantial coherent
+content actually stored there) for every `USING_PARADIGM USING_HARVEST`
+skill: **35 found, only 20 harvest a real, already-migrated item** — the
+other 15 produce `coin` (entertainment/taxing/fireworks — cash-generating,
+structurally different) or internal event-signal items never migrated
+(`evtupkp`/`evtrais`/`evtfort` — terrain-walk/necromancy/fortress-building
+triggers, not physical goods). New columns `harvest_item`/`produced_item`/
+`harvest_rate_per_level`/`harvest_days_per_level` on `skill_defs`
+(migration `23_add_skill_defs_harvest_data.sql`), populated for the 20 real
+ones. Two source-vs-live tag mismatches found and resolved: skill `fshn` →
+live tag `fish`; item `hrbs` → live tag `herb`.
+
+**Parsing correction caught mid-migration**: a first pass assumed only the
+harvest *rate* (`HARVEST` directive) varies between skill levels. Wrong for
+3 of the 20 (`mini`/`aext`/`gmin`) — the source varies the *days*
+denominator (`PRODUCES` directive) instead at some levels (gold mining
+doesn't yield more gold per attempt at level 2, it just takes fewer days).
+Rewritten to track both `HARVEST` and `PRODUCES` level-by-level, carrying
+the last-seen value forward when a level has neither line (confirmed real,
+not assumed — `mini`'s 4th level has no new directive at all and correctly
+inherits level 3's rate). All 20 now align exactly with the existing
+`level_days` column lengths.
+
+**Contention**: implemented as a two-phase per-day pool, since proportional
+sharing needs every same-day request known before any of them can be
+granted — sequential per-unit granting would just be list-order priority
+with extra steps. `tickFullDayOrder`'s `USE` case only submits a request;
+new `resolveHarvestContention()` runs once after every unit has ticked for
+the day, sums requests per location+resource, grants `request *
+(available/totalRequested)` to each — matches `EvenConflict.cpp` exactly
+(confirmed already resolved earlier in this document, not re-derived).
+
+**v1 simplifications, confirmed before implementing**: no production/tool
+bonus, no ownership/permission gating (any unit can harvest anywhere).
+
+**Two real bugs caught by testing, not shipped**:
+- An order that completes the same day its final request is submitted (the
+  day-count safety cap, or a satisfied `products` target) had
+  `completeFullDayOrder()` clear `state.fullDayOrder` — and therefore the
+  request's `data` reference — *before* `resolveHarvestContention()` ran
+  for that day, silently dropping the final grant. A level-1 horse
+  breeder's exact 30th day granted 0 horses before this was fixed. Fixed by
+  carrying the `data` reference directly in the pool entry instead of
+  re-deriving it from `state.fullDayOrder` at resolution time.
+- Summing a repeating fraction (`1/30` thirty times) doesn't reliably land
+  on exactly `1.0` in floating point — a plain `Math.floor()` could round a
+  fully-earned unit down to zero. Added an epsilon-tolerant floor
+  (`flooredProgress()`).
+
+**Verified**, hand-built `TurnContext` (real `skill_defs`/`item_defs`
+harvest data, fake non-DB-backed locations/units, nothing ever persisted):
+single-unit harvest matching real archived-report timing (1 horse in
+exactly 30 days), the exact contention example from this document's own
+resolved-decision section (15 available, 20/40 requested → 5/10 granted,
+not first-come), a `products` count cap (stops exactly at target, no
+over-harvest), a non-harvest skill (graceful failure, order stays queued),
+and a unit lacking the skill (`INVALID`, order dropped) — all five correct.
 
 ## -7. UPDATE — New-unit placeholder addressing, GIVE, and a real mail-loop incident (ninth session, Claude Code)
 
@@ -1040,7 +1113,10 @@ guessed. Confirmed-correct against source:
 | WORK | ✅ done | Wage from `location.economics.wages`; blocked if guarding |
 | STUDY | ✅ done, corrected | Implicit target = current level + 1 if no level given (never open-ended); self-study caps at level 2 (3rd+ needs TEACH, not built); cost is **per-figure**, not flat |
 | MOVE | ⚠️ partial | Walking only. Reads real `location.resources.exits` (nested in jsonb `resources`, not top-level). Riding/flying capacity deferred — needs `unit_items` + `item_defs.capacity_ride/fly` wiring |
-| RECRUIT, GIVE, USE, MARCH | ❌ not built | Recognized, logged as `order_pending`, left queued untouched — not silently dropped |
+| RECRUIT, WITHDRAW | ✅ done | See section -5 |
+| GIVE | ✅ done | See section -7 |
+| USE | ⚠️ partial | `USING_HARVEST` paradigm only (20 real-resource skills) — see section -8. `USING_CRAFT`/`BUILD`/`CONSTRUCTION`/`ENCHANT`/`SUMMON`/`COMBAT`/`ACTION` paradigms not built; fail gracefully as `order_pending`, not silently dropped |
+| MARCH | ❌ not built | Recognized, logged as `order_pending`, left queued untouched — not silently dropped |
 | Everything else in RulesNew.txt | ❌ not built | TEACH, EQUIP, SPLIT, ENTER/LEAVE, etc. |
 
 **The conditional/alternative cascade** (`-`/`+` order chaining) was rebuilt
@@ -1231,8 +1307,9 @@ highest-value items for the next two phases:
 11. **New-unit placeholder addressing + GIVE — DONE, verified against real
     production.** See section -7 above, including a real mail-loop incident
     (found, fixed, documented) and the standing lesson on when to use real
-    email vs. SQL-injected orders for testing. `USE` still needs real source
-    pulled before building (same discipline — don't guess).
+    email vs. SQL-injected orders for testing. ~~`USE` still needs real
+    source pulled before building (same discipline — don't guess).~~
+    **DONE (harvesting paradigm only), section -8.**
 12. **Playtest readiness** — real starting funds/upkeep numbers (**RESOLVED,
    section -8**: real per-zone funds and real per-race upkeep both now
    correct), then actually recruit 5 people
