@@ -113,6 +113,12 @@ interface SkillDefRow {
   leader_only: boolean
   specialist: boolean
   is_magic: boolean
+  // Real USING_HARVEST data from skills.rules (migration 23) -- null for
+  // any skill not among the ~20 real-resource harvest skills built for USE.
+  harvest_item: string | null
+  produced_item: string | null
+  harvest_rate_per_level: number[] | null
+  harvest_days_per_level: number[] | null
   [key: string]: any
 }
 
@@ -146,6 +152,7 @@ interface UnitItemRow {
 type FullDayData =
   | { kind: 'move'; targetLocationId: string; targetLocCode: string; originLocationId: string; originLocCode: string; originName: string }
   | { kind: 'study'; targetLevel: number }
+  | { kind: 'use'; skillTag: string; targetProducts: number | null; producedSoFar: number } // producedSoFar is fractional (RationalNumber in the real engine) -- only whole units get granted to unit_items, see resolveHarvestContention
   | { kind: 'none' }
 
 interface ActiveFullDayOrder {
@@ -176,8 +183,15 @@ interface TurnContext {
   dirtyUnitSkills: Set<string>
   unitItems: Map<string, Map<string, UnitItemRow>> // unitId -> item_tag -> row (GIVE's non-coin transfers)
   dirtyUnitItems: Set<string>
-  dirtyLocationIds: Set<string> // locations whose economics.recruits pool was depleted this turn
+  dirtyLocationIds: Set<string> // locations whose economics.recruits pool or resources were depleted this turn
   locationMaxStackPosition: Map<string, number> // lazily-computed running max stack_position per location, for arrival ordering
+  // USE-harvest daily contention pool, keyed by "locationId|harvestItemTag".
+  // Populated by tickFullDayOrder's USE case (one entry per unit requesting
+  // that day), resolved and cleared by resolveHarvestContention() after all
+  // units have been ticked for the day -- proportional sharing needs every
+  // same-day request pooled before any of them can be granted (EvenConflict.cpp,
+  // confirmed in HANDOVER.md; not list-order/first-come).
+  dailyHarvestRequests: Map<string, { state: UnitOrderState; data: Extract<FullDayData, { kind: 'use' }>; producedItem: string; request: number }[]>
   placeholderOrdersByCode: Map<string, ParsedOrder[]> // new-unit placeholder code (e.g. "F2028N01") -> queued orders, claimed by RECRUIT when it creates the matching unit
   unitStates: Map<string, UnitOrderState>
   eventLog: { game_id: string; turn_number: number; day_number: number; location_id: string | null; unit_id: string | null; faction_id: string | null; event_type: string; data: any; is_public: boolean }[]
@@ -585,6 +599,7 @@ async function buildTurnContext(gameId: string, turnNumber: number): Promise<Tur
     dirtyLocationIds: new Set(),
     locationMaxStackPosition: new Map(),
     placeholderOrdersByCode: new Map(),
+    dailyHarvestRequests: new Map(),
     unitStates: new Map(), eventLog,
   }
 
@@ -725,9 +740,9 @@ function postProcessCascade(state: UnitOrderState, fromIndex: number, result: 'S
 // ---------------------------------------------------------------------------
 
 const FULL_DAY_COMMANDS = new Set(['WORK', 'STUDY', 'MOVE', 'MARCH', 'USE'])
-const NOT_YET_IMPLEMENTED_FULL_DAY = new Set(['MARCH', 'USE'])
+const NOT_YET_IMPLEMENTED_FULL_DAY = new Set(['MARCH'])
 
-async function processUnitDay(ctx: TurnContext, state: UnitOrderState, day: number) {
+export async function processUnitDay(ctx: TurnContext, state: UnitOrderState, day: number) {
   state.recruitedToday = false
 
   if (state.fullDayOrder) {
@@ -1291,6 +1306,48 @@ function beginFullDayOrder(
       }
     }
 
+    // USE, scoped to harvesting real resources (USING_HARVEST paradigm) --
+    // confirmed real full-day order (UseOrder.cpp: fullDayOrder_ = true).
+    // Real syntax per UseOrder.cpp's loadParameters: "USE skill-tag [target]
+    // [products]". No harvesting skill has a meaningful target, so [target]
+    // isn't parsed here (v1 scope, confirmed) -- args[1], if present and
+    // numeric, is the products count; open-ended (harvest all turn) otherwise.
+    case 'USE': {
+      const skillTag = (order.args[0] || '').toLowerCase()
+      const skillDef = ctx.skillDefsByTag.get(skillTag)
+      if (!skillDef) return { status: 'INVALID' } // unusableSkillReporter equivalent
+
+      if (!skillDef.harvest_item) {
+        logEvent(
+          ctx, day, 'order_pending',
+          `${state.unit.name} [${state.unit.unit_code}]: USE ${skillTag} not yet supported (only harvesting skills are implemented) — order held for a later stage`,
+          state.unit.faction_id, state.unit.id, state.unit.location_id
+        )
+        return { status: 'FAILURE' }
+      }
+
+      // "executes as soon as the unit has the designated skill at 1st level
+      // or better" (UseOrder.cpp description) -- mayBeUsedBy's UNUSABLE -> INVALID.
+      const skillLevel = ctx.unitSkills.get(state.unit.id)?.get(skillTag)?.level ?? 0
+      if (skillLevel < 1) return { status: 'INVALID' }
+
+      // mayBeUsedBy's NO_RESOURCES -> FAILURE (retry-able -- the location
+      // could still gain this resource, or another unit could stop drawing
+      // on it, before the turn ends).
+      const location = ctx.locationsById.get(state.unit.location_id)
+      const available = location?.resources?.[skillDef.harvest_item] ?? 0
+      if (available <= 0) return { status: 'FAILURE' }
+
+      const productsArg = order.args[1] ? parseInt(order.args[1]) : NaN
+      const targetProducts = Number.isFinite(productsArg) && productsArg > 0 ? productsArg : null
+
+      return {
+        status: 'SUCCESS',
+        daysRemaining: DAYS_PER_TURN - day + 1, // safety cap -- real completion is amount-driven, checked in tickFullDayOrder
+        data: { kind: 'use', skillTag, targetProducts, producedSoFar: 0 },
+      }
+    }
+
     default:
       return { status: 'FAILURE' }
   }
@@ -1378,6 +1435,53 @@ function tickFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: number) 
     case 'MOVE':
       break
 
+    case 'USE': {
+      if (active.data.kind !== 'use') break
+      const data = active.data
+
+      // Completion is detected up to one day late by design: yesterday's
+      // request was resolved by resolveHarvestContention() after this unit
+      // had already ticked, so the earliest this unit can see the result is
+      // today's tick, before it asks for more.
+      if (data.targetProducts !== null && flooredProgress(data.producedSoFar) >= data.targetProducts) {
+        active.daysRemaining = 0
+        return
+      }
+
+      const skillDef = ctx.skillDefsByTag.get(data.skillTag)
+      if (!skillDef || !skillDef.harvest_item || !skillDef.produced_item) { active.daysRemaining = 0; return }
+
+      const level = ctx.unitSkills.get(state.unit.id)?.get(data.skillTag)?.level ?? 1
+      const rates = skillDef.harvest_rate_per_level ?? []
+      const daysArr = skillDef.harvest_days_per_level ?? []
+      // Defensive clamp -- a level beyond the captured array (shouldn't
+      // happen, arrays are sized to match level_days) reuses the last entry.
+      const idx = Math.min(level, rates.length) - 1
+      const rate = rates[idx] ?? 0
+      const days = daysArr[idx] ?? 1
+      if (rate <= 0 || days <= 0) { active.daysRemaining = 0; return }
+
+      // No production bonus, no tool bonus (v1 scope, confirmed).
+      let request = (rate / days) * state.unit.figure_count
+      if (data.targetProducts !== null) {
+        request = Math.min(request, data.targetProducts - data.producedSoFar)
+      }
+      if (request <= 0) break
+
+      // Carries `data` directly (not re-derived from state.fullDayOrder at
+      // resolution time) -- if this order's daysRemaining hits 0 on this
+      // same day (safety cap, or a satisfied products target), processUnitDay
+      // calls completeFullDayOrder() and clears state.fullDayOrder BEFORE
+      // resolveHarvestContention() runs for the day. Confirmed as a real bug
+      // via testing (the final day of a harvest silently granted nothing)
+      // before this existed -- looking the data up via state.fullDayOrder
+      // at resolution time would find it already null.
+      const poolKey = `${state.unit.location_id}|${skillDef.harvest_item}`
+      if (!ctx.dailyHarvestRequests.has(poolKey)) ctx.dailyHarvestRequests.set(poolKey, [])
+      ctx.dailyHarvestRequests.get(poolKey)!.push({ state, data, producedItem: skillDef.produced_item, request })
+      break
+    }
+
     default:
       break
   }
@@ -1407,6 +1511,64 @@ function completeFullDayOrder(ctx: TurnContext, state: UnitOrderState, day: numb
   }
 
   state.fullDayOrder = null
+}
+
+// Epsilon-tolerant floor for accumulated fractional harvest progress.
+// Summing a repeating fraction (e.g. 1/30 thirty times) in floating point
+// doesn't reliably land on exactly 1.0 -- it can drift to 0.9999999999991,
+// which a plain Math.floor() would round down to 0, silently withholding
+// the unit it actually earned. Confirmed as a real bug via testing (a
+// level-1 horse breeder's 30th day granted 0 horses instead of 1) before
+// this existed, not a hypothetical.
+function flooredProgress(n: number): number {
+  return Math.floor(n + 1e-9)
+}
+
+// Resolves one day's USE-harvest contention pool. Proportional sharing by
+// requested amount, matching EvenConflict::resolve() in the real 2010
+// engine (confirmed in HANDOVER.md, not re-derived here): ratio =
+// available / totalRequested, each requester gets theirRequest * ratio --
+// no list-order/first-come factor. Must run after every unit has ticked
+// for the day (tickFullDayOrder only submits a request; nothing is granted
+// until every unit's request for that day is known).
+export function resolveHarvestContention(ctx: TurnContext, day: number) {
+  for (const [poolKey, requests] of ctx.dailyHarvestRequests) {
+    if (requests.length === 0) continue
+    const [locationId, harvestItem] = poolKey.split('|')
+    const location = ctx.locationsById.get(locationId)
+    const available = location?.resources?.[harvestItem] ?? 0
+    const totalRequested = requests.reduce((sum, r) => sum + r.request, 0)
+    if (totalRequested <= 0 || available <= 0) continue
+
+    const ratio = Math.min(1, available / totalRequested)
+    let totalGranted = 0
+
+    for (const r of requests) {
+      const granted = r.request * ratio
+      totalGranted += granted
+
+      const before = flooredProgress(r.data.producedSoFar)
+      r.data.producedSoFar += granted
+      const wholeGranted = flooredProgress(r.data.producedSoFar) - before
+      if (wholeGranted <= 0) continue
+
+      setUnitItemQuantity(ctx, r.state.unit.id, r.producedItem, getUnitItemQuantity(ctx, r.state.unit.id, r.producedItem) + wholeGranted)
+
+      const itemName = ctx.itemDefsByTag.get(r.producedItem)?.name ?? r.producedItem
+      logEvent(
+        ctx, day, 'unit_harvest',
+        `${r.state.unit.name} [${r.state.unit.unit_code}] harvests ${wholeGranted} ${itemName}[${r.producedItem}]${ratio < 1 ? ' (shared with other units competing for the same resource)' : ''}`,
+        r.state.unit.faction_id, r.state.unit.id, locationId
+      )
+    }
+
+    if (location && totalGranted > 0) {
+      location.resources = { ...location.resources, [harvestItem]: available - totalGranted }
+      ctx.dirtyLocationIds.add(locationId)
+    }
+  }
+
+  ctx.dailyHarvestRequests.clear()
 }
 
 function ordinalSuffix(n: number): string {
@@ -1581,6 +1743,10 @@ export async function processTurn(gameId: string): Promise<{
     for (const state of ctx.unitStates.values()) {
       await processUnitDay(ctx, state, day)
     }
+    // Every unit has now ticked for today -- safe to resolve today's
+    // USE-harvest contention pool (proportional sharing needs every
+    // same-day request pooled before any of them can be granted).
+    resolveHarvestContention(ctx, day)
     // Battles, markets, mana, effects — Stage 3/4.
   }
 
@@ -1614,15 +1780,16 @@ export async function processTurn(gameId: string): Promise<{
       .eq('id', state.unit.id)
   }
 
-  // Persist depleted recruit pools -- RECRUIT mutates location.economics.recruits
-  // in memory (ctx.locationsById is shared across the whole turn's processing,
-  // so depletion correctly carries across days/units within the turn); without
-  // this it would never actually save, and the pool would silently "refill"
-  // every new turn.
+  // Persist depleted recruit pools and harvested-down resources --
+  // RECRUIT mutates location.economics.recruits, USE-harvest mutates
+  // location.resources (both in memory; ctx.locationsById is shared across
+  // the whole turn's processing, so depletion correctly carries across
+  // days/units within the turn); without this it would never actually
+  // save, and the pool/resources would silently "refill" every new turn.
   for (const locationId of ctx.dirtyLocationIds) {
     const location = ctx.locationsById.get(locationId)
     if (!location) continue
-    await supabase.from('locations').update({ economics: location.economics }).eq('id', locationId)
+    await supabase.from('locations').update({ economics: location.economics, resources: location.resources }).eq('id', locationId)
   }
 
   for (const unitId of ctx.dirtyUnitSkills) {
