@@ -276,6 +276,20 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
   const { data: manRace } = await supabase.from('race_defs').select('base_stats').eq('tag', 'man').maybeSingle()
   const manStats = manRace?.base_stats as Record<string, number> | undefined
 
+  // Real candidate pool for a mage's "two random low-level magic items"
+  // (RulesNew.txt, "Starting position"). item_defs has no literal "magic"
+  // category or level/tier field -- the real pool is amulet (10) + ring
+  // (17) = 27 items. "Low-level" is a judgment call, confirmed: every one
+  // of those 27 except rmig (ring of might: +60 life/-200 mana/+20
+  // defense) and rpow (ring of power: +30 mana/-15 melee/-15 missile),
+  // both with effect magnitudes far outside the ±5ish range everything
+  // else in the pool falls in.
+  const { data: magicItemPool } = await supabase
+    .from('item_defs')
+    .select('tag, equip_slot')
+    .in('category', ['amulet', 'ring'])
+    .not('tag', 'in', '(rmig,rpow)')
+
   // Real settlement locations across all three starting zones, fetched once
   // per batch rather than per-player. Each zone maps to a distance band from
   // the Imperial City, matching the "ZONE imperial|borders|colonial" choice
@@ -434,10 +448,9 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
 
     // Per RulesNew.txt ("Starting position"): "All leaders start with a
     // horse, which is equipped, and a follower unit of 50 unskilled
-    // followers, stacked beneath them." The horse item isn't granted here
-    // yet (starting equipment isn't wired up at all -- general/mage/
-    // adventurer/craftsman all still get none, a pre-existing gap, not new).
-    // The follower unit is real-data-sourced the same way the leader is:
+    // followers, stacked beneath them." (The horse itself is granted below,
+    // alongside the rest of starting equipment.) The follower unit is
+    // real-data-sourced the same way the leader is:
     // 'man' race_defs base_stats for life/upkeep, unskilled baseline for
     // combat stats (matches seedNPCUnits.ts's untrained-unit defaults).
     const followerCode = await generateUniqueUnitCode()
@@ -464,6 +477,45 @@ export async function processPendingRegistrations(gameId: string, turnNumber: nu
 
     if (followerError) {
       skipped.push(`${player.email}: starting leader created, but starting follower unit failed — ${followerError.message}`)
+    }
+
+    // Starting equipment per leader type (RulesNew.txt, "Starting
+    // position"). Only the items RulesNew.txt/the equipment task itself
+    // explicitly calls "equipped" (general's sword+armor, every leader's
+    // horse) get equipped: true -- the rest (mage's magic items,
+    // adventurer's rations, craftsman's tools) are carried, not worn,
+    // matching the source's own wording (no "equipped" qualifier for those
+    // three). Starting *skills* (combat+blades for general, etc.) stay out
+    // of scope for this task -- equipment only.
+    const leaderType = (player.attributes?.leader_type || 'general').toLowerCase()
+    const equipmentRows: { item_tag: string; quantity: number; equipped: boolean; equip_slot: string | null }[] = []
+
+    if (leaderType === 'mage') {
+      const pool = [...(magicItemPool ?? [])]
+      for (let i = 0; i < 2 && pool.length > 0; i++) {
+        const idx = Math.floor(Math.random() * pool.length)
+        const [item] = pool.splice(idx, 1)
+        equipmentRows.push({ item_tag: item.tag, quantity: 1, equipped: false, equip_slot: null })
+      }
+    } else if (leaderType === 'adventurer') {
+      equipmentRows.push({ item_tag: 'food', quantity: 30, equipped: false, equip_slot: null })
+    } else if (leaderType === 'craftsman') {
+      equipmentRows.push({ item_tag: 'tool', quantity: 2, equipped: false, equip_slot: null })
+    } else {
+      // general (and the default for an unrecognized/missing leader_type)
+      equipmentRows.push(
+        { item_tag: 'swrd', quantity: 1, equipped: true, equip_slot: 'weapon' },
+        { item_tag: 'plat', quantity: 1, equipped: true, equip_slot: 'armor' },
+      )
+    }
+
+    equipmentRows.push({ item_tag: 'hrse', quantity: 1, equipped: true, equip_slot: 'mount' })
+
+    const { error: equipError } = await supabase.from('unit_items').insert(
+      equipmentRows.map(e => ({ unit_id: leaderUnit.id, token_progress: 0, ...e }))
+    )
+    if (equipError) {
+      skipped.push(`${player.email}: starting leader/follower created, but starting equipment failed — ${equipError.message}`)
     }
 
     await supabase.from('players').update({ status: 'active' }).eq('id', player.id)
@@ -1084,6 +1136,19 @@ function stanceAtLeast(faction: FactionRow, towardFactionCode: string, minStance
   return rank >= (STANCE_RANK[minStance.toLowerCase()] ?? STANCE_RANK.neutral)
 }
 
+// Combat stub's trigger condition: real combat in RulesNew.txt is
+// automatic specifically at Enemy (line 1242: "the attack may be...
+// automatic, for example when a faction is declared ENEMY"), but the real
+// stance system has five tiers (Ally/Friendly/Neutral/Hostile/Enemy, all
+// present in STANCE_RANK above) and the task calls for the broader
+// "hostile factions" reading -- Hostile-or-worse, checked in either
+// direction, confirmed. Not stanceAtLeast(): that asks "is the stance AT
+// LEAST X" (friendly-or-better); this needs the opposite end of the scale.
+function isHostileStance(faction: FactionRow, towardFactionCode: string): boolean {
+  const rank = STANCE_RANK[getStance(faction, towardFactionCode)] ?? STANCE_RANK.neutral
+  return rank <= STANCE_RANK.hostile
+}
+
 function getUnitItemQuantity(ctx: TurnContext, unitId: string, itemTag: string): number {
   return ctx.unitItems.get(unitId)?.get(itemTag)?.quantity ?? 0
 }
@@ -1571,6 +1636,50 @@ export function resolveHarvestContention(ctx: TurnContext, day: number) {
   ctx.dailyHarvestRequests.clear()
 }
 
+// Combat stub -- minimum viable: detect the collision, log it, no
+// casualties, no resolution (real combat/battle mechanics are a separate,
+// much larger task). Runs once per day, after that day's unit processing,
+// so it sees each unit's final position for the day (a same-day MOVE
+// arrival should count). Applies to every faction, NPC-vs-NPC included,
+// consistent with how upkeep/USE were scoped -- not player-only. Fires
+// every day two hostile units remain co-located, not just once: this is
+// acknowledgment, not resolution, confirmed (7 units sharing a location
+// for 7 days is 7 log lines, by design).
+export function detectHostileEncounters(ctx: TurnContext, day: number) {
+  const byLocation = new Map<string, UnitOrderState[]>()
+  for (const state of ctx.unitStates.values()) {
+    if (!byLocation.has(state.unit.location_id)) byLocation.set(state.unit.location_id, [])
+    byLocation.get(state.unit.location_id)!.push(state)
+  }
+
+  for (const [locationId, states] of byLocation) {
+    if (states.length < 2) continue
+    const location = ctx.locationsById.get(locationId)
+    const locationName = location?.geographic_name ?? location?.loc_code ?? locationId
+
+    for (const state of states) {
+      const faction = ctx.factionsById.get(state.unit.faction_id)
+      if (!faction) continue
+
+      const hostilePresent = states.some(other => {
+        if (other.unit.faction_id === state.unit.faction_id) return false
+        const otherFaction = ctx.factionsById.get(other.unit.faction_id)
+        if (!otherFaction) return false
+        // Either side considering the other Hostile-or-worse is enough.
+        return isHostileStance(faction, otherFaction.faction_code) || isHostileStance(otherFaction, faction.faction_code)
+      })
+
+      if (hostilePresent) {
+        logEvent(
+          ctx, day, 'hostile_encounter',
+          `${state.unit.name} [${state.unit.unit_code}] encountered hostile forces at ${locationName}`,
+          state.unit.faction_id, state.unit.id, locationId
+        )
+      }
+    }
+  }
+}
+
 function ordinalSuffix(n: number): string {
   if (n === 1) return 'st'
   if (n === 2) return 'nd'
@@ -1747,7 +1856,9 @@ export async function processTurn(gameId: string): Promise<{
     // USE-harvest contention pool (proportional sharing needs every
     // same-day request pooled before any of them can be granted).
     resolveHarvestContention(ctx, day)
-    // Battles, markets, mana, effects — Stage 3/4.
+    // Combat stub: detect (not resolve) hostile-faction units sharing a
+    // location today. Real battle resolution — Stage 3/4.
+    detectHostileEncounters(ctx, day)
   }
 
   // Upkeep/desertion -- end of month, after work wages are collected, before
