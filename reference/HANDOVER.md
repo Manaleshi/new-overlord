@@ -5,7 +5,7 @@ without losing context. Read this before touching any code.
 
 ---
 
-## -8. UPDATE — Starting funds/follower unit, NPC stack grouping, upkeep/desertion, USE-harvest implemented (tenth session, Claude Code)
+## -8. UPDATE — Starting funds/follower/equipment, NPC stack grouping, upkeep/desertion, USE-harvest, combat stub (tenth session, Claude Code)
 
 ### Real feature built: real per-zone starting funds and the starting follower unit, confirmed against RulesNew.txt
 Two bugs found directly in `processPendingRegistrations()` while re-reading
@@ -35,19 +35,24 @@ via `tsx` (not a reimplementation), confirmed funds ($6000/$5500/$5000) and
 follower stacking correct for all three, then deleted the test rows.
 
 ### Known gaps, not fixed this session, playtest-blocking
-- **Starting equipment is not granted at all.** `RulesNew.txt` is explicit
+- ~~**Starting equipment is not granted at all.** `RulesNew.txt` is explicit
   per leader type: general gets a sword + plate armor, mage gets two random
   low-level magic items, adventurer gets 30 food rations, craftsman gets two
   tools matching their starting skills — and *every* leader additionally
   gets an equipped horse (see the follower-unit fix above; the horse itself
   still isn't granted). None of this exists yet — `processPendingRegistrations()`
-  grants no `unit_items` rows to the starting leader regardless of type.
-- **Leader-type starting skills/equipment aren't differentiated at all.**
+  grants no `unit_items` rows to the starting leader regardless of type.~~
+  **RESOLVED, later in this same document (search "starting equipment"
+  below)** — equipment only; starting *skills* per type are still open, see
+  the next item.
+- **Leader-type starting skills aren't differentiated at all** (equipment
+  now is, per the item above — this is specifically about *skills*).
   `leader_type` (general/mage/adventurer/craftsman) is collected at
-  registration and stored on the faction, but every leader currently gets
-  the identical generic start (same stats, same — currently zero — skills,
-  same — currently zero — equipment) regardless of which type was chosen.
-  Real per-type differences, also from "Starting position": general starts
+  registration and stored on the faction; equipment is now real per type
+  (see above), but every leader still gets the identical generic start on
+  *skills* (same stats, same — currently zero — skills) regardless of
+  which type was chosen. Real per-type differences, also from
+  "Starting position": general starts
   at 1st level in combat + blades; mage starts at 1st level in magecraft +
   a chosen elemental; adventurer starts at 1st level in scouting + the
   local land-lore skill; craftsman starts at 1st level in two basic skills.
@@ -245,6 +250,66 @@ resolved-decision section (15 available, 20/40 requested → 5/10 granted,
 not first-come), a `products` count cap (stops exactly at target, no
 over-harvest), a non-harvest skill (graceful failure, order stays queued),
 and a unit lacking the skill (`INVALID`, order dropped) — all five correct.
+
+### Real feature built: starting equipment per leader type, confirmed against RulesNew.txt
+Closes the equipment half of the gap flagged earlier in this document
+(search "Starting equipment is not granted at all", now marked resolved).
+Per `RulesNew.txt` "Starting position": general gets a sword `[swrd]` +
+plate armor `[plat]`, equipped; mage gets two random low-level magic
+items; adventurer gets 30 food rations `[food]`; craftsman gets two tools
+`[tool]`; every leader additionally gets a horse `[hrse]`, equipped. Only
+equipped what the source itself calls "equipped" — general's gear and the
+horse; the other three types' items are carried, not worn, matching the
+source's own wording (no "equipped" qualifier for those). **Starting
+skills stay explicitly out of scope** — this task was equipment only,
+confirmed; general/mage/adventurer/craftsman still get identical (empty)
+starting skills, tracked as the still-open half of the original gap.
+
+**Real finding**: `item_defs` has no literal `magic` category or any
+level/tier field — RulesNew.txt's "low-level magic items" isn't a
+formally defined set anywhere in the migrated data. Real candidate pool is
+`amulet` (10) + `ring` (17) = 27 items; defined "low-level," confirmed, as
+all 27 except `rmig` (ring of might: +60 life/-200 mana/+20 defense) and
+`rpow` (ring of power: +30 mana/-15 melee/-15 missile) — both have effect
+magnitudes far outside the ±5-ish range everything else in the pool falls
+in. Also checked whether `item_defs.skill_required`/`skill_level_req`
+(e.g. `plat` requires `parr` level 2, which no starting general has) is
+enforced anywhere — it isn't, nowhere in this codebase — and is consistent
+with the source itself (a general starts wielding a sword before he's even
+finished studying blades).
+
+**Verified**, real production Supabase: SQL-injected one pending test
+player per leader type (fake `.invalid` addresses), ran
+`processPendingRegistrations()` directly, confirmed exact item/quantity/
+equipped state for all four types plus the horse, then deleted the test
+rows.
+
+### Real feature built: minimum-viable combat stub, confirmed against RulesNew.txt
+Detects, doesn't resolve — no casualties, no combat math, explicitly
+confirmed scope. Real finding: `RulesNew.txt`'s stance system has **five**
+tiers (Ally/Friendly/Neutral/Hostile/Enemy — not a binary hostile/not),
+already exactly matched by this codebase's existing `STANCE_RANK`. Real
+automatic combat triggers specifically at Enemy (line 1242: "the attack
+may be... automatic, for example when a faction is declared ENEMY"); this
+stub uses the broader, confirmed reading — Hostile-or-worse, checked in
+either direction (either faction's own perception is enough, matching how
+stance is already one-sided everywhere else in this codebase). New
+`detectHostileEncounters()`, once per day after that day's unit
+processing (so same-day MOVE arrivals count), logs one `turn_event` per
+unit that shares a location with a different-faction unit meeting that
+bar: `"[Unit] encountered hostile forces at [location]"`. Fires every day
+the standoff continues, not deduped — confirmed as the correct reading of
+"just acknowledgment, not resolution." Applies to every faction, NPC-vs-NPC
+included, consistent with how upkeep/USE were scoped. No `turnReport.ts`
+changes needed — `turn_events` already render generically per unit.
+
+**Verified**, hand-built `TurnContext` (fake non-DB-backed factions/units,
+nothing persisted): a one-directional Enemy stance and a one-directional
+Hostile stance both correctly fired for units on *both* sides; Neutral and
+Friendly stances correctly never fired; two units of the same faction
+sharing a location with no other faction present correctly never fired
+against each other; running the detector twice (simulating two days)
+produced two full, undeduped sets of events.
 
 ## -7. UPDATE — New-unit placeholder addressing, GIVE, and a real mail-loop incident (ninth session, Claude Code)
 
